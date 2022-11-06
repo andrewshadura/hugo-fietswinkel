@@ -2,7 +2,7 @@
 
 {{ partial "page-title.html" . }}
 
-<section class="section pt-0">
+<section class="section pt-0 h-product">
   <div class="container">
     <div class="row">
       {{ $image := "" }}
@@ -19,13 +19,13 @@
         <div class="product-slider">
           {{ range .Params.Images }}
           <div data-image="{{ .image | absURL }}">
-            <img class="img-fluid w-100" src="{{ .image | absURL }}" alt="product-img">
+            <img class="img-fluid w-100 u-photo" src="{{ .image | absURL }}" alt="product-img">
           </div>
           {{ end }}
         </div>
       </div>
       <div class="col-lg-5 offset-lg-1">
-        <h4 class="font-weight-medium">{{ .Title }}</h4>
+        <h4 class="font-weight-medium p-name">{{ .Title }}</h4>
         <!-- rating star -->
         {{ if site.Params.rating.enable }}
         <div class="rw-ui-container"></div>
@@ -34,7 +34,7 @@
           {{ if .Params.PriceBefore }}
           <s>{{ site.Params.currencySymbol }}{{ .Params.PriceBefore }}</s>
           {{ end }}
-          <span class="lead text-primary font-weight-medium">{{ site.Params.currencySymbol }}{{ .Params.Price }}</span>
+          <span class="lead text-primary font-weight-medium p-price">{{ site.Params.currencySymbol }}{{ .Params.Price }}</span>
         </div>
         <h5>Short Description</h5>
         <p>{{ .Params.ShortDescription | markdownify }}</p>
@@ -56,10 +56,10 @@
           </li>
         </ul>
         <div class="tab-content" id="myTabContent">
-          <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+          <div class="tab-pane fade show active e-description" id="description" role="tabpanel" aria-labelledby="description-tab">
             <div class="content">{{ .Content }}</div>
           </div>
-          <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+          <div class="tab-pane fade p-review" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
             {{ template "_internal/disqus.html" . }}
           </div>
         </div>
