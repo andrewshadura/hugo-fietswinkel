@@ -321,22 +321,25 @@
 
 .product-slider {
   .slick-list{
-    border: 1px solid $primary-color;
     margin-bottom: 10px;
     border-radius: 5px;
   }
   .slick-dots {
     margin-top: 10px;
     padding-left: 0;
-    display: flex;
 
+    li.slick-active {
+      border: 1px solid $primary-color;
+    }
     li {
       list-style-type: none;
-      border: 1px solid $primary-color;
       margin: 10px;
-      border-radius: 5px;
+      border-radius: 2px;
       padding: 10px;
       cursor: pointer;
+      display: inline-block;
+      max-width: 20%;
+
       &:first-child {
         margin-left: 0;
       }
