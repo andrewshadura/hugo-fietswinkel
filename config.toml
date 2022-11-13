@@ -1,0 +1,7 @@
+[outputFormats]
+  [outputFormats.HeurekaFeed20]
+    baseName = 'heureka-feed'
+    mediaType = 'application/xml'
+
+[outputs]
+home = ['HTML', 'RSS', 'HeurekaFeed20']
