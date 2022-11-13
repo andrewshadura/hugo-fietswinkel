@@ -1,3 +1,7 @@
+[params]
+currency = "EUR"
+currencySymbol = "€"
+
 [outputFormats]
   [outputFormats.HeurekaFeed20]
     baseName = 'heureka-feed'
