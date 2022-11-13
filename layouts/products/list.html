@@ -35,7 +35,7 @@
             <button class="cart-add-item btn btn-sm btn-outline-primary" data-item-id="{{ .Params.ProductID }}"
               data-item-name="{{ .Title }}" data-item-image="{{ $image }}"
               data-item-price="{{ .Params.Price }}" data-item-url="{{ .Permalink }}" data-item-description="{{ .Description }}">
-              Add to cart
+              {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}
             </button>
             {{ end }}
           </div>
