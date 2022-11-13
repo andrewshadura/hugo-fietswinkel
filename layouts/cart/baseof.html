@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="{{ site.LanguageCode | default "en" }}">
+  {{- partial "head.html" . -}}
+  <body>
+    {{- partial "preloader.html" . -}}
+    {{- partial "header.html" . -}}
+    {{- block "main" . }}{{- end }}
+    {{- partial "footer.html" . -}}
+
+    <script defer>
+    function updateQuantity(e) {
+      const id = e.target.dataset.id
+      const quantity = parseInt(e.target.value, 10)
+      if (Number.isNaN(quantity)) {
+        const cart = Cart.get()
+        if (id in cart) {
+          e.target.value = cart[id].quantity
+        } else {
+          e.target.value = 0
+        }
+        return
+      }
+      Cart.update(id, quantity)
+    }
+
+    function removeItem(e) {
+      const id = e.target.dataset.id
+      Cart.remove(id)
+    }
+    </script>
+
+  </body>
+</html>

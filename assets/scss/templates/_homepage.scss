@@ -303,15 +303,6 @@
   }
 }
 
-/* snipcart */
-.snip-layout .snip-layout__main-container {
-  top: 100px;
-}
-
-.snip-header__title {
-  color: $white;
-}
-
 /* rating widget */
 .rw-ui-report{
   z-index: 9 !important;
@@ -352,6 +343,21 @@
         height: auto;
         max-width: 100%;
       }
+    }
+  }
+}
+
+#cart-summary {
+  table {
+    img {
+      max-width: 220px;
+      max-height: 220px;
+      height: auto;
+      width: auto;
+    }
+
+    input.cart-quantity {
+      max-width: 5em;
     }
   }
 }

@@ -28,11 +28,11 @@
             {{ if .Params.Price }}
             <div class="mb-4">
               {{ if .Params.PriceBefore }}
-              <s>{{ site.Params.currencySymbol }}{{ .Params.PriceBefore }}</s>
+              <s>{{ .Params.PriceBefore | lang.FormatCurrency 2 .Site.Params.currency }}</s>
               {{ end }}
-              <span class="lead text-primary">{{ site.Params.currencySymbol }}{{ .Params.Price }}</span>
+              <span class="lead text-primary">{{ .Params.Price | lang.FormatCurrency 2 .Site.Params.currency }}</span>
             </div>
-            <button class="snipcart-add-item btn btn-sm btn-outline-primary" data-item-id="{{ .Params.ProductID }}"
+            <button class="cart-add-item btn btn-sm btn-outline-primary" data-item-id="{{ .Params.ProductID }}"
               data-item-name="{{ .Title }}" data-item-image="{{ $image }}"
               data-item-price="{{ .Params.Price }}" data-item-url="{{ .Permalink }}" data-item-description="{{ .Description }}">
               Add to cart

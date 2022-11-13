@@ -51,16 +51,17 @@
   </div>
 </footer>
 
-{{ with site.Params.snipcartApiKey }}
-{{ "<!-- Snipcart -->" | safeHTML }}
-<div id="snipcart" data-api-key="{{ . }}" hidden></div>
-{{ end }}
-
 {{ "<!-- Google Maps API -->" | safeHTML }}
 <script src="{{ site.Params.gmapAPI | absURL }}"></script>
 {{ "<!-- JS Plugins -->" | safeHTML }}
 {{ range site.Params.plugins.js}}
 <script src="{{ .link | absURL }}"></script>
+{{ end }}
+
+{{ "<!-- Cart handling -->" | safeHTML }}
+{{ range (slice "js/liquidjs/liquid.browser.umd.js" "js/cart.js") }}
+{{ $script := resources.Get . | minify}}
+<script src="{{ $script.Permalink }}"></script>
 {{ end }}
 
 {{ "<!-- Main Script -->" | safeHTML }}
