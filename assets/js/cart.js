@@ -100,19 +100,19 @@ var Cart = {
     }
 }
 
-Cart.currencyFormat = (function() {
-    let currency = 'EUR'
+Cart.currencyFormat = (function(Cart) {
+    Cart.currency = 'EUR'
     const cartCurrency = document.querySelector("[data-cart-currency]")
     if (cartCurrency) {
-        currency = cartCurrency.dataset.cartCurrency
+        Cart.currency = cartCurrency.dataset.cartCurrency
     }
     return new Intl.NumberFormat(
         document.documentElement.lang, {
             style: 'currency',
-            currency: currency
+            currency: Cart.currency
         }
     )
 
-})()
+})(Cart)
 Cart.setHandlers()
 Cart.render()
