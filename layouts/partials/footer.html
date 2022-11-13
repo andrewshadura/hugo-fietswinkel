@@ -8,7 +8,7 @@
     </div>
     <div class="row border-bottom pb-5 justify-content-between">
       <div class="col-md-3 col-sm-6">
-        <h5 class="font-weight-medium mb-4">Important Links</h5>
+        <h5 class="font-weight-medium mb-4">{{ with "Important links" }}{{ i18n . | default . }}{{ end }}</h5>
         <ul class="list-unstyled">
           {{ range site.Menus.footer }}
           <li class="mb-3"><a class="text-color" href="{{ .URL | absURL }}">{{ .Name }}</a></li>
@@ -16,7 +16,7 @@
         </ul>
       </div>
       <div class="col-md-4 col-sm-6">
-        <h5 class="font-weight-medium mb-4">Connect With Us</h5>
+        <h5 class="font-weight-medium mb-4">{{ with "Connect with us" }}{{ i18n . | default . }}{{ end }}</h5>
         <ul class="list-unstyled mb-5">
           <li class="mb-3"><a class="text-color" href="tel:{{ site.Params.mobile }}"><i
                 class="ti-mobile text-primary mr-2"></i>
@@ -34,12 +34,12 @@
         </ul>
       </div>
       <div class="col-lg-4 col-md-5">
-        <h5 class="font-weight-medium mb-4">Contact us</h5>
+        <h5 class="font-weight-medium mb-4">{{ with "Contact us" }}{{ i18n . | default . }}{{ end }}</h5>
         <form action="{{ site.Params.contact.formAction }}" method="POST">
-          <input type="text" class="form-control mb-2" id="name" name="name" placeholder="Your Name">
-          <input type="email" class="form-control mb-2" id="email" name="email" placeholder="Your Email">
-          <textarea name="message" id="message" class="form-control mb-2" placeholder="Your Message"></textarea>
-          <button type="submit" value="send" class="btn btn-block btn-outline-primary rounded">Send Now</button>
+          <input type="text" class="form-control mb-2" id="name" name="name" placeholder="{{ with "Name" }}{{ i18n . | default . }}{{ end }}">
+          <input type="email" class="form-control mb-2" id="email" name="email" placeholder="{{ with "Email" }}{{ i18n . | default . }}{{ end }}">
+          <textarea name="message" id="message" class="form-control mb-2" placeholder="{{ with "Message" }}{{ i18n . | default . }}{{ end }}"></textarea>
+          <button type="submit" value="send" class="btn btn-block btn-outline-primary rounded">{{ with "Send" }}{{ i18n . | default . }}{{ end }}</button>
         </form>
       </div>
     </div>
