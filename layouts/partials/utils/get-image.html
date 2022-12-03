@@ -1,0 +1,9 @@
+{{ $image := "" }}
+{{ if .Params.Image }}
+  {{ $image = .Params.Image | absURL }}
+{{ else }}
+  {{ range first 1 .Params.Images }}
+    {{ $image = .image | absURL }}
+  {{ end }}
+{{ end }}
+{{ return $image }}

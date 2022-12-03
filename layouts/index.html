@@ -168,16 +168,7 @@
       </div>
       {{ range first 6 (where site.RegularPages "Type" "products") }}
       {{ if not .IsSection }}
-      {{ $image := "" }}
-      {{ if .Params.Image }}
-        {{ $image = .Params.Image | absURL }}
-      {{ else }}
-        {{ if .Params.Images }}
-          {{ range first 1 .Params.Images }}
-            {{ $image = .image | absURL }}
-          {{ end }}
-        {{ end }}
-      {{ end }}
+      {{- $image := partial "utils/get-image" . }}
       <div class="col-lg-4 col-sm-6 mb-4">
         <div class="card border-0 text-center">
           <a href="{{ .Permalink }}">

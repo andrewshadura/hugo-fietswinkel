@@ -1,19 +1,11 @@
 {{ define "main" }}
 
 {{ partial "page-title.html" . }}
+{{- $image := partial "utils/get-image" . }}
 
 <section class="section pt-0 h-product">
   <div class="container">
     <div class="row">
-      {{ $image := "" }}
-      {{ if .Params.Image }}
-        {{ $image = .Params.Image | absURL }}
-      {{ else }}
-        {{ range first 1 .Params.Images }}
-          {{ $image = .image | absURL }}
-        {{ end }}
-      {{ end }}
-
       <div class="col-lg-5 mb-4 mb-lg-0">
         <!-- product image slider -->
         <div class="product-slider">

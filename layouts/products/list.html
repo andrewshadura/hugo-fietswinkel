@@ -7,16 +7,8 @@
     <div class="row">
       {{ range .Data.Pages }}
       {{ if site.Params.showProductSections | or (not .IsSection) }}
-      {{ $image := "" }}
-      {{ if .Params.Image }}
-        {{ $image = .Params.Image | absURL }}
-      {{ else }}
-        {{ if .Params.Images }}
-          {{ range first 1 .Params.Images }}
-            {{ $image = .image | absURL }}
-          {{ end }}
-        {{ end }}
-      {{ end }}
+      {{- $image := partial "utils/get-image" . }}
+      {{- $params := partial "utils/get-params" . }}
       <div class="col-lg-4 col-sm-6 mb-4">
         <div class="card border-0 text-center">
           <a href="{{ .Permalink }}">

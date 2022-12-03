@@ -1,14 +1,7 @@
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 <SHOP>
 {{- range where site.RegularPages "Section" "products" }}
-{{- $image := "" }}
-{{- if .Params.Image }}
-  {{- $image = .Params.Image | absURL }}
-{{- else }}
-  {{- range first 1 .Params.Images }}
-    {{- $image = .image | absURL }}
-  {{- end }}
-{{- end }}
+{{- $image := partial "utils/get-image" . }}
     <SHOPITEM>
         <ITEM_ID>{{ .Params.productID }}</ITEM_ID>
         <PRODUCTNAME>{{ .Name }}</PRODUCTNAME>
