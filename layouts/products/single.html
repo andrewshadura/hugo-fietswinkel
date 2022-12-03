@@ -1,7 +1,9 @@
 {{ define "main" }}
 
 {{ partial "page-title.html" . }}
+{{- $params := partial "utils/get-params" . }}
 {{- $image := partial "utils/get-image" . }}
+{{- $defaultStock := 100 }}
 
 <section class="section pt-0 h-product">
   <div class="container">
@@ -31,9 +33,15 @@
         <h5>Short Description</h5>
         <p>{{ .Params.ShortDescription | markdownify }}</p>
         <button class="cart-add-item btn btn-primary" data-item-id="{{ .Params.ProductID }}"
+          data-item-instock="{{ $params.instock | default $defaultStock }}"
+          {{ if eq (int (default $defaultStock $params.instock)) 0 }}disabled{{ end }}
           data-item-name="{{ .Title }}" {{ range first 1 .Params.Images }} data-item-image="{{ $image }}"
           {{ end }} data-item-price="{{ .Params.Price }}" data-item-url="{{ .Permalink }}" data-item-description="{{ .Description }}">
-          {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}
+          {{ if eq (int (default $defaultStock $params.instock)) 0 }}
+            {{ with "Out of stock" }}{{ i18n . | default . }}{{ end }}
+          {{ else }}
+            {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}
+          {{ end }}
         </button>
       </div>
       <div class="col-12 mt-5">

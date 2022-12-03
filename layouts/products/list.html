@@ -9,6 +9,7 @@
       {{ if site.Params.showProductSections | or (not .IsSection) }}
       {{- $image := partial "utils/get-image" . }}
       {{- $params := partial "utils/get-params" . }}
+      {{- $defaultStock := 100 }}
       <div class="col-lg-4 col-sm-6 mb-4">
         <div class="card border-0 text-center">
           <a href="{{ .Permalink }}">
@@ -26,8 +27,14 @@
             </div>
             <button class="cart-add-item btn btn-sm btn-outline-primary" data-item-id="{{ .Params.ProductID }}"
               data-item-name="{{ .Title }}" data-item-image="{{ $image }}"
+              data-item-instock="{{ $params.instock | default $defaultStock }}"
+              {{ if eq (int (default $defaultStock $params.instock)) 0 }}disabled{{ end }}
               data-item-price="{{ .Params.Price }}" data-item-url="{{ .Permalink }}" data-item-description="{{ .Description }}">
-              {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}
+              {{ if eq (int (default $defaultStock $params.instock)) 0 }}
+                {{ with "Out of stock" }}{{ i18n . | default . }}{{ end }}
+              {{ else }}
+                {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}
+              {{ end }}
             </button>
             {{ end }}
           </div>

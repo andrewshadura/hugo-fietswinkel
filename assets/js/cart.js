@@ -87,7 +87,8 @@ var Cart = {
                 name: item.item.name,
                 description: item.item.description,
                 url: item.item.url,
-                image: item.item.image
+                image: item.item.image,
+                instock: item.item.instock,
             }))
 
             engine

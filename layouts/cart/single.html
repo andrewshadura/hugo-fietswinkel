@@ -32,6 +32,8 @@
                 data-id="[= item.id =]"
                 type="number"
                 value="[= item.quantity =]"
+                min="0"
+                max="[= item.instock =]"
                 onchange="updateQuantity(event)"
                 inputmode="numeric" /><br>
               <button
