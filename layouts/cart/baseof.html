@@ -27,6 +27,76 @@
       const id = e.target.dataset.id
       Cart.remove(id)
     }
+
+    function selectDelivery(e) {
+      if (!e.target.checked) {
+        return
+      }
+      const price = e.target.dataset.deliveryPrice
+      Cart.deliveryPrice = Math.floor(parseFloat(price * 100))
+      Cart.deliveryType = e.target.value
+
+      const totalElement = document.querySelector("#cart-summary .cart-total")
+      totalElement.innerHTML = Cart.currencyFormat.format(Cart.total() / 100)
+
+      const priceElement = document.querySelector("#cart-summary .cart-delivery-total")
+      priceElement.innerHTML = Cart.currencyFormat.format(price)
+
+      const checkoutButton = document.querySelector("#cart-checkout")
+      if (checkoutButton) {
+        priceElement.innerHTML = Cart.currencyFormat.format(price)
+        const detailsRequired = e.target.dataset.deliveryDetailsRequired
+        if (detailsRequired == "true") {
+          const detailsElement = document.querySelector(`#cart-summary .cart-delivery-details[name=${e.target.value}-delivery-details]`)
+          if (detailsElement) {
+            checkoutButton.disabled = detailsElement.value == ""
+          }
+        } else {
+          checkoutButton.disabled = false
+        }
+      }
+    }
+
+    function performCheckout() {
+      const cart = Cart.get()
+
+      const line_items = Object.values(cart).map(item => ({
+          price_data: {
+              currency: Cart.currency.toLowerCase(),
+              product_data: {
+                  name: item.item.name,
+                  description: item.item.description,
+                  images: [item.item.image],
+              },
+              unit_amount: item.item.price,
+              tax_behavior: 'inclusive',
+          },
+          quantity: item.quantity,
+      }))
+      const form = document.createElement('form')
+      {{- with (site.Params.CheckoutURL) }}
+      form.action = "{{ . }}"
+      {{- else }}
+      {{ $baseUrl := urls.Parse (site.BaseURL) }}
+      form.action = "https://checkout.{{ $baseUrl.Host }}/checkout"
+      {{- end }}
+      form.method = "POST"
+      form.style = "display: none"
+
+      const input = document.createElement('input')
+      input.name = 'cart'
+      input.value = JSON.stringify(line_items)
+      form.appendChild(input)
+
+      const deliveryInput = document.createElement('input')
+      deliveryInput.name = 'delivery_details'
+      deliveryInput.value = JSON.stringify(Cart.deliveryDetails)
+      form.appendChild(deliveryInput)
+
+      document.body.appendChild(form)
+      form.submit()
+    }
+
     </script>
 
   </body>

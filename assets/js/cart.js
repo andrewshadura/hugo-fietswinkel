@@ -1,4 +1,7 @@
 var Cart = {
+    deliveryPrice: 0,
+    deliveryType: null,
+    deliveryDetails: {},
     get: function() {
         try {
             return JSON.parse(localStorage.getItem('cart')) || {};
@@ -44,6 +47,16 @@ var Cart = {
             Cart.set(cart)
         }
     },
+    subtotal: function() {
+        const cart = Cart.get()
+        return total = Object.values(cart).reduce(
+            (sum, item) => sum + item.quantity * item.item.price,
+            0
+        )
+    },
+    total: function() {
+        return Cart.subtotal() + Cart.deliveryPrice
+    },
     render: function() {
         const cart = Cart.get()
 
@@ -78,7 +91,12 @@ var Cart = {
             }))
 
             engine
-                .parseAndRender(template.innerHTML, {items: items})
+                .parseAndRender(template.innerHTML, {
+                    items: items,
+                    deliveryPrice: Cart.currencyFormat.format(Cart.deliveryPrice / 100),
+                    subtotal: Cart.currencyFormat.format(Cart.subtotal() / 100),
+                    total: Cart.currencyFormat.format(Cart.total() / 100),
+                })
                 .then(html => cart_summary.innerHTML = html)
 
         }
