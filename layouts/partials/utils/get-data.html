@@ -1,0 +1,4 @@
+{{ $file := . }}
+{{ $lang := page.Language.Lang }}
+{{ $data := (index site.Data (printf "%s_%s" $file $lang) | default (index site.Data $file)) }}
+{{ return $data }}

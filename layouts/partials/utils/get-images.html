@@ -1,0 +1,28 @@
+{{ $images := slice }}
+{{ $page := . }}
+{{ if $page.Params.Images }}
+  {{ range $page.Params.Images }}
+    {{ $image := $page.Resources.Get .image }}
+    {{ if $image }}
+    {{ $image = $image.Resize "1600x q83 picture Lanczos" }}
+    {{ warnf "Adding image %q" $image }}
+    {{ $images = $images | append $image }}
+    {{ else }}
+    {{ warnf "Missing image %q" .image }}
+    {{ end }}
+  {{ end }}
+{{ else }}
+  {{ $coverImage := $page.Resources.GetMatch "cover.jpg" }}
+  {{ $coverImage = $coverImage.Resize "1600x q83 picture Lanczos" }}
+  {{ if $coverImage }}
+  {{ $images = $images | append $coverImage }}
+  {{ end }}
+  {{ range $page.Resources.Match "*.jpg" }}
+    {{ if ne .Name "cover.jpg" }}
+      {{ $image := .Resize "1600x q83 picture Lanczos" }}
+      {{ $images = $images | append $image }}
+      {{ warnf "Automatically adding %q" $image }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $images }}

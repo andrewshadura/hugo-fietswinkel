@@ -1,9 +1,22 @@
 {{ $image := "" }}
-{{ if .Params.Image }}
-  {{ $image = .Params.Image | absURL }}
+{{ $page := . }}
+{{ if $page.Params.Image }}
+  {{ $image = $page.Params.Image | absURL }}
 {{ else }}
-  {{ range first 1 .Params.Images }}
-    {{ $image = .image | absURL }}
+  {{ $imageResource := slice }}
+  {{ $images := partial "utils/get-images" $page }}
+  {{ if $images }}
+    {{ $imageResource = index (partial "utils/get-images" $page) 0 }}
+  {{ else }}
+    {{ $imageResource = $page.Resources.GetMatch "cover.jpg" }}
+    {{ if (not $imageResource) }}
+      {{ warnf "Missing cover.jpg for page %q" $page }}
+    {{ end }}
+  {{ end }}
+  {{ if $imageResource }}
+    {{ $imageResource = $imageResource.Resize "520x q83" }}
+    {{ $imageResource = $imageResource.Crop "520x360 Center" }}
+    {{ $image = $imageResource.Permalink }}
   {{ end }}
 {{ end }}
 {{ return $image }}
