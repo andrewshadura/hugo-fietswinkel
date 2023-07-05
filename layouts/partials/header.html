@@ -13,8 +13,8 @@
           {{ range site.Menus.main }}
           {{ if .HasChildren }}
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              {{ .Name }}
+            <a class="nav-link dropdown-toggle" href="{{ .URL | absURL }}" role="button" aria-haspopup="true" aria-expanded="false">
+              {{ i18n .Name | default .Name }}
             </a>
             <div class="dropdown-menu">
               {{ range .Children }}
@@ -30,6 +30,23 @@
           {{ end }}
         </ul>
       </div>
+      {{ $page := . }}
+      {{ with $languages := $.Site.Languages }}
+      <div class="collapse navbar-collapse text-center" id="navigation">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+              <i class="ti-world"></i>
+            </a>
+            <div class="dropdown-menu">
+              {{ range $i, $e := $languages }}
+              <a class="dropdown-item" href="{{ relref $page (dict "path" "/" "lang" $e.Lang) }}">{{ $e.LanguageName }}</a>
+              {{ end }}
+            </div>
+          </li>
+        </ul>
+      </div>
+      {{ end }}
       <button class="cart" data-cart-currency="{{ site.Params.currency }}">
         <a href="{{ "cart/" | absURL }}"  class="text-dark"><i class="ti-shopping-cart"></i><span class="badge badge-primary cart-items-count"></span></a>
       </button>
