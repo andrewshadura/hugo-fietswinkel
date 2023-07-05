@@ -47,9 +47,11 @@
         </ul>
       </div>
       {{ end }}
+      {{ if (not site.Params.disableCart) }}
       <button class="cart" data-cart-currency="{{ site.Params.currency }}">
         <a href="{{ "cart/" | absURL }}"  class="text-dark"><i class="ti-shopping-cart"></i><span class="badge badge-primary cart-items-count"></span></a>
       </button>
+      {{ end }}
     </nav>
   </div>
 </header>
