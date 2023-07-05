@@ -93,6 +93,11 @@
       deliveryInput.value = JSON.stringify(Cart.deliveryDetails)
       form.appendChild(deliveryInput)
 
+      const deliveryTypeInput = document.createElement('input')
+      deliveryTypeInput.name = 'delivery_type'
+      deliveryTypeInput.value = Cart.deliveryType
+      form.appendChild(deliveryTypeInput)
+
       document.body.appendChild(form)
       form.submit()
     }
