@@ -1,0 +1,10 @@
+{{ $image := . }}
+{{ $image := page.Resources.GetMatch $image }}
+{{ if $image }}
+{{ $image = $image.Resize "1600x q83 picture Lanczos" }}
+{{ warnf "Adding image %q" $image }}
+{{ $image = $image.Permalink }}
+{{ else }}
+{{ $image = "" }}
+{{ end }}
+{{ return $image }}

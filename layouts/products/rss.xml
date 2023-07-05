@@ -1,0 +1,124 @@
+{{- $pctx := . -}}
+{{- if .IsHome -}}{{ $pctx = .Site }}{{- end -}}
+{{- $pages := slice -}}
+{{- if or $.IsHome $.IsSection -}}
+{{- $pages = $pctx.RegularPagesRecursive -}}
+{{- else -}}
+{{- $pages = $pctx.Pages -}}
+{{- end -}}
+{{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>{{ if eq  .Title  .Site.Title }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{.}} on {{ end }}{{ .Site.Title }}{{ end }}</title>
+    <link>{{ .Permalink }}</link>
+    <description>Products {{ if ne  .Title  .Site.Title }}{{ with .Title }}in {{.}} {{ end }}{{ end }}on {{ .Site.Title }}</description>
+    <generator>Hugo Fietswinkel</generator>
+    <language>{{ site.Language.LanguageCode }}</language>{{ with .Site.Author.email }}
+    <managingEditor>{{.}}{{ with $.Site.Author.name }} ({{.}}){{end}}</managingEditor>{{end}}{{ with .Site.Author.email }}
+    <webMaster>{{.}}{{ with $.Site.Author.name }} ({{.}}){{end}}</webMaster>{{end}}{{ with .Site.Copyright }}
+    <copyright>{{.}}</copyright>{{end}}{{ if not .Date.IsZero }}
+    <lastBuildDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>{{ end }}
+    {{- with .OutputFormats.Get "RSS" -}}
+    {{ printf "<atom:link href=%q rel=\"self\" type=%q />" .Permalink .MediaType | safeHTML }}
+    {{- end -}}
+    {{- range $pages }}
+    {{- $image := partial "utils/get-image" . }}
+    {{- $images := partial "utils/get-images" . | after 1 }}
+    {{- if .Params.ProductID }}
+    {{- $page := . }}
+    {{- $params := .Params }}
+    {{- $option_colours := partial "utils/get-option-colours" . }}
+    {{- $colours := or $option_colours (slice $params.Colour) }}
+    {{- $colour_arg := "" }}
+    {{- $colour_suffix := "" }}
+
+    {{ range $colour := $colours }}
+    {{- if $colour }}{{ $colour = partial "utils/get-colour-name" $colour }}{{ end }}
+    {{- if $option_colours }}
+      {{- $colour_arg = printf "?colour=%s" (anchorize $colour) }}
+      {{- $colour_suffix = printf "-%s" (anchorize $colour) }}
+      {{- if $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
+        {{- $image = $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
+        {{- $image = $image.Permalink }}
+        {{- $second_image := $page.Resources.GetMatch (printf "colours/%s_2.jpg" (anchorize $colour)) }}
+        {{- if $second_image }}
+          {{- $images = slice $second_image | append (after 1 $images) }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    <item>
+      <g:title>{{ $page.Title }}{{ if $params.Variant }} {{ $params.Variant }}{{ end }}{{ if $colour }} {{ $colour }}{{ end }}</g:title>
+      <g:id>{{ $params.ProductID }}{{ $colour_suffix }}</g:id>
+      <g:link>{{ $page.Permalink }}{{ $colour_arg }}</g:link>
+      {{- if $params.Group_ID }}
+      <g:item_group_id>{{ $params.Group_ID }}</g:item_group_id>
+      {{- end }}
+      {{- if $params.EAN }}
+      <g:gtin>{{ $params.EAN }}{{ $colour_suffix }}</g:gtin>
+      {{- end }}
+      {{- if $params.MPN }}
+      <g:mpn>{{ $params.MPN }}{{ $colour_suffix }}</g:mpn>
+      {{- else }}
+      {{- if $params.OEM_ID }}
+      <g:mpn>{{ $params.OEM_ID }}{{ $colour_suffix }}</g:mpn>
+      {{- end }}
+      {{- end }}
+      {{- if $params.ProductType }}
+      <g:product_type>{{ $params.ProductType }}</g:product_type>
+      {{- end }}
+      {{- if $params.GoogleCategory }}
+      <g:google_product_category>{{ $params.GoogleCategory }}</g:google_product_category>
+      {{- end }}
+      {{- if $params.Condition }}
+      <g:condition>{{ $params.Condition }}</g:condition>
+      {{- else }}
+      <g:condition>new</g:condition>
+      {{- end }}
+      {{- if $params.Manufacturer }}
+      <g:brand>{{ $params.Manufacturer }}</g:brand>
+      {{- end }}
+      <g:image_link>{{ $image }}</g:image_link>
+      {{- range $images }}
+      <g:additional_image_link>{{ .Permalink }}</g:additional_image_link>
+      {{- end }}
+      {{- if $params.PriceBefore }}
+      <g:price>{{ $params.PriceBefore }} {{ site.Params.currency }}</g:price>
+      <g:sale_price>{{ $params.Price }} {{ site.Params.currency }}</g:sale_price>
+      {{- else }}
+      <g:price>{{ $params.Price }} {{ site.Params.currency }}</g:price>
+      {{- end }}
+      {{- if eq (default false $params.instoreonly) true }}
+      <g:pickup_method>reserve</g:pickup_method>
+      <g:pickup_sla>next day</g:pickup_sla>
+      {{- end }}
+      {{- if $params.GoogleShopID }}
+      <g:store_code>{{ $params.GoogleShopID }}</g:store_code>
+      {{- end }}
+      <g:availability>
+        {{- if gt (int $params.instock) 0 -}}
+        in_stock
+        {{- else -}}
+          {{- if eq (default false $params.orderable) true -}}
+          backorder
+          {{- else -}}
+          out_of_stock
+          {{- end -}}
+        {{- end -}}
+      </g:availability>
+      {{- if $params.AvailabilityDate }}
+      <g:availability_date>{{ dateFormat "2006-01-02T15:04-07:00" $params.AvailabilityDate }}</g:availability_date>
+      {{- end }}
+      {{- if $colour }}
+      <g:color>{{ $colour }}</g:color>
+      {{- end }}
+      {{- if $page.Date }}
+      <pubDate>{{ $page.Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
+      {{- end }}
+      <guid>{{ $page.Permalink }}{{ $colour_arg }}</guid>
+      <g:description>{{ $page.Summary | html }}</g:description>
+    </item>
+    {{- end }}
+    {{- end }}
+    {{- end }}
+  </channel>
+</rss>

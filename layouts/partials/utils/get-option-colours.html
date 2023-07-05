@@ -1,0 +1,7 @@
+{{ $colours := slice }}
+{{ range .Params.Options }}
+{{ if .colours }}
+{{ $colours = .colours }}
+{{ end }}
+{{ end }}
+{{ return $colours }}

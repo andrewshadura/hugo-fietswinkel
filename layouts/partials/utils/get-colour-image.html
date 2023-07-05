@@ -1,0 +1,7 @@
+{{ $p := split . "[" }}
+{{ $coords := index $p 1 }}
+{{ if $coords }}
+{{ $coords = split (index (split $coords "]") 0) "," }}
+{{ $coords = printf "-%spx -%spx" (trim (index $coords 0) " ") (trim (index $coords 1) " ") }}
+{{ end }}
+{{ return $coords }}
