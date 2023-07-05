@@ -57,14 +57,14 @@
 .btn-light {
   background: $white;
   color: $text-color;
-  border-color: $white;
+  border-color: $light;
 
   &:active,
   &:hover,
   &.focus,
   &.active {
-    background: $white !important;
-    border-color: $white !important;
+    background: $light !important;
+    border-color: $light !important;
   }
 }
 
