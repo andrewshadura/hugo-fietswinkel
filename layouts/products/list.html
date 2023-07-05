@@ -17,6 +17,9 @@
           </a>
           <div class="card-body">
             <a href="{{ .Permalink }}" class="h4">{{ .Title }}</a>
+            {{ if .Params.Colour }}
+            <p>{{ partial "utils/get-colour-name" .Params.Colour }}</p>
+            {{ end }}
             <p>{{ .Params.Description }}</p>
             {{ if .Params.Price }}
             <div class="mb-4">
@@ -25,7 +28,14 @@
               {{ end }}
               <span class="lead text-primary">{{ .Params.Price | lang.FormatCurrency 2 .Site.Params.currency }}</span>
             </div>
-            <button class="cart-add-item btn btn-sm btn-outline-primary" data-item-id="{{ .Params.ProductID }}"
+            {{ if ne (default false $params.instoreonly) true }}
+            <button
+              {{ if eq (default false $params.instoreonly) true }}
+              class="btn btn-sm btn-outline-primary"
+              {{ else }}
+              class="cart-add-item btn btn-sm btn-outline-primary"
+              {{ end }}
+              data-item-id="{{ .Params.ProductID }}"
               data-item-name="{{ .Title }}" data-item-image="{{ $image }}"
               data-item-instock="{{ $params.instock | default $defaultStock }}"
               {{ if eq (int (default $defaultStock $params.instock)) 0 }}disabled{{ end }}
@@ -33,14 +43,25 @@
               {{ if eq (int (default $defaultStock $params.instock)) 0 }}
                 {{ with "Out of stock" }}{{ i18n . | default . }}{{ end }}
               {{ else }}
-                {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}
+                {{ if eq (default false $params.instoreonly) true }}
+                  {{ with "Book a test" }}{{ i18n . | default . }}{{ end }}
+                {{ else }}
+                  {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}
+                {{ end }}
               {{ end }}
             </button>
+            {{ end }}
             {{ end }}
           </div>
         </div>
       </div>
       {{ end }}
+      {{ else }}
+      <div class="col">
+        <div class="card border-0 text-center">
+      {{ with "This category is currently empty, but we’re working hard to prepare it for you!" }}{{ i18n . | default . }}{{ end }}
+        </div>
+      </div>
       {{ end }}
     </div>
   </div>
