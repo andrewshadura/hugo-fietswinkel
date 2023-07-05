@@ -1,0 +1,62 @@
+{{ define "main" }}
+
+{{ partial "page-title.html" . }}
+
+<script id="cart-summary-template" type="text/template">
+<div class="row">
+  [[ if items.length > 0 ]]
+  <div class="table-responsive col-12">
+    <table class="table">
+      <thead>
+          <tr>
+            <th scope="col"> </th>
+            <th scope="col">{{ with "Product" }}{{ i18n . | default . }}{{ end }}</th>
+            <th scope="col" class="text-right">{{ with "Price" }}{{ i18n . | default . }}{{ end }}</th>
+            <th scope="col" class="text-center">{{ with "Quantity" }}{{ i18n . | default . }}{{ end }}</th>
+            <th scope="col" class="text-right">{{ with "Subtotal" }}{{ i18n . | default . }}{{ end }}</th>
+            <th> </th>
+          </tr>
+        </thead>
+        <tbody>
+          [[ for item in items ]]
+          <tr>
+            <td><img class="img-thumbnail" src="[= item.image =]" /> </td>
+            <td><a href="[= item.url =]">[= item.name =]</a></td>
+            <td class="text-right">[= item.price =]</td>
+            <td align="center">[= item.quantity =]</td>
+            <td class="text-right">[= item.subtotal =]</td>
+            <td> </td>
+          </tr>
+          [[ endfor ]]
+        </tbody>
+    </table>
+  </div>
+  [[ else ]]
+  <div class="col text-center py-5">
+    <h5>{{ with "The cart is empty" }}{{ i18n . | default . }}{{ end }}</h5>
+  </div>
+  [[ endif ]]
+</div>
+<div class="row">
+  <div class="col mb-2">
+      <div class="row">
+          <div class="col-sm-12 col-md-6">
+              <button class="btn btn-block btn-light" onclick="history.back();">{{ with "Continue shopping" }}{{ i18n . | default . }}{{ end }}</button>
+          </div>
+          [[ if items.length > 0 ]]
+          <div class="col-sm-12 col-md-6 text-right">
+              <button id="cart-checkout"
+                      class="btn btn-lg btn-block btn-success text-uppercase"
+                      onclick="performCheckout()">{{ with "Proceed to checkout" }}{{ i18n . | default . }}{{ end }}</button>
+          </div>
+          [[ endif ]]
+      </div>
+  </div>
+</script>
+<section class="section pt-0">
+  <div class="container" id="cart-summary">
+  </div>
+</section>
+
+
+{{ end }}
