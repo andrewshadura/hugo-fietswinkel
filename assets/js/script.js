@@ -76,7 +76,7 @@ $(window).on('load', function () {
     dots: true,
     customPaging: function (slider, i) {
       var image = $(slider.$slides[i]).data('image');
-      return '<img class="img-fluid" src="' + image + '" alt="product-img">';
+      return '<img class="img-fluid" src="' + image + '">';
     }
   });
 
