@@ -8,17 +8,17 @@
     <div class="row">
       <div class="col-12 mb-5">
         <div class="content">
-          {{.Content}}
+          {{ .Content }}
         </div>
       </div>
       <div class="col-lg-4">
         <div class="sticky-top top-100">
-        <h3 class="mb-4">Ask Your Question</h3>
+        <h3 class="mb-4">{{ with "Ask Your Question" }}{{ i18n . | default . }}{{ end }}</h3>
         <form action="{{ site.Params.contact.formAction }}" method="POST">
-          <input type="text" class="form-control mb-2" id="name" name="name" placeholder="Your Name">
-          <input type="email" class="form-control mb-2" id="email" name="email" placeholder="Your Email">
-          <textarea name="message" id="message" class="form-control mb-2" placeholder="Your Message"></textarea>
-          <button type="submit" value="send" class="btn btn-block btn-outline-primary rounded">Send Now</button>
+          <input type="text" class="form-control mb-2" id="name" name="name" placeholder="{{ with "Your Name" }}{{ i18n . | default . }}{{ end }}">
+          <input type="email" class="form-control mb-2" id="email" name="email" placeholder="{{ with "Your Email" }}{{ i18n . | default . }}{{ end }}">
+          <textarea name="message" id="message" class="form-control mb-2" placeholder="{{ with "Your Message" }}{{ i18n . | default . }}{{ end }}"></textarea>
+          <button type="submit" value="send" class="btn btn-block btn-outline-primary rounded">{{ with "Send Now" }}{{ i18n . | default . }}{{ end }}</button>
         </form>
       </div></div>
       {{ with site.Data.faq}}
