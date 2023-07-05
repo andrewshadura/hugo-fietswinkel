@@ -2,6 +2,10 @@
 currency = "EUR"
 currencySymbol = "€"
 
+[module]
+[[module.imports]]
+  path = "github.com/hugo-fonts/inter"
+
 [outputFormats]
   [outputFormats.HeurekaFeed20]
     baseName = 'heureka-feed'
