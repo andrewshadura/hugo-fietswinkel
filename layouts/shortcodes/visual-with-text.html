@@ -1,0 +1,31 @@
+<div class="container">
+  <div class="row justify-content-between align-items-center">
+    {{ if ne (.Get 1) "right" }}
+      <div class="col-lg-4 col-md-6 order-2 order-md-1">
+        {{ .Inner | markdownify }}
+      </div>
+      <div class="col-lg-8 col-md-6 order-1 order-lg-2">
+        {{ $image := .Get 0 }}
+        {{ if not (hasPrefix $image "/") }}
+        {{ $image = page.Resources.GetMatch $image }}
+        {{ $image = $image.Resize "1024x q83" }}
+        {{ $image = $image.Permalink }}
+        {{ end }}
+        <img src="{{ $image }}" class="img-fluid">
+      </div>
+    {{ else }}
+      <div class="col-lg-8 col-md-6 order-1 order-lg-1">
+        {{ $image := .Get 0 }}
+        {{ if not (hasPrefix $image "/") }}
+        {{ $image = page.Resources.GetMatch $image }}
+        {{ $image = $image.Resize "1024x q83" }}
+        {{ $image = $image.Permalink }}
+        {{ end }}
+        <img src="{{ $image }}" class="img-fluid">
+      </div>
+      <div class="col-lg-4 col-md-6 order-2 order-md-2">
+        {{ .Inner | markdownify }}
+      </div>
+    {{ end }}
+  </div>
+</div>
