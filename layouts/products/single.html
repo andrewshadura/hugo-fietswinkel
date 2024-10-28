@@ -349,7 +349,7 @@
               {{ end }}
             {{ end }}
           {{ else }}
-            {{ if eq (default false $params.instoreonly) true }}
+            {{ if or (eq (default false $params.instoreonly) true) site.Params.disableCart }}
               {{ with "Book a test" }}{{ i18n . | default . }}{{ end }}
             {{ else }}
               {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}
