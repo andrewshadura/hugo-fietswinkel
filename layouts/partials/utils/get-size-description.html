@@ -1,0 +1,3 @@
+{{- $p := split . "(" }}
+{{- $description := index (split (index $p 1) ")") 0 }}
+{{- return $description }}

@@ -32,23 +32,27 @@
     {{- $colour_arg := "" }}
     {{- $colour_suffix := "" }}
 
-    {{ range $colour := $colours }}
-    {{- if $colour }}{{ $colour = partial "utils/get-colour-name" $colour }}{{ end }}
-    {{- if $option_colours }}
-      {{- $colour_arg = printf "?colour=%s" (anchorize $colour) }}
-      {{- $colour_suffix = printf "-%s" (anchorize $colour) }}
-      {{- if $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
-        {{- $image = $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
-        {{- $image = $image.Permalink }}
-        {{- $second_image := $page.Resources.GetMatch (printf "colours/%s_2.jpg" (anchorize $colour)) }}
-        {{- if $second_image }}
-          {{- $images = slice $second_image | append (after 1 $images) }}
+    {{- $sizes := or $params.Sizes (slice $params.Size) }}
+
+    {{- range $size := $sizes }}
+    {{- range $colour := $colours }}
+      {{- if $colour }}{{ $colour = partial "utils/get-colour-name" $colour }}{{ end }}
+      {{- if $option_colours }}
+        {{- $colour_arg = printf "?colour=%s" (anchorize $colour) }}
+        {{- $colour_suffix = printf "-%s" (anchorize $colour) }}
+        {{- if $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
+          {{- $image = $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
+          {{- $image = $image.Permalink }}
+          {{- $second_image := $page.Resources.GetMatch (printf "colours/%s_2.jpg" (anchorize $colour)) }}
+          {{- if $second_image }}
+            {{- $images = slice $second_image | append (after 1 $images) }}
+          {{- end }}
         {{- end }}
       {{- end }}
-    {{- end }}
+      {{- $size_name := partial "utils/get-size-name" $size }}
     <item>
       <g:title>{{ $page.Title }}{{ if $params.Variant }} {{ $params.Variant }}{{ end }}{{ if $colour }} {{ $colour }}{{ end }}</g:title>
-      <g:id>{{ $params.ProductID }}{{ $colour_suffix }}</g:id>
+      <g:id>{{ replace $params.ProductID "{size}" $size_name }}{{ $colour_suffix }}</g:id>
       <g:link>{{ $page.Permalink }}{{ $colour_arg }}</g:link>
       {{- if $params.Group_ID }}
       <g:item_group_id>{{ $params.Group_ID }}</g:item_group_id>
@@ -68,6 +72,9 @@
       {{- end }}
       {{- if $params.GoogleCategory }}
       <g:google_product_category>{{ $params.GoogleCategory }}</g:google_product_category>
+      {{- end }}
+      {{- if $size }}
+      <g:size>{{ $size }}</g:size>
       {{- end }}
       {{- if $params.Condition }}
       <g:condition>{{ $params.Condition }}</g:condition>
@@ -117,6 +124,7 @@
       <guid>{{ $page.Permalink }}{{ $colour_arg }}</guid>
       <g:description>{{ $page.Summary | html }}</g:description>
     </item>
+    {{- end }}
     {{- end }}
     {{- end }}
     {{- end }}

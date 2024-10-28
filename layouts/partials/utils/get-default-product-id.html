@@ -1,0 +1,5 @@
+{{- $sku := page.Params.ProductID }}
+{{- $size := index .Params.Sizes 0 | default .Params.Size }}
+{{- $size = partial "utils/get-size-name" $size }}
+{{- $sku = replace $sku "{size}" $size }}
+{{- return $sku }}

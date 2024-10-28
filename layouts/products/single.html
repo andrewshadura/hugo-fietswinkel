@@ -121,9 +121,8 @@
           <h5>{{ with "Sizes" }}{{ i18n . | default . }}{{ end }}</h5>
           <div class="btn-group btn-group-toggle" data-toggle="buttons" role="group" aria-label="{{ with "Sizes" }}{{ i18n . | default . }}{{ end }}">
             {{ range .Params.Sizes }}
-            {{ $p := split . "(" }}
-            {{ $name := index $p 0 }}
-            {{ $size := index (split (index $p 1) ")") 0 }}
+            {{ $name := partial "utils/get-size-name" . }}
+            {{ $size := partial "utils/get-size-description" . }}
             <label class="btn btn-light btn-sizes product-option">
               <input type="radio" name="size" {{ printf "id=%q" (print "size-" $name) | safeHTMLAttr }} value="{{ . }}" class="product-option product-option-radio">
                 <span class="size-name">{{ $name }}</span><br><span class="size-detail">{{ $size }}</span>
@@ -281,7 +280,8 @@
         {{ end }}
 
         <p>{{ .Params.ShortDescription | default .Description | markdownify }}</p>
-        <meta itemprop="sku" content="{{ .Params.ProductID }}" />
+        <meta itemprop="sku" class="sku" content="{{ partial "utils/get-default-product-id" . }}" />
+        <meta itemprop="orig-sku" content="{{ .Params.ProductID }}" />
         {{ if .Params.MPN }}
         <meta itemprop="mpn" content="{{ .Params.MPN }}" />
         {{ end }}
@@ -303,7 +303,7 @@
         {{ if .Params.Size }}
         <meta itemprop="size" content="{{ .Params.Size }}" />
         {{ end }}
-          {{ range .Params.Sizes }}
+        {{ range .Params.Sizes }}
         <meta itemprop="size" content="{{ . }}" />
         {{ end }}
         {{ if .Params.Parameters }}
@@ -331,7 +331,7 @@
           {{ if and (eq (int $params.instock) 0) (eq (default false $params.orderable) true) (not $params.Available_In) }}
           data-toggle="modal" data-target="#modal-request-order"
           {{ end }}
-          data-item-id="{{ .Params.ProductID }}"
+          data-item-id="{{ partial "utils/get-default-product-id" . }}"
           {{ if .Params.EAN }}
           data-item-ean="{{ .Params.EAN }}"
           {{ end }}
@@ -372,7 +372,7 @@
                   <input type="email" class="form-control mb-2" id="email" name="email" placeholder="{{ with "Email" }}{{ i18n . | default . }}{{ end }}">
                   <input type="tel" class="form-control mb-2" id="phone" name="phone" placeholder="+421">
                   <input type="hidden" name="item-name" value="{{ .Params.Title }}">
-                  <input type="hidden" name="item-id" value="{{ .Params.ProductID }}">
+                  <input type="hidden" name="item-id" class="sku" value="{{ partial "utils/get-default-product-id" . }}">
                   <input type="hidden" name="item-price" value="{{ .Params.Price }}">
                   <input type="hidden" name="item-colour" value="{{ .Params.Colour }}">
                   {{ if .Params.Sizes }}
@@ -405,7 +405,7 @@
                   <input type="email" class="form-control mb-2" id="email" name="email" placeholder="{{ with "Email" }}{{ i18n . | default . }}{{ end }}">
                   <input type="tel" class="form-control mb-2" id="phone" name="phone" placeholder="+421">
                   <input type="hidden" name="item-name" value="{{ .Params.Title }}">
-                  <input type="hidden" name="item-id" value="{{ .Params.ProductID }}">
+                  <input type="hidden" name="item-id" class="sku" value="{{ partial "utils/get-default-product-id" . }}">
                   <input type="hidden" name="item-price" value="{{ .Params.Price }}">
                   <input type="hidden" name="item-colour" value="{{ .Params.Colour }}">
                   {{ if .Params.Sizes }}
@@ -453,7 +453,11 @@
             <div class="content">
               <table class="table">
                 <tbody>
-                  {{- range slice "manufacturer" "model" "productID" "EAN" "maximum_load" "width" "height" "size" }}
+                  <tr itemprop="additionalProperty" itemscope itemtype="https://schema.org/PropertyValue">
+                    <th scope="row" itemprop="name">{{ i18n (humanize "productID") | default (humanize .) }}</th>
+                    <td itemprop="value" class="sku">{{ partial "utils/get-default-product-id" . }}</td>
+                  </tr>
+                  {{- range slice "manufacturer" "model" "EAN" "maximum_load" "width" "height" "size" }}
                   {{- if index $params . }}
                   <tr itemprop="additionalProperty" itemscope itemtype="https://schema.org/PropertyValue">
                     <th scope="row" itemprop="name">{{ i18n (humanize .) | default (humanize .) }}</th>
