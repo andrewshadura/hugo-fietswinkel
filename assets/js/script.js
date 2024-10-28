@@ -280,6 +280,27 @@ $(window).on('load', function () {
     return image_candidates
   }
 
+  function updateSku() {
+    const orig_sku = $("[itemprop='orig-sku']")[0]
+    const selected_size = $('.btn-group .btn-sizes input[type="radio"]:checked')[0]
+
+    if (orig_sku && selected_size) {
+      const size = selected_size.id.split('-')[1]
+      const sku = orig_sku.content
+      for (const e of $(".sku")) {
+        if (e.content) {
+          e.content = sku.replace("{size}", size)
+        } else if (e.value) {
+          e.value = sku.replace("{size}", size)
+        } else if (e.innerText) {
+          e.innerText = sku.replace("{size}", size)
+        }
+      }
+    }
+  }
+
+  $('.btn-sizes.product-option').on('change', updateSku);
+
   function updateColour() {
     console.error("unused code called")
     return
@@ -349,6 +370,7 @@ $(window).on('load', function () {
         }
       }
     }
+    updateSku()
   })()
 
   recalculatePrice()
