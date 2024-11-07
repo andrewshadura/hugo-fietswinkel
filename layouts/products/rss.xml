@@ -94,6 +94,9 @@
       {{- else }}
       <g:price>{{ $params.Price }} {{ site.Params.currency }}</g:price>
       {{- end }}
+      {{- if $params.Shipping_Weight }}
+      <g:shipping_weight>{{ $params.Shipping_Weight }}</g:shipping_weight>
+      {{- end }}
       {{- if eq (default false $params.instoreonly) true }}
       <g:pickup_method>reserve</g:pickup_method>
       <g:pickup_sla>next day</g:pickup_sla>
