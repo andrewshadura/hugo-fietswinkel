@@ -90,7 +90,13 @@
       {{- end }}
       {{- if $params.PriceBefore }}
       <g:price>{{ $params.PriceBefore }} {{ site.Params.currency }}</g:price>
+      {{- if and $params.Showroom_Sale_only $size }}
+      {{- if or (in $params.Showroom_Sizes $size_name) (in $params.Showroom_Sizes (int $size_name)) }}
       <g:sale_price>{{ $params.Price }} {{ site.Params.currency }}</g:sale_price>
+      {{- end }}
+      {{- else }}
+      <g:sale_price>{{ $params.Price }} {{ site.Params.currency }}</g:sale_price>
+      {{- end }}
       {{- else }}
       <g:price>{{ $params.Price }} {{ site.Params.currency }}</g:price>
       {{- end }}
