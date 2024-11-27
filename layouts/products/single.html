@@ -235,6 +235,11 @@
           <span class="badge badge-success badge-medium">
             {{ i18n "Available sizes" (dict "Count" (len .Params.Showroom_Sizes) "Sizes" (delimit .Params.Showroom_Sizes ", ")) }}
           </span>
+          {{ if .Params.Showroom_Sale_only }}
+            <span class="badge badge-info badge-medium">
+              {{ with "Sale price applies to showroom stock only" }}{{ i18n . | default . }}{{ end }}
+            </span>
+          {{ end }}
           {{ if .Params.Available_In }}
             <span class="badge badge-info badge-medium">
               {{ i18n "Available in (other sizes)" (.Params.Available_In | time | time.Format "January 2006") }}
