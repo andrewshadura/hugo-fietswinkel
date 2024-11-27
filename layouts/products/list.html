@@ -109,7 +109,11 @@
               {{- if gt (len .colours) 3 }}
               <span
                 class="color-button d-inline-block m-0"
+                {{- if gt (len .colours) 9 }}
+                style="box-shadow: inset 0 0 0 1px #888; padding: 3px; font-size: 13px;"
+                {{- else }}
                 style="box-shadow: inset 0 0 0 1px #888; padding: 4px; font-size: 13px;"
+                {{- end }}
                 {{ $ncolours := sub (len .colours) 2 }}
                 {{ $scolours := "More colours available" }}
                 alt="{{ i18n $scolours (dict "Count" $ncolours) | default $scolours }}"
