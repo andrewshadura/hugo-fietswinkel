@@ -1,21 +1,46 @@
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 <SHOP>
 {{- range where site.RegularPages "Section" "products" }}
+{{- $productID := partial "utils/get-product-id" . }}
+{{- if $productID }}
+{{- $page := . }}
+{{- $params := .Params }}
 {{- $image := partial "utils/get-image" . }}
+{{- $option_colours := partial "utils/get-option-colours" . }}
+{{- $colours := or $option_colours (slice $params.Colour) }}
+{{- $colour_arg := "" }}
+{{- $colour_suffix := "" }}
+{{- $sizes := or $params.Sizes (slice $params.Size) }}
+
+  {{- range $size := $sizes }}
+    {{- range $colour := $colours }}
+      {{- if $colour }}{{ $colour = partial "utils/get-colour-name" $colour }}{{ end }}
+      {{- if $option_colours }}
+        {{- $colour_arg = printf "?colour=%s" (anchorize $colour) }}
+        {{- $colour_suffix = printf "-%s" (anchorize $colour) }}
+        {{- if $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
+          {{- $image = $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
+          {{- $image = $image.Permalink }}
+        {{- end }}
+      {{- end }}
+
+    {{- $size_name := partial "utils/get-size-name" $size }}
     <SHOPITEM>
-        <ITEM_ID>{{ .Params.productID }}</ITEM_ID>
-        <PRODUCTNAME>{{ .Name }}</PRODUCTNAME>
-        <PRODUCT>{{ .Name }}</PRODUCT>
-        <DESCRIPTION>{{ with .Description }}{{ . }}{{ else }}{{ .Summary }}{{ end }}</DESCRIPTION>
-        <URL>{{ .Permalink | absURL }}</URL>
+        <ITEM_ID>{{ replace $productID "{size}" $size_name }}{{ $colour_suffix }}</ITEM_ID>
+        <PRODUCTNAME>{{ $page.Title }}{{ if $params.Variant }} {{ $params.Variant }}{{ end }}{{ if $colour }} {{ $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}</PRODUCTNAME>
+        <PRODUCT>{{ $page.Title }}</PRODUCT>
+        <DESCRIPTION>{{ with $page.Description }}{{ . }}{{ else }}{{ $page.Summary }}{{ end }}</DESCRIPTION>
+        <URL>{{ $page.Permalink | absURL }}{{ $colour_arg }}</URL>
         <IMGURL>{{ $image }}</IMGURL>
-        {{ if .Params.EAN }}
-        <EAN>{{ .Params.EAN }}</EAN>
-        {{ end }}
-        <PRICE_VAT>{{ .Params.Price }}</PRICE_VAT>
-        {{- $params := partial "utils/get-params" . }}
-        <CATEGORYTEXT>{{ .Params.Heurekacategory }}</CATEGORYTEXT>
-        <MANUFACTURER>{{ .Params.Manufacturer }}</MANUFACTURER>
+        {{- if $params.EAN }}
+        <EAN>{{ $params.EAN }}</EAN>
+        {{- end }}
+        <PRICE_VAT>{{ $params.Price }}</PRICE_VAT>
+        <CATEGORYTEXT>{{ $params.Heurekacategory }}</CATEGORYTEXT>
+        <MANUFACTURER>{{ $params.Manufacturer }}</MANUFACTURER>
     </SHOPITEM>
+    {{- end }}
+  {{- end }}
+{{- end }}
 {{- end }}
 </SHOP>
