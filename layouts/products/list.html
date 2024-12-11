@@ -15,7 +15,7 @@
       <div class="col-12" id="maintext-holder">
 <style>
 #maintext.content {
-  min-height: 6lh;
+  min-height: {{- default "6" .Params.Truncate_To -}}lh;
 }
 
 #maintext.content.collapse:not(.show) {
