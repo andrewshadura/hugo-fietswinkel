@@ -135,32 +135,6 @@
               {{ end }}
               <span class="lead text-primary">{{ .Params.Price | lang.FormatCurrency 2 .Site.Params.currency }}</span>
             </div>
-            {{ if ne (default false $params.instoreonly) true }}
-            <button
-              {{ if eq (default false $params.instoreonly) true }}
-              class="btn btn-sm btn-outline-primary"
-              {{ else }}
-              class="cart-add-item btn btn-sm btn-outline-primary"
-              {{ end }}
-              data-item-id="{{ .Params.ProductID }}"
-              data-item-name="{{ .Title }}" data-item-image="{{ $image }}"
-              {{ if .Params.EAN }}
-              data-item-ean="{{ .Params.EAN }}"
-              {{ end }}
-              data-item-instock="{{ $params.instock | default $defaultStock }}"
-              {{ if eq (int (default $defaultStock $params.instock)) 0 }}disabled{{ end }}
-              data-item-price="{{ .Params.Price }}" data-item-url="{{ .Permalink }}" data-item-description="{{ .Description }}">
-              {{ if eq (int (default $defaultStock $params.instock)) 0 }}
-                {{ with "Out of stock" }}{{ i18n . | default . }}{{ end }}
-              {{ else }}
-                {{ if eq (default false $params.instoreonly) true }}
-                  {{ with "Book a test" }}{{ i18n . | default . }}{{ end }}
-                {{ else }}
-                  {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}
-                {{ end }}
-              {{ end }}
-            </button>
-            {{ end }}
             {{ end }}
           </div>
         </div>
