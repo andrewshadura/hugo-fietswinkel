@@ -24,7 +24,10 @@
     {{- range $pages }}
     {{- $image := partial "utils/get-image" . }}
     {{- $images := partial "utils/get-images" . | after 1 }}
-    {{- if .Params.ProductID }}
+
+    {{- $productID := partial "utils/get-product-id" . }}
+
+    {{- if $productID }}
     {{- $page := . }}
     {{- $params := .Params }}
     {{- $option_colours := partial "utils/get-option-colours" . }}
@@ -52,7 +55,7 @@
       {{- $size_name := partial "utils/get-size-name" $size }}
     <item>
       <g:title>{{ $page.Title }}{{ if $params.Variant }} {{ $params.Variant }}{{ end }}{{ if $colour }} {{ $colour }}{{ end }}</g:title>
-      <g:id>{{ replace $params.ProductID "{size}" $size_name }}{{ $colour_suffix }}</g:id>
+      <g:id>{{ replace $productID "{size}" $size_name }}{{ $colour_suffix }}</g:id>
       <g:link>{{ $page.Permalink }}{{ $colour_arg }}</g:link>
       {{- if $params.Group_ID }}
       <g:item_group_id>{{ $params.Group_ID }}</g:item_group_id>
