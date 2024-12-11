@@ -3,6 +3,7 @@
 {{- partial "components/schema" . }}
 
 {{ partial "page-title.html" . }}
+{{- $productID := partial "utils/get-product-id" . }}
 {{- $params := partial "utils/get-params" . }}
 {{- $image := partial "utils/get-image" . }}
 {{- $badges := slice }}
@@ -120,11 +121,14 @@
         <div class="my-4 variants-box">
           <h5>{{ with "Sizes" }}{{ i18n . | default . }}{{ end }}</h5>
           <div class="btn-group btn-group-toggle" data-toggle="buttons" role="group" aria-label="{{ with "Sizes" }}{{ i18n . | default . }}{{ end }}">
+            {{ $one_size_only := eq (len .Params.Sizes) 1 }}
             {{ range .Params.Sizes }}
             {{ $name := partial "utils/get-size-name" . }}
             {{ $size := partial "utils/get-size-description" . }}
             <label class="btn btn-light btn-sizes product-option">
-              <input type="radio" name="size" {{ printf "id=%q" (print "size-" $name) | safeHTMLAttr }} value="{{ . }}" class="product-option product-option-radio">
+              <input type="radio" name="size" {{ printf "id=%q" (print "size-" $name) | safeHTMLAttr }} value="{{ . }}" class="product-option product-option-radio"
+                {{ if $one_size_only }} checked {{ end }}
+                >
                 <span class="size-name">{{ $name }}</span><br><span class="size-detail">{{ $size }}</span>
               </input>
             </label>
@@ -286,7 +290,7 @@
 
         <p>{{ .Params.ShortDescription | default .Description | markdownify }}</p>
         <meta itemprop="sku" class="sku" content="{{ partial "utils/get-default-product-id" . }}" />
-        <meta itemprop="orig-sku" content="{{ .Params.ProductID }}" />
+        <meta itemprop="orig-sku" content="{{ $productID }}" />
         {{ if .Params.MPN }}
         <meta itemprop="mpn" content="{{ .Params.MPN }}" />
         {{ end }}
@@ -325,6 +329,7 @@
         {{ end }}
         {{ end }}
         <button
+          id="cart-primary-button"
           {{ if eq (default false $params.instoreonly) true }}
           class="btn btn-primary"
           {{ if or (gt (int $params.instock) 0) $params.Available_In }}
@@ -337,9 +342,14 @@
           data-toggle="modal" data-target="#modal-request-order"
           {{ end }}
           data-item-id="{{ partial "utils/get-default-product-id" . }}"
-          {{ if .Params.EAN }}
+          {{- if .Params.Size }}
+          data-item-size="{{ partial "utils/get-size-name" .Params.Size }}"
+          {{- else if .Params.Sizes }}
+          data-item-size="{{ partial "utils/get-size-name" (index .Params.Sizes 0) }}"
+          {{- end }}
+          {{- if .Params.EAN }}
           data-item-ean="{{ .Params.EAN }}"
-          {{ end }}
+          {{- end }}
           data-item-instock="{{ int $params.instock }}"
           data-item-name="{{ .Title }}" data-item-image="{{ $image }}"
           data-item-price="{{ .Params.Price }}" data-item-url="{{ .Permalink }}" data-item-description="{{ .Params.ShortDescription | default .Description | markdownify }}">

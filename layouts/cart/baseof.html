@@ -8,8 +8,14 @@
     {{- partial "footer.html" . -}}
 
     <script defer>
+    function el_to_id(el) {
+      const id = el.dataset.id
+      const colour = el.dataset.colour
+      const size = el.dataset.size
+      return `${id}/${colour}/${size}`
+    }
     function updateQuantity(e) {
-      const id = e.target.dataset.id
+      const id = el_to_id(e.target)
       const quantity = parseInt(e.target.value, 10)
       if (Number.isNaN(quantity)) {
         const cart = Cart.get()
@@ -24,7 +30,7 @@
     }
 
     function removeItem(e) {
-      const id = e.target.dataset.id
+      const id = el_to_id(e.target)
       Cart.remove(id)
     }
 
@@ -64,7 +70,7 @@
           price_data: {
               currency: Cart.currency.toLowerCase(),
               product_data: {
-                  name: item.item.name,
+                  name: [item.item.name, item.item.colour_label, item.item.size].filter((x) => (x !== undefined && x !== null)).join(' / '),
                   description: item.item.description,
                   images: [item.item.image],
                   metadata: item.item,

@@ -105,6 +105,8 @@ More colours available:
   other: 'Dostupné ešte {{ .Count }} farieb'
 Read more:
   other: Čítať viac
+Colour:
+  other: Farba
 Colours:
   other: Farby
 Sizes:

@@ -18,7 +18,7 @@ var Cart = {
     },
     add: function(item, quantity = 1) {
         const cart = Cart.get()
-        const id = item.id
+        const id = `${item.id}/${item.colour}/${item.size}`
         if (id in cart) {
             cart[id].quantity += quantity
         } else {
@@ -89,6 +89,15 @@ var Cart = {
                 url: item.item.url,
                 image: item.item.image,
                 instock: item.item.instock,
+                colour: item.item.colour,
+                colour_label: item.item.colour_label,
+                size: item.item.size,
+                options: Object.fromEntries(
+                    Object.entries(item.item)
+                        .filter(x => x[0].startsWith("option_"))
+                        .map(x => [x[0].replace("option_", ""), x[1]])
+                        .filter(x => x[0] != "size")
+                ),
             }))
 
             engine

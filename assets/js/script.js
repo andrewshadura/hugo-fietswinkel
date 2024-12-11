@@ -166,8 +166,26 @@ $(window).on('load', function () {
 
     let price = base_price + extras
 
-    $(".p-price").text(Cart.currencyFormat.format(price / 100))
-    collectOptions()
+    let formatted_price = Cart.currencyFormat.format(price / 100)
+    $(".p-price").text(formatted_price)
+    const $button = $("#cart-primary-button")
+    $button.attr("data-item-price", price / 100)
+    $button.attr("data-item-image", $(".product-slider .slick-track .slick-slide:first-child > img")[0].src)
+    $button.attr("data-item-colour", getSelectedColour())
+    $button.attr("data-item-colour_label", getSelectedColourLabel())
+    options = collectOptions()
+    for (const i in options) {
+      const urlized = i.replaceAll(" ", "-")
+      $button.attr(`data-item-option_${urlized}`, options[i])
+    }
+  }
+
+  function getSelectedColour() {
+    return ($(".color-button.product-option:checked, a.color-button.active").attr("id") || "").replace("colour-", "")
+  }
+
+  function getSelectedColourLabel() {
+    return ($(".color-button.product-option:checked, a.color-button.active").attr("title") || "")
   }
 
   function collectOptionArgs(arg) {
@@ -296,55 +314,12 @@ $(window).on('load', function () {
           e.innerText = sku.replace("{size}", size)
         }
       }
+      $("#cart-primary-button").attr("data-item-id", sku.replace("{size}", size))
+      $("#cart-primary-button").attr("data-item-size", size)
     }
   }
 
   $('.btn-sizes.product-option').on('change', updateSku);
-
-  function updateColour() {
-    console.error("unused code called")
-    return
-
-    let selectedColours = $(".color-button.product-option:checked")
-    if (selectedColours.length) {
-      const colour = selectedColours[0]
-      const colour_id = colour.id.replace("colour-", "")
-      let image = window.location.pathname + "/colours/" + colour_id + ".jpg"
-
-      let http = new XMLHttpRequest()
-      http.open('HEAD', image)
-      http.onreadystatechange = function() {
-        if (
-          (this.readyState == this.DONE) &&
-          (this.status != 404)
-        ) {
-          $(".product-slider .slick-track .slick-slide:first-child").attr("data-remote", image)
-          $(".product-slider .slick-track .slick-slide:first-child > img").attr("src", image)
-          $(".product-slider ul.slick-dots li:first-child > img").attr("src", image)
-        }
-      }
-      http.send()
-
-      let image2 = window.location.pathname + "/colours/" + colour_id + "_2.jpg"
-      http = new XMLHttpRequest()
-      http.open('HEAD', image2)
-      http.onreadystatechange = function() {
-        if (
-          (this.readyState == this.DONE) &&
-          (this.status != 404)
-        ) {
-          $(".product-slider .slick-track .slick-slide:nth-child(2)").attr("data-remote", image2)
-          $(".product-slider .slick-track .slick-slide:nth-child(2) > img").attr("src", image2)
-          $(".product-slider ul.slick-dots li:nth-child(2) > img").attr("src", image2)
-        }
-      }
-      http.send()
-
-      return colour_id
-    } else {
-      return false
-    }
-  }
 
   $('.product-option').on('change', recalculatePrice);
 
@@ -376,9 +351,10 @@ $(window).on('load', function () {
   recalculatePrice()
 
   $('.contact-modal').on('shown.bs.modal', function (e) {
-    const size = $(".product-option :selected")
+    const colour = getSelectedColour()
     const options = collectOptions()
     console.log(options)
+    $('.contact-modal form [name="item-colour"]').val(colour)
     $('.contact-modal form [name="item-size"]').val(options.size)
     $('.contact-modal form [name="item-options"]').val(JSON.stringify(options))
   })
