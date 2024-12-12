@@ -71,7 +71,7 @@
               currency: Cart.currency.toLowerCase(),
               product_data: {
                   name: [item.item.name, item.item.colour_label, item.item.size].filter((x) => (x !== undefined && x !== null)).join(' / '),
-                  description: item.item.description,
+                  description: item.item.description || '\xA0',
                   images: [item.item.image],
                   metadata: item.item,
               },
