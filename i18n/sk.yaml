@@ -6,6 +6,16 @@ Quantity:
   other: Množstvo
 Subtotal:
   other: Medzisúčet
+Total:
+  other: Spolu
+Discounts:
+  other: Zľavy
+Your order has been placed.:
+  other: Vaša objednávka bola prijatá.
+The payment has been cancelled.:
+  other: Platba bola zrušená.
+Back to cart:
+  other: Zobraziť košík
 Delete:
   other: Odobrať
 Continue shopping:
@@ -16,6 +26,8 @@ The cart is empty:
   other: Košík je prázdny
 Add to cart:
   other: Vložiť do košíka
+Order summary:
+  other: Zhrnutie objednávky
 Free:
   other: Zadarmo
 Collect in person:

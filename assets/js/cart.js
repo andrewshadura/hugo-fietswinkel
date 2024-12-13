@@ -2,9 +2,13 @@ var Cart = {
     deliveryPrice: 0,
     deliveryType: null,
     deliveryDetails: {},
-    get: function() {
+    get: function(session_id) {
         try {
-            return JSON.parse(localStorage.getItem('cart')) || {};
+            if (session_id) {
+                return JSON.parse(localStorage.getItem(`cart_${session_id}`)) || {};
+            } else {
+                return JSON.parse(localStorage.getItem('cart')) || {};
+            }
         } catch {
             return {};
         }
@@ -14,7 +18,7 @@ var Cart = {
         Cart.render()
     },
     clear: function() {
-        sessionStorage.removeItem('cart')
+        localStorage.removeItem('cart')
     },
     add: function(item, quantity = 1) {
         const cart = Cart.get()
@@ -28,6 +32,10 @@ var Cart = {
             }
         }
         Cart.set(cart)
+    },
+    shelve: function(session_id) {
+        localStorage[`cart_${session_id}`] = JSON.stringify(Cart.get())
+        Cart.clear()
     },
     update: function(id, quantity = 1) {
         let cart = Cart.get()
@@ -57,9 +65,18 @@ var Cart = {
     total: function() {
         return Cart.subtotal() + Cart.deliveryPrice
     },
+    empty: function() {
+        return Object.keys(Cart.get()).length == 0
+    },
+
     render: function() {
         const cart = Cart.get()
 
+        Cart.renderBadge(cart)
+        Cart.renderCart(cart)
+    },
+
+    renderBadge: function(cart) {
         const badge = document.querySelector(".cart .cart-items-count")
         if (badge) {
             const item_count = Object.values(cart).reduce(
@@ -68,7 +85,8 @@ var Cart = {
             )
             badge.innerHTML = item_count || ""
         }
-
+    },
+    renderCart: function(cart) {
         const cart_summary = document.querySelector('#cart-summary')
         if (cart_summary) {
             const template = document.querySelector('#cart-summary-template[type="text/template"]')
@@ -89,9 +107,9 @@ var Cart = {
                 url: item.item.url,
                 image: item.item.image,
                 instock: item.item.instock,
-                colour: item.item.colour,
+                colour: item.item.colour ? item.item.colour : null,
                 colour_label: item.item.colour_label,
-                size: item.item.size,
+                size: item.item.size ? item.item.size : null,
                 options: Object.fromEntries(
                     Object.entries(item.item)
                         .filter(x => x[0].startsWith("option_"))
