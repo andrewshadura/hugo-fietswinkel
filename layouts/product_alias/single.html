@@ -1,10 +1,11 @@
+{{- $target := site.GetPage page.Params.AliasTarget -}}
 <!DOCTYPE html>
 <html lang="{{ site.Language.LanguageCode }}">
   <head>
-    <title>{{ ref . page.Params.AliasTarget }}</title>
-    <link rel="canonical" href="{{ ref . page.Params.AliasTarget }}">
+    <title>{{ $target.Title }}</title>
+    <link rel="canonical" href="{{ $target.Permalink }}">
     <meta name="robots" content="noindex">
     <meta charset="utf-8">
-    <meta http-equiv="refresh" content="0; url={{ ref . page.Params.AliasTarget }}">
+    <meta http-equiv="refresh" content="0; url={{ $target.Permalink }}">
   </head>
 </html>
