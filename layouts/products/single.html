@@ -137,9 +137,11 @@
         </div>
         {{ end }}
 
-        {{ $colour_swatch := .Params.Colour_Swatch }}
+        {{- $colour_swatch := .Params.Colour_Swatch }}
         {{ range .Params.Options }}
-        {{ if .colours }}
+        {{- if .colours }}
+        {{- $default_colour := partial "utils/get-colour-name" (index .colours 0) }}
+        {{- if $.Params.Default_Colour }}{{- $default_colour = $.Params.Default_Colour }}{{ end }}
         <div class="my-4 variants-box">
           <h5>{{ with "Colours" }}{{ i18n . | default . }}{{ end }}</h5>
           <div class="btn-group color-buttons" role="group" aria-label="{{ with "Colours" }}{{ i18n . | default . }}{{ end }}">
@@ -161,7 +163,7 @@
               {{ end }}
               {{ printf "alt=%q" (i18n $name | default $name) | safeHTMLAttr }}
               {{ printf "title=%q" (i18n $name | default $name) | safeHTMLAttr }}
-              {{ if eq $.Params.Default_Colour $name }} checked {{ end }}
+              {{- if eq $default_colour $name }} checked {{ end }}
                >
             {{ end }}
           </div>
