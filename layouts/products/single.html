@@ -344,6 +344,11 @@
           data-toggle="modal" data-target="#modal-request-order"
           {{ end }}
           data-item-id="{{ partial "utils/get-default-product-id" . }}"
+          {{- if .Params.Colour }}
+          {{ $name := partial "utils/get-colour-name" .Params.Colour }}
+          data-item-colour="{{ $name | anchorize }}"
+          data-item-colour_label="{{ i18n $name | default $name }}"
+          {{- end }}
           {{- if .Params.Size }}
           data-item-size="{{ partial "utils/get-size-name" .Params.Size }}"
           {{- else if .Params.Sizes }}
