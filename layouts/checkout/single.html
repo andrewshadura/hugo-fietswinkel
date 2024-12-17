@@ -79,18 +79,24 @@ document.addEventListener("DOMContentLoaded", function() {
     fetch(status_url).then((response) => response.json()).then((json) => {
       console.log(json)
       if (json.status == "complete") {
-        $("#checking").addClass("d-none")
-        $("#shipping_price").text(Cart.currencyFormat.format(json.amount_shipping / 100))
-        $("#discounts").text(Cart.currencyFormat.format(json.amount_discount / 100))
-        if (json.amount_discount > 0) {
-          $("#discounts-line").removeClass("d-none")
+        const update_totals = function() {
+          $("#checking").addClass("d-none")
+          $("#shipping_price").text(Cart.currencyFormat.format(json.amount_shipping / 100))
+          $("#discounts").text(Cart.currencyFormat.format(json.amount_discount / 100))
+          if (json.amount_discount > 0) {
+            $("#discounts-line").removeClass("d-none")
+          }
+          $("#subtotal_amount").text(Cart.currencyFormat.format(json.amount_subtotal / 100))
+          $("#total_amount").text(Cart.currencyFormat.format(json.amount_total / 100))
         }
-        $("#total_amount").text(Cart.currencyFormat.format(json.amount_total / 100))
 
         if (Cart.empty()) {
           const old_cart = Cart.get(session_id)
-          Cart.renderCart(old_cart)
+          Cart.renderCart(old_cart).then(() => {
+            update_totals()
+          })
         } else {
+          update_totals()
           Cart.shelve(session_id)
           Cart.renderBadge({})
         }

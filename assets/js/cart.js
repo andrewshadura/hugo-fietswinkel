@@ -118,7 +118,7 @@ var Cart = {
                 ),
             }))
 
-            engine
+            return engine
                 .parseAndRender(template.innerHTML, {
                     items: items,
                     deliveryPrice: Cart.currencyFormat.format(Cart.deliveryPrice / 100),
