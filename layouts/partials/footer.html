@@ -127,3 +127,8 @@ ga('send', 'pageview');
 }(document, new Date(), "script", "rating-widget.com/"));
 </script>
 {{ end }}
+
+{{- $data := partial "utils/get-data" "homepage" }}
+{{- if $data.stickyBottomBar.enable }}
+{{- partial "sticky-bottom-bar.html" $data.stickyBottomBar.text }}
+{{- end }}
