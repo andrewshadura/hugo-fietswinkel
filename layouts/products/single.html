@@ -367,6 +367,8 @@
           data-item-size="{{ partial "utils/get-size-name" .Params.Size }}"
           {{- else if .Params.Sizes }}
           data-item-size="{{ partial "utils/get-size-name" (index .Params.Sizes 0) }}"
+          {{- else }}
+          data-item-size=""
           {{- end }}
           {{- if .Params.EAN }}
           data-item-ean="{{ .Params.EAN }}"
