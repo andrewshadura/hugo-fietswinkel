@@ -32,16 +32,24 @@
     {{- $params := .Params }}
     {{- $option_colours := partial "utils/get-option-colours" . }}
     {{- $colours := or $option_colours (slice $params.Colour) }}
-    {{- $colour_arg := "" }}
+    {{- $args := slice }}
     {{- $colour_suffix := "" }}
+    {{- $colour_sku := "" }}
+    {{- $colour_sku_arg := "" }}
 
     {{- $sizes := or $params.Sizes (slice $params.Size) }}
 
     {{- range $size := $sizes }}
     {{- range $colour := $colours }}
-      {{- if $colour }}{{ $colour = partial "utils/get-colour-name" $colour }}{{ end }}
+      {{- $args = slice }}
+      {{- $colour_suffix = "" }}
+      {{- if $colour }}
+      {{- $colour_sku_arg = partial "utils/get-colour-product-id-arg" $colour }}
+      {{- $colour_sku = partial "utils/get-colour-product-id" $colour }}
+      {{- $colour = partial "utils/get-colour-name" $colour }}
+      {{- end }}
       {{- if $option_colours }}
-        {{- $colour_arg = printf "?colour=%s" (anchorize $colour) }}
+        {{- $args = slice "colour" (anchorize $colour) }}
         {{- $colour_suffix = printf "-%s" (anchorize $colour) }}
         {{- if $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
           {{- $image = $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
@@ -53,10 +61,27 @@
         {{- end }}
       {{- end }}
       {{- $size_name := partial "utils/get-size-name" $size }}
+      {{- $item_id := $productID }}
+      {{- if $colour_sku }}
+      {{-   $item_id = $colour_sku }}
+      {{- end }}
+      {{- $item_id = replace $item_id "{size}" $size_name }}
+      {{- $item_id = replace $item_id "{colour}" $colour_sku_arg }}
+      {{- if $colour }}
+      {{-   if not (or $colour_sku (strings.Contains $productID "{colour}") $params.Colour) }}
+      {{-     $item_id = printf "%s-%s" $item_id (anchorize $colour) }}
+      {{-   end }}
+      {{- end }}
+      {{- if $size_name }}
+      {{-   $args = append "size" $size_name $args }}
+      {{-   if not (strings.Contains $productID "{size}") }}
+      {{-     $item_id = printf "%s-%s" $item_id $size_name }}
+      {{-   end }}
+      {{- end }}
     <item>
       <g:title>{{ $page.Title }}{{ if $params.Variant }} {{ $params.Variant }}{{ end }}{{ if $colour }} {{ $colour }}{{ end }}</g:title>
-      <g:id>{{ replace $productID "{size}" $size_name }}{{ $colour_suffix }}</g:id>
-      <g:link>{{ $page.Permalink }}{{ $colour_arg }}</g:link>
+      <g:id>{{ $item_id }}</g:id>
+      <g:link>{{ $page.Permalink | absURL }}{{ if $args }}?{{ end }}{{ querify $args }}</g:link>
       {{- if $params.Group_ID }}
       <g:item_group_id>{{ $params.Group_ID }}</g:item_group_id>
       {{- end }}
@@ -133,7 +158,7 @@
       {{- if $page.Date }}
       <pubDate>{{ $page.Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
       {{- end }}
-      <guid>{{ $page.Permalink }}{{ $colour_arg }}</guid>
+      <guid>{{ $page.Permalink | absURL }}{{ if $args }}?{{ end }}{{ querify $args }}</guid>
       <g:description>{{ $page.Summary | html }}</g:description>
     </item>
     {{- end }}

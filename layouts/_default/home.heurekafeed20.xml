@@ -2,22 +2,31 @@
 <SHOP>
 {{- range where site.RegularPages "Section" "products" }}
 {{- $productID := partial "utils/get-product-id" . }}
-{{- if $productID }}
+{{- $defaultProductID := partial "utils/get-default-product-id" . }}
+{{- if and $productID (ne (default false .Params.instoreonly) true) }}
+{{- end }}
+{{- if and $productID (or (eq (default false .Params.orderable) true) (gt (int .Params.instock) 0)) }}
 {{- $page := . }}
 {{- $params := .Params }}
 {{- $image := partial "utils/get-image" . }}
 {{- $option_colours := partial "utils/get-option-colours" . }}
 {{- $colours := or $option_colours (slice $params.Colour) }}
-{{- $colour_arg := "" }}
-{{- $colour_suffix := "" }}
+{{- $args := slice }}
+{{- $colour_sku := "" }}
+{{- $colour_sku_arg := "" }}
 {{- $sizes := or $params.Sizes (slice $params.Size) }}
+{{- $full_name := partial "utils/get-product-full-name" . }}
 
   {{- range $size := $sizes }}
     {{- range $colour := $colours }}
-      {{- if $colour }}{{ $colour = partial "utils/get-colour-name" $colour }}{{ end }}
+      {{- $args = slice }}
+      {{- if $colour }}
+      {{- $colour_sku_arg = partial "utils/get-colour-product-id-arg" $colour }}
+      {{- $colour_sku = partial "utils/get-colour-product-id" $colour }}
+      {{- $colour = partial "utils/get-colour-name" $colour }}
+      {{- end }}
       {{- if $option_colours }}
-        {{- $colour_arg = printf "?colour=%s" (anchorize $colour) }}
-        {{- $colour_suffix = printf "-%s" (anchorize $colour) }}
+        {{- $args = slice "colour" (anchorize $colour) }}
         {{- if $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
           {{- $image = $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
           {{- $image = $image.Permalink }}
@@ -25,18 +34,85 @@
       {{- end }}
 
     {{- $size_name := partial "utils/get-size-name" $size }}
+    {{- $item_id := $productID }}
+    {{- if $colour_sku }}
+    {{-   $item_id = $colour_sku }}
+    {{- end }}
+    {{- $item_id = replace $item_id "{size}" $size_name }}
+    {{- $item_id = replace $item_id "{colour}" $colour_sku_arg }}
+    {{- if $colour }}
+    {{-   if not (or $colour_sku (strings.Contains $productID "{colour}") $params.Colour) }}
+    {{-     $item_id = printf "%s-%s" $item_id (anchorize $colour) }}
+    {{-   end }}
+    {{- end }}
+    {{- if $size_name }}
+    {{-   $args = append "size" $size_name $args }}
+    {{-   if not (strings.Contains $productID "{size}") }}
+    {{-     $item_id = printf "%s-%s" $item_id $size_name }}
+    {{-   end }}
+    {{- end }}
     <SHOPITEM>
-        <ITEM_ID>{{ replace $productID "{size}" $size_name }}{{ $colour_suffix }}</ITEM_ID>
-        <PRODUCTNAME>{{ $page.Title }}{{ if $params.Variant }} {{ $params.Variant }}{{ end }}{{ if $colour }} {{ $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}</PRODUCTNAME>
-        <PRODUCT>{{ $page.Title }}</PRODUCT>
-        <DESCRIPTION>{{ with $page.Description }}{{ . }}{{ else }}{{ $page.Summary }}{{ end }}</DESCRIPTION>
-        <URL>{{ $page.Permalink | absURL }}{{ $colour_arg }}</URL>
+        <ITEM_ID>{{ substr $item_id 0 36 }}</ITEM_ID>
+        <PRODUCTNAME>{{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}</PRODUCTNAME>
+        <PRODUCT>{{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}</PRODUCT>
+        <DESCRIPTION>
+          {{- $descr_slice := slice }}
+          {{- if $page.Description }}{{ $descr_slice = append $page.Description $descr_slice }}{{ end }}
+          {{- $descr_slice = append $page.Summary $descr_slice }}
+          {{- replace (replace (replace (replace (replace (replace (replace (replace (
+            htmlUnescape (delimit $descr_slice ".\n")
+            ) "&" "&amp;"
+            ) "\"" "&#34;"
+            ) "'" "&#39;"
+            ) "<" "&lt;"
+            ) ">" "&gt;"
+            ) "\t" "&#x9;"
+            ) "\n" "&#xA;"
+            ) "\r" "&#xD;"
+            | safeHTML}}
+        </DESCRIPTION>
+        <URL>{{ $page.Permalink | absURL }}{{ if $args }}?{{ end }}{{ querify $args }}</URL>
         <IMGURL>{{ $image }}</IMGURL>
         {{- if $params.EAN }}
         <EAN>{{ $params.EAN }}</EAN>
         {{- end }}
+        {{- if $colour }}
+        <PARAM>
+          <PARAM_NAME>FARBA</PARAM_NAME>
+          <VAL>{{ i18n $colour | default $colour }}</VAL>
+        </PARAM>
+        {{- end }}
+        {{- if $size_name }}
+        <PARAM>
+          <PARAM_NAME>VEĽKOSŤ</PARAM_NAME>
+          <VAL>{{ $size_name }}</VAL>
+        </PARAM>
+        {{- end }}
+        {{- $param_keys := slice }}
+        {{- range $k, $v := $params.Parameters }}
+        {{- $param_keys = append $param_keys (slice $k) }}
+        {{- end }}
+        {{- range $param := intersect site.Params.ParameterOrder $param_keys }}
+        <PARAM>
+          <PARAM_NAME>{{ i18n (humanize $param) | default (humanize $param) }}</PARAM_NAME>
+          <VAL>{{ index $params.Parameters $param }}</VAL>
+        </PARAM>
+        {{- end }}
+        {{- range $param := complement site.Params.ParameterOrder $param_keys }}
+        <PARAM>
+          <PARAM_NAME>{{ i18n (humanize $param) | default (humanize $param) }}</PARAM_NAME>
+          <VAL>{{ i18n (index $params.Parameters $param | humanize) | default (index $params.Parameters $param) }}</VAL>
+        </PARAM>
+        {{- end }}
         <PRICE_VAT>{{ $params.Price }}</PRICE_VAT>
-        <CATEGORYTEXT>{{ $params.Heurekacategory }}</CATEGORYTEXT>
+        {{- if $params.Group_ID }}
+        <ITEMGROUP_ID>{{ replace (string $params.Group_ID) "." "-" | anchorize }}</ITEMGROUP_ID>
+        {{- else if or $colour $size_name }}
+        <ITEMGROUP_ID>{{ replace (string $defaultProductID) "." "-" | anchorize }}</ITEMGROUP_ID>
+        {{- end }}
+        {{- if $params.Heurekacategory }}
+        <CATEGORYTEXT>{{ replace $params.Heurekacategory "Heureka.sk | " "" }}</CATEGORYTEXT>
+        {{- end }}
         <MANUFACTURER>{{ $params.Manufacturer }}</MANUFACTURER>
     </SHOPITEM>
     {{- end }}

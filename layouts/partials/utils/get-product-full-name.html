@@ -1,0 +1,19 @@
+{{- $page := . }}
+{{- $params := .Params }}
+{{- $name := $page.Title }}
+{{- if $params.Full_Name }}
+{{-   $name = $params.Full_Name }}
+{{- else }}
+{{-   if $params.Name_Prefix }}
+{{-     $name = printf "%s %s" $params.Name_Prefix $name }}
+{{-   end }}
+{{-   if $params.Manufacturer }}
+{{-     if not (strings.Contains (replace (lower $name) " " "") (replace (lower $params.Manufacturer) " " "")) }}
+{{-       $name = printf "%s %s" $name $params.Manufacturer }}
+{{-     end }}
+{{-   end }}
+{{-   if $params.Variant }}
+{{-     $name = printf "%s %s" $name $params.Variant }}
+{{-   end }}
+{{- end }}
+{{- return $name -}}
