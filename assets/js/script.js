@@ -178,6 +178,7 @@ $(window).on('load', function () {
       const urlized = i.replaceAll(" ", "-")
       $button.attr(`data-item-option_${urlized}`, options[i])
     }
+    updateSku()
   }
 
   function getSelectedColour() {
@@ -186,6 +187,14 @@ $(window).on('load', function () {
 
   function getSelectedColourLabel() {
     return ($(".color-button.product-option:checked, a.color-button.active").attr("title") || "")
+  }
+
+  function getSelectedColourSkuArg() {
+    return ($(".color-button.product-option:checked, a.color-button.active").attr("data-colour-sku-arg") || "")
+  }
+
+  function getSelectedColourSku() {
+    return ($(".color-button.product-option:checked, a.color-button.active").attr("data-colour-sku") || "")
   }
 
   function collectOptionArgs(arg) {
@@ -302,19 +311,31 @@ $(window).on('load', function () {
     const orig_sku = $("[itemprop='orig-sku']")[0]
     const selected_size = $('.btn-group .btn-sizes input[type="radio"]:checked')[0]
 
-    if (orig_sku && selected_size) {
-      const size = selected_size.id.split('-')[1]
+    if (orig_sku) {
       const sku = orig_sku.content
+      let new_sku = sku
+
+      const colour_sku = getSelectedColourSku()
+      if (colour_sku) {
+        new_sku = colour_sku
+      }
+      if (selected_size) {
+        const size = selected_size.id.split('-')[1]
+        new_sku = new_sku.replace("{size}", size)
+      }
+      if (sku.indexOf("{colour}") >= 0) {
+        new_sku = new_sku.replace("{colour}", getSelectedColourSkuArg())
+      }
       for (const e of $(".sku")) {
         if (e.content) {
-          e.content = sku.replace("{size}", size)
+          e.content = new_sku
         } else if (e.value) {
-          e.value = sku.replace("{size}", size)
+          e.value = new_sku
         } else if (e.innerText) {
-          e.innerText = sku.replace("{size}", size)
+          e.innerText = new_sku
         }
       }
-      $("#cart-primary-button").attr("data-item-id", sku.replace("{size}", size))
+      $("#cart-primary-button").attr("data-item-id", new_sku)
       $("#cart-primary-button").attr("data-item-size", size)
     }
   }

@@ -1,0 +1,7 @@
+{{- $p := split . "{" }}
+{{- $sku_part := "" }}
+{{- $sku := index (split (index $p 1) "}") 0 }}
+{{- if strings.Contains $sku "=" }}
+{{-   $sku_part = trim $sku "=" }}
+{{- end }}
+{{- return $sku_part }}

@@ -102,12 +102,19 @@
             {{ with .Params.Colour }}
             {{ $name := partial "utils/get-colour-name" . }}
             {{ $rgb := partial "utils/get-colour-rgb" . }}
+            {{ $sku_arg := partial "utils/get-colour-product-id-arg" . }}
+            {{ $sku := partial "utils/get-colour-product-id" . }}
             {{ if and (not $rgb) $images }}
             {{ $coverimage := index (partial "utils/get-images" $page) 0 }}
             {{ $rgb = index ($coverimage.Colors) 0 }}
             {{ end }}
             <a href="{{ $page.RelPermalink }}" id="colour-{{ $name | anchorize }}"
               {{ if $active }}class="color-button product-option active"{{ else }}class="color-button product-option"{{ end }}
+              {{- if $sku }}
+              data-colour-sku="{{ $sku }}"
+              {{- else if $sku_arg }}
+              data-colour-sku-arg="{{ $sku_arg }}"
+              {{- end }}
               {{ printf "background: %s" $rgb | printf "style=%q" | safeHTMLAttr }}
               {{ printf "title=%q" $name | safeHTMLAttr }}
                ><span class="sr-only">{{ $name }}</span></a>
@@ -149,6 +156,8 @@
             {{ range .colours }}
             {{ $name := partial "utils/get-colour-name" . }}
             {{ $rgb := partial "utils/get-colour-rgb" . }}
+            {{ $sku_arg := partial "utils/get-colour-product-id-arg" . }}
+            {{ $sku := partial "utils/get-colour-product-id" . }}
             {{ $image_coords := partial "utils/get-colour-image" . }}
             {{ if and (not $rgb) $images }}
             {{ $coverimage := index (partial "utils/get-images" page) 0 }}
@@ -161,6 +170,11 @@
               {{ else }}
                 {{ printf "background: %s" $rgb | printf "style=%q" | safeHTMLAttr }}
               {{ end }}
+              {{- if $sku }}
+              data-colour-sku="{{ $sku }}"
+              {{- else if $sku_arg }}
+              data-colour-sku-arg="{{ $sku_arg }}"
+              {{- end }}
               {{ printf "alt=%q" (i18n $name | default $name) | safeHTMLAttr }}
               {{ printf "title=%q" (i18n $name | default $name) | safeHTMLAttr }}
               {{- if eq $default_colour $name }} checked {{ end }}
