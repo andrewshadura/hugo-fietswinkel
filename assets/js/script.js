@@ -322,6 +322,7 @@ $(window).on('load', function () {
       if (selected_size) {
         const size = selected_size.id.split('-')[1]
         new_sku = new_sku.replace("{size}", size)
+        $("#cart-primary-button").attr("data-item-size", size)
       }
       if (sku.indexOf("{colour}") >= 0) {
         new_sku = new_sku.replace("{colour}", getSelectedColourSkuArg())
@@ -336,7 +337,6 @@ $(window).on('load', function () {
         }
       }
       $("#cart-primary-button").attr("data-item-id", new_sku)
-      $("#cart-primary-button").attr("data-item-size", size)
     }
   }
 
