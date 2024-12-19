@@ -25,12 +25,14 @@
       {{- $colour_sku = partial "utils/get-colour-product-id" $colour }}
       {{- $colour = partial "utils/get-colour-name" $colour }}
       {{- end }}
+      {{- $second_image := "" }}
       {{- if $option_colours }}
         {{- $args = slice "colour" (anchorize $colour) }}
         {{- if $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
           {{- $image = $page.Resources.GetMatch (printf "colours/%s.jpg" (anchorize $colour)) }}
           {{- $image = $image.Permalink }}
         {{- end }}
+        {{- $second_image = $page.Resources.GetMatch (printf "colours/%s_2.jpg" (anchorize $colour)) }}
       {{- end }}
 
     {{- $size_name := partial "utils/get-size-name" $size }}
@@ -73,6 +75,9 @@
         </DESCRIPTION>
         <URL>{{ $page.Permalink | absURL }}{{ if $args }}?{{ end }}{{ querify $args }}</URL>
         <IMGURL>{{ $image }}</IMGURL>
+        {{- if $second_image }}
+        <IMGURL_ALTERNATIVE>{{ $second_image.Permalink }}</IMGURL_ALTERNATIVE>
+        {{- end }}
         {{- if $params.EAN }}
         <EAN>{{ $params.EAN }}</EAN>
         {{- end }}
