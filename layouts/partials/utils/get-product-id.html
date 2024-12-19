@@ -1,6 +1,6 @@
 {{- $productID := "" }}
 {{- if .Params.ProductID }}
-{{-   $productID = .Params.ProductID }}
+{{-   $productID = (string .Params.ProductID) }}
 {{- else }}
 {{-   if and .Params.OEM_ID .Params.Manufacturer }}
 {{-     $productID = printf "%s-%s" .Params.Manufacturer (string .Params.OEM_ID) }}
