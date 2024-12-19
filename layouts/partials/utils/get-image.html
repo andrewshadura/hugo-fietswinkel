@@ -9,7 +9,7 @@
     {{ $imageResource = index (partial "utils/get-images" $page) 0 }}
   {{ else }}
     {{ $imageResource = $page.Resources.GetMatch "cover.jpg" }}
-    {{ if (not $imageResource) }}
+    {{ if not (or $imageResource $page.IsNode (ne $page.Type "products")) }}
       {{ warnf "Missing cover.jpg for page %q" $page }}
     {{ end }}
   {{ end }}
