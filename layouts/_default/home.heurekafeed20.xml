@@ -1,5 +1,12 @@
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 <SHOP>
+  {{- $sku_list := dict }}
+  {{- range $supplier := site.Params.suppliers }}
+  {{-   with resources.Get (printf "suppliers/%s/skulist.json" $supplier) }}
+  {{-     $sku_list = merge $sku_list (transform.Unmarshal .) }}
+  {{-   end }}
+  {{- end }}
+
   {{- range where site.RegularPages "Section" "products" }}
   {{- $productID := partial "utils/get-product-id" . }}
   {{- $defaultProductID := partial "utils/get-default-product-id" . }}
@@ -53,6 +60,7 @@
       {{-     $item_id = printf "%s-%s" $item_id $size_name }}
       {{-   end }}
       {{- end }}
+      {{- $product := index $sku_list $item_id }}
       <SHOPITEM>
           <ITEM_ID>{{ substr $item_id 0 36 }}</ITEM_ID>
           <PRODUCTNAME>{{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}</PRODUCTNAME>
@@ -78,8 +86,12 @@
           {{- if $second_image }}
           <IMGURL_ALTERNATIVE>{{ $second_image.Permalink }}</IMGURL_ALTERNATIVE>
           {{- end }}
-          {{- if $params.EAN }}
+          {{- if $product }}
+          <EAN>{{ $product.ean }}</EAN>
+          {{- else }}
+          {{-   if $params.EAN }}
           <EAN>{{ $params.EAN }}</EAN>
+          {{-   end }}
           {{- end }}
           {{- if $colour }}
           <PARAM>

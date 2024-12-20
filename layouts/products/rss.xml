@@ -85,15 +85,23 @@
       {{- if $params.Group_ID }}
       <g:item_group_id>{{ $params.Group_ID }}</g:item_group_id>
       {{- end }}
-      {{- if $params.EAN }}
-      <g:gtin>{{ $params.EAN }}{{ $colour_suffix }}</g:gtin>
-      {{- end }}
-      {{- if $params.MPN }}
-      <g:mpn>{{ $params.MPN }}{{ $colour_suffix }}</g:mpn>
+      {{- if $product }}
+      <g:gtin>{{ $product.ean }}</g:gtin>
       {{- else }}
-      {{- if $params.OEM_ID }}
-      <g:mpn>{{ $params.OEM_ID }}{{ $colour_suffix }}</g:mpn>
+      {{-   if $params.EAN }}
+      <g:gtin>{{ $params.EAN }}{{ $colour_suffix }}</g:gtin>
+      {{-   end }}
       {{- end }}
+      {{- if $product }}
+      <g:mpn>{{ $product.oem_id }}</g:mpn>
+      {{- else }}
+      {{-   if $params.MPN }}
+      <g:mpn>{{ $params.MPN }}{{ $colour_suffix }}</g:mpn>
+      {{-   else }}
+      {{-   if $params.OEM_ID }}
+      <g:mpn>{{ $params.OEM_ID }}{{ $colour_suffix }}</g:mpn>
+      {{-   end }}
+      {{-   end }}
       {{- end }}
       {{- if $params.ProductType }}
       <g:product_type>{{ $params.ProductType }}</g:product_type>
