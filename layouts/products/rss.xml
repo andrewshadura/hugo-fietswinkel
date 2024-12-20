@@ -21,6 +21,15 @@
     {{- with .OutputFormats.Get "RSS" -}}
     {{ printf "<atom:link href=%q rel=\"self\" type=%q />" .Permalink .MediaType | safeHTML }}
     {{- end -}}
+
+    {{- $sku_lists := slice }}
+    {{- range $supplier := site.Params.suppliers }}
+    {{-   with resources.Get (printf "suppliers/%s/skulist.json" $supplier) }}
+    {{-     $skus := transform.Unmarshal . }}
+    {{-     $sku_lists = append $skus $sku_lists }}
+    {{-   end }}
+    {{- end }}
+
     {{- range $pages }}
     {{- $image := partial "utils/get-image" . }}
     {{- $images := partial "utils/get-images" . | after 1 }}
@@ -77,6 +86,10 @@
       {{-   if not (strings.Contains $productID "{size}") }}
       {{-     $item_id = printf "%s-%s" $item_id $size_name }}
       {{-   end }}
+      {{- end }}
+      {{- $product := dict }}
+      {{- range $sku_list := $sku_lists }}
+      {{-   $product = or $product (index $sku_list $item_id) }}
       {{- end }}
     <item>
       <g:title>{{ $page.Title }}{{ if $params.Variant }} {{ $params.Variant }}{{ end }}{{ if $colour }} {{ $colour }}{{ end }}</g:title>

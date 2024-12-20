@@ -1,9 +1,10 @@
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 <SHOP>
-  {{- $sku_list := dict }}
+  {{- $sku_lists := slice }}
   {{- range $supplier := site.Params.suppliers }}
   {{-   with resources.Get (printf "suppliers/%s/skulist.json" $supplier) }}
-  {{-     $sku_list = merge $sku_list (transform.Unmarshal .) }}
+  {{-     $skus := transform.Unmarshal . }}
+  {{-     $sku_lists = append $skus $sku_lists }}
   {{-   end }}
   {{- end }}
 
@@ -60,7 +61,10 @@
       {{-     $item_id = printf "%s-%s" $item_id $size_name }}
       {{-   end }}
       {{- end }}
-      {{- $product := index $sku_list $item_id }}
+      {{- $product := dict }}
+      {{- range $sku_list := $sku_lists }}
+      {{-   $product = or $product (index $sku_list $item_id) }}
+      {{- end }}
       <SHOPITEM>
           <ITEM_ID>{{ substr $item_id 0 36 }}</ITEM_ID>
           <PRODUCTNAME>{{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}</PRODUCTNAME>
