@@ -133,7 +133,7 @@
             {{ $name := partial "utils/get-size-name" . }}
             {{ $size := partial "utils/get-size-description" . }}
             <label class="btn btn-light btn-sizes product-option">
-              <input type="radio" name="size" {{ printf "id=%q" (print "size-" $name) | safeHTMLAttr }} value="{{ . }}" class="product-option product-option-radio"
+              <input type="radio" name="size" {{ printf "id=%q" (print "size-" (anchorize $name)) | safeHTMLAttr }} value="{{ . }}" class="product-option product-option-radio"
                 {{ if $one_size_only }} checked {{ end }}
                 >
                 <span class="size-name">{{ $name }}</span><br><span class="size-detail">{{ $size }}</span>
