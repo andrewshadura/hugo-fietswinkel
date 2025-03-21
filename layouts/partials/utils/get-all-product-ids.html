@@ -1,0 +1,47 @@
+{{- $sku_lists := partialCached "utils/get-sku-lists" . }}
+{{- $product_ids := slice }}
+{{- $productID := partial "utils/get-product-id" . }}
+{{- $page := . }}
+{{- $params := .Params }}
+{{- $option_colours := partial "utils/get-option-colours" . }}
+{{- $colours := or $option_colours (slice $params.Colour) }}
+{{- $args := slice }}
+{{- $colour_suffix := "" }}
+{{- $colour_sku := "" }}
+{{- $colour_sku_arg := "" }}
+{{- $sizes := or $params.Sizes (slice $params.Size) }}
+{{- range $size := $sizes }}
+{{- range $colour := $colours -}}
+  {{- $args = slice }}
+  {{- $colour_suffix = "" }}
+  {{- if $colour }}
+  {{- $colour_sku_arg = partial "utils/get-colour-product-id-arg" $colour }}
+  {{- $colour_sku = partial "utils/get-colour-product-id" $colour }}
+  {{- $colour = partial "utils/get-colour-name" $colour }}
+  {{- end }}
+  {{- if $option_colours }}
+    {{- $args = slice "colour" (anchorize $colour) }}
+    {{- $colour_suffix = printf "-%s" (anchorize $colour) }}
+  {{- end }}
+  {{- $size_name := partial "utils/get-size-name" $size }}
+  {{- $item_id := $productID }}
+  {{- if $colour_sku }}
+  {{-   $item_id = $colour_sku }}
+  {{- end }}
+  {{- $item_id = replace $item_id "{size}" (anchorize $size_name) }}
+  {{- $item_id = replace $item_id "{colour}" $colour_sku_arg }}
+  {{- if $colour }}
+  {{-   if not (or $colour_sku (strings.Contains $productID "{colour}") $params.Colour) }}
+  {{-     $item_id = printf "%s-%s" $item_id (anchorize $colour) }}
+  {{-   end }}
+  {{- end }}
+  {{- if $size_name }}
+  {{-   $args = append "size" $size_name $args }}
+  {{-   if not (strings.Contains $productID "{size}") }}
+  {{-     $item_id = printf "%s-%s" $item_id $size_name }}
+  {{-   end }}
+  {{- end }}
+  {{- $product_ids = append $item_id $product_ids }}
+{{- end }}
+{{- end }}
+{{- return $product_ids }}

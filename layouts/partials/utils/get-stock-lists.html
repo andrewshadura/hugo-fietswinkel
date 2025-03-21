@@ -1,0 +1,10 @@
+{{- $stock_lists := slice }}
+{{- range $supplier := site.Params.suppliers }}
+{{- with (or
+    (resources.Get (printf "suppliers/%s/stocks.json" $supplier))
+) }}
+{{-     $stocks := transform.Unmarshal . }}
+{{-     $stock_lists = append $stocks $stock_lists }}
+{{-   end }}
+{{- end }}
+{{- return $stock_lists }}

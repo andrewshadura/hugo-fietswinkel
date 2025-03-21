@@ -2,7 +2,10 @@
 <SHOP>
   {{- $sku_lists := slice }}
   {{- range $supplier := site.Params.suppliers }}
-  {{-   with resources.Get (printf "suppliers/%s/skulist.json" $supplier) }}
+  {{-   with (or
+      (resources.Get (printf "suppliers/%s/skulist.json" $supplier))
+      (resources.Get (printf "suppliers/%s/skulist.csv" $supplier))
+  ) }}
   {{-     $skus := transform.Unmarshal . }}
   {{-     $sku_lists = append $skus $sku_lists }}
   {{-   end }}

@@ -22,13 +22,7 @@
     {{ printf "<atom:link href=%q rel=\"self\" type=%q />" .Permalink .MediaType | safeHTML }}
     {{- end -}}
 
-    {{- $sku_lists := slice }}
-    {{- range $supplier := site.Params.suppliers }}
-    {{-   with resources.Get (printf "suppliers/%s/skulist.json" $supplier) }}
-    {{-     $skus := transform.Unmarshal . }}
-    {{-     $sku_lists = append $skus $sku_lists }}
-    {{-   end }}
-    {{- end }}
+    {{- $sku_lists := partialCached "utils/get-sku-lists" . }}
 
     {{- range $pages }}
     {{- $image := partial "utils/get-image" . }}

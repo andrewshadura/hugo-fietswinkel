@@ -1,0 +1,10 @@
+{{- $sku_lists := slice }}
+{{- range $supplier := site.Params.suppliers }}
+{{- with (or
+    (resources.Get (printf "suppliers/%s/skulist.json" $supplier))
+) }}
+{{-     $skus := transform.Unmarshal . }}
+{{-     $sku_lists = append $skus $sku_lists }}
+{{-   end }}
+{{- end }}
+{{- return $sku_lists }}
