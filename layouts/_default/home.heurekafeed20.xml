@@ -48,7 +48,7 @@
       {{- if $colour_sku }}
       {{-   $item_id = $colour_sku }}
       {{- end }}
-      {{- $item_id = replace $item_id "{size}" $size_name }}
+      {{- $item_id = replace $item_id "{size}" (anchorize $size_name) }}
       {{- $item_id = replace $item_id "{colour}" $colour_sku_arg }}
       {{- if $colour }}
       {{-   if not (or $colour_sku (strings.Contains $productID "{colour}") $params.Colour) }}
@@ -56,9 +56,9 @@
       {{-   end }}
       {{- end }}
       {{- if $size_name }}
-      {{-   $args = append "size" $size_name $args }}
+      {{-   $args = append "size" (anchorize $size_name) $args }}
       {{-   if not (strings.Contains $productID "{size}") }}
-      {{-     $item_id = printf "%s-%s" $item_id $size_name }}
+      {{-     $item_id = printf "%s-%s" $item_id (anchorize $size_name) }}
       {{-   end }}
       {{- end }}
       {{- $product := dict }}
