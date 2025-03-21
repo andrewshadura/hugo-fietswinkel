@@ -30,6 +30,14 @@ Products List:
   other: In ons aanbod
 See more products:
   other: Bekĳk het aanbod
+Book a test:
+  other: Vraag over het product
+Book a test (title):
+  other: Vraag over het product
+Book a test (description):
+  other: Ben je geïnteresseerd in dit product en wil je het uitproberen? Neem contact met ons op via het formulier
+request-order-description-text:
+  other: We hebben dit artikel momenteel niet op voorraad, maar we kunnen het op verzoek bestellen bij de leverancier. Neem om te bestellen contact met ons op via het formulier
 Ean:
   other: EAN
 This category is currently empty, but we’re working hard to prepare it for you!:
@@ -63,6 +71,8 @@ Email:
   other: Uw e-mailadres
 Message:
   other: Uw bericht
+Additional notes:
+  other: Uw vraag
 Your Message:
   other: Uw bericht
 Send:
@@ -95,3 +105,9 @@ More colours available:
   other: 'Nog {{ .Count }} meer kleuren beschikbaar'
 Read more:
   other: Lees meer
+Colour:
+  other: Kleur
+Colours:
+  other: Kleuren
+Close:
+  other: Sluiten

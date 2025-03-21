@@ -215,3 +215,11 @@ Charger:
   other: Nabíjačka
 Sale price applies to showroom stock only:
   other: Zľava platí len na veľkosti dostupné na predajni
+Low stock:
+  other: Zostáva málo kusov
+No longer available:
+  other: Predaj skončil
+Out of stock:
+  other: Vypredané
+On request:
+  other: Na objednávku
