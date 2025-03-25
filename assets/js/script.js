@@ -309,7 +309,7 @@ $(window).on('load', function () {
 
   function updateSku() {
     const orig_sku = $("[itemprop='orig-sku']")[0]
-    const selected_size = $('.btn-group .btn-sizes input[type="radio"]:checked')[0]
+    const selected_size = $('.btn-group .btn-sizes input[type="radio"]:checked')[0] || $('.btn-group .btn-sizes input[type="radio"]')[0]
 
     if (orig_sku) {
       const sku = orig_sku.content
