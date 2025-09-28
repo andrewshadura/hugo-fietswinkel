@@ -378,7 +378,10 @@ $(window).on('load', function () {
       const urlized = option.replaceAll(" ", "-")
       const value = params.get(urlized)
       if (value) {
-        const selectedOption = $(`#${urlized}-select [value="${value}"], #${urlized}-select [data-variant="${value}"], #${urlized}-select [data-option-id="${value}"]`)
+        const selectedOption = $(`#${urlized}-select [value="${value}"],
+            #${urlized}-select [data-variant="${value}"],
+            #${urlized}-select [data-option-id="${value}"]
+`)
         if (selectedOption.length) {
           selectedOption[0].selected = true
         }
