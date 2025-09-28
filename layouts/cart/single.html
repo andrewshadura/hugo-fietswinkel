@@ -40,7 +40,7 @@
                 class="form-control cart-quantity text-center"
                 data-id="[= item.id =]"
                 data-colour="[= item.colour =]"
-                data-size="[= item.size =]"
+                data-size="[= item.size | escape =]"
                 type="number"
                 value="[= item.quantity =]"
                 min="0"
@@ -51,7 +51,7 @@
                 class="btn btn-sm btn-outline-primary"
                 data-id="[= item.id =]"
                 data-colour="[= item.colour =]"
-                data-size="[= item.size =]"
+                data-size="[= item.size | escape =]"
                 onclick="removeItem(event)">{{ with "Delete" }}{{ i18n . | default . }}{{ end }} </button>
             </td>
             <td class="text-right">[= item.subtotal =]</td>
