@@ -83,6 +83,10 @@ $(window).on('load', function () {
   function recalculatePrice(e) {
     if (e && e.target.tagName.toLowerCase() == 'select') {
       const target = e.target.children[e.target.selectedIndex]
+      if (target.dataset.href) {
+        window.location = target.dataset.href
+        return
+      }
       if (target.dataset.includes) {
         const includes = JSON.parse(target.dataset.includes)
         for (const option in includes) {
