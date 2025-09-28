@@ -1,0 +1,11 @@
+Available in:
+  other: 'Available in: {{ . }}'
+Available in (other sizes):
+  other: 'Other sizes: available in {{ . }}'
+Available sizes:
+  one: 'Available now: size {{ first .Sizes }}'
+  other: 'Available now: sizes {{ delimit .Sizes ", " }}'
+Lead time:
+  other: 'Delivery within {{ .Count }} days'
+Lead time other sizes:
+  other: 'Other sizes: delivery within {{ .Count }} days'
