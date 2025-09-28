@@ -47,11 +47,12 @@
         {{- end }}
 
       {{- $size_name := partial "utils/get-size-name" $size }}
+      {{- $size_id := partial "utils/get-size-product-id-arg" $size }}
       {{- $item_id := $productID }}
       {{- if $colour_sku }}
       {{-   $item_id = $colour_sku }}
       {{- end }}
-      {{- $item_id = replace $item_id "{size}" (anchorize $size_name) }}
+      {{- $item_id = replace $item_id "{size}" (anchorize $size_id) }}
       {{- $item_id = replace $item_id "{colour}" $colour_sku_arg }}
       {{- if $colour }}
       {{-   if not (or $colour_sku (strings.Contains $productID "{colour}") $params.Colour) }}
@@ -59,7 +60,7 @@
       {{-   end }}
       {{- end }}
       {{- if $size_name }}
-      {{-   $args = append "size" (anchorize $size_name) $args }}
+      {{-   $args = append "size" $size_name $args }}
       {{-   if not (strings.Contains $productID "{size}") }}
       {{-     $item_id = printf "%s-%s" $item_id (anchorize $size_name) }}
       {{-   end }}
@@ -130,14 +131,49 @@
           {{- end }}
           <PRICE_VAT>{{ $params.Price }}</PRICE_VAT>
           {{- if $params.Group_ID }}
-          <ITEMGROUP_ID>{{ replace (string $params.Group_ID) "." "-" | anchorize }}</ITEMGROUP_ID>
+          <ITEMGROUP_ID>{{ replace (substr (string $params.Group_ID) 0 36) "." "-" | anchorize }}</ITEMGROUP_ID>
           {{- else if or $colour $size_name }}
-          <ITEMGROUP_ID>{{ replace (string $defaultProductID) "." "-" | anchorize }}</ITEMGROUP_ID>
+          <ITEMGROUP_ID>{{ replace (substr (string $defaultProductID) 0 36) "." "-" | anchorize }}</ITEMGROUP_ID>
           {{- end }}
           {{- if $params.Heurekacategory }}
           <CATEGORYTEXT>{{ replace $params.Heurekacategory "Heureka.sk | " "" }}</CATEGORYTEXT>
           {{- end }}
+          {{- if $params.Manufacturer }}
           <MANUFACTURER>{{ $params.Manufacturer }}</MANUFACTURER>
+
+          <PARAM>
+            <PARAM_NAME>Výrobca</PARAM_NAME>
+            <VAL>{{ $params.Manufacturer }}</VAL>
+          </PARAM>
+          {{- end }}
+          {{- if $params.Showroom_Sizes }}
+          {{-   if in (partial "utils/stringify-list" $params.Showroom_Sizes) $size_name }}
+          <DELIVERY_DATE>0</DELIVERY_DATE>
+          {{-   else }}
+          {{-     if $params.Lead_Time }}
+          <DELIVERY_DATE>{{ $params.Lead_Time }}</DELIVERY_DATE>
+          {{-     end }}
+          {{-   end }}
+          {{- end }}
+          {{- range $k, $v := $params.Heureka }}
+          {{- if $v }}
+          {{- if reflect.IsSlice $v }}
+          {{-   range $vv := $v }}
+          {{-     if reflect.IsMap $vv }}
+          {{-       printf "<%s>" (upper $k) | safeHTML }}
+          {{-       range $kkk, $vvv := $vv }}
+          {{-         printf "<%s>" (upper $kkk) | safeHTML }}{{ $vvv }}{{ printf "</%s>" (upper $kkk) | safeHTML -}}
+          {{-       end }}
+          {{-       printf "</%s>" (upper $k) | safeHTML -}}
+          {{-     else }}
+          {{-       printf "<%s>" (upper $k) | safeHTML }}{{ $vv }}{{ printf "</%s>" (upper $k) | safeHTML -}}
+          {{-     end }}
+          {{-   end }}
+          {{- else }}
+          {{-   printf "<%s>" (upper $k) | safeHTML }}{{ $v }}{{ printf "</%s>" (upper $k) | safeHTML -}}
+          {{- end }}
+          {{- end }}
+          {{- end }}
       </SHOPITEM>
       {{- end }}
     {{- end }}

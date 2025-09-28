@@ -320,9 +320,9 @@ $(window).on('load', function () {
         new_sku = colour_sku
       }
       if (selected_size) {
-        const size = selected_size.id.split('-')[1]
-        new_sku = new_sku.replace("{size}", size)
-        $("#cart-primary-button").attr("data-item-size", size)
+        new_sku = new_sku.replace("{size}", selected_size.dataset.sizeId)
+        $("#cart-primary-button").attr("data-item-size", selected_size.dataset.size)
+        $("#cart-primary-button").attr("data-item-size-id", selected_size.dataset.sizeId)
       }
       if (sku.indexOf("{colour}") >= 0) {
         new_sku = new_sku.replace("{colour}", getSelectedColourSkuArg())
@@ -355,6 +355,16 @@ $(window).on('load', function () {
     }
     let options = collectAllOptions()
     delete options.colour
+
+    const size = params.get("size")
+    if (size) {
+      const selectedOption = $(`.btn-sizes input[data-size="${size.replace('"', '\\"')}"`)
+      if (selectedOption.length) {
+        selectedOption[0].selected = true
+        selectedOption[0].parentElement.classList.add('active')
+      }
+      delete options.size
+    }
 
     for (const option in options) {
       const urlized = option.replaceAll(" ", "-")

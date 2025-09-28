@@ -221,13 +221,16 @@ Stock status: {{ $stock_status }}
         <div class="my-4 variants-box">
           <h5>{{ with "Sizes" }}{{ i18n . | default . }}{{ end }}</h5>
           <div class="btn-group btn-group-toggle" data-toggle="buttons" role="group" aria-label="{{ with "Sizes" }}{{ i18n . | default . }}{{ end }}">
-            {{ $one_size_only := eq (len .Params.Sizes) 1 }}
-            {{ range .Params.Sizes }}
-            {{ $name := partial "utils/get-size-name" . }}
-            {{ $size := partial "utils/get-size-description" . }}
+            {{- $one_size_only := eq (len .Params.Sizes) 1 }}
+            {{- range .Params.Sizes }}
+            {{- $name := partial "utils/get-size-name" . }}
+            {{- $size_id := partial "utils/get-size-product-id-arg" . }}
+            {{- $size := partial "utils/get-size-description" . }}
             <label class="btn btn-light btn-sizes product-option">
               <input type="radio" name="size" {{ printf "id=%q" (print "size-" (anchorize $name)) | safeHTMLAttr }} value="{{ . }}" class="product-option product-option-radio"
                 {{ if $one_size_only }} checked {{ end }}
+                data-size="{{ $name }}"
+                data-size-id="{{ $size_id }}"
                 >
                 <span class="size-name">{{ $name }}</span><br><span class="size-detail">{{ $size }}</span>
               </input>
@@ -481,10 +484,13 @@ Stock status: {{ $stock_status }}
           {{- end }}
           {{- if .Params.Size }}
           data-item-size="{{ partial "utils/get-size-name" .Params.Size }}"
+          data-item-size-id="{{ partial "utils/get-size-product-id-arg" .Params.Size }}"
           {{- else if .Params.Sizes }}
           data-item-size="{{ partial "utils/get-size-name" (index .Params.Sizes 0) }}"
+          data-item-size-id="{{ partial "utils/get-size-product-id-arg" (index .Params.Sizes 0) }}"
           {{- else }}
           data-item-size=""
+          data-item-size-id=""
           {{- end }}
           {{- if .Params.EAN }}
           data-item-ean="{{ .Params.EAN }}"

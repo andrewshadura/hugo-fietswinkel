@@ -1,6 +1,6 @@
 {{- $sku := partial "utils/get-product-id" . }}
 {{- $size := index .Params.Sizes 0 | default .Params.Size }}
-{{- $size = partial "utils/get-size-name" $size }}
+{{- $size_id := partial "utils/get-size-product-id-arg" $size }}
 {{- $colour := .Params.Colour }}
 {{- if not $colour }}
 {{-   range .Params.Options }}
@@ -18,7 +18,7 @@
 {{- if $colour_sku_full }}
 {{-   $sku = $colour_sku_full }}
 {{- end }}
-{{- $sku = replace $sku "{size}" $size }}
+{{- $sku = replace $sku "{size}" $size_id }}
 {{- $colour_sku_arg := partial "utils/get-colour-product-id-arg" $colour }}
 {{- if $colour_sku_arg }}
 {{-   $sku = replace $sku "{colour}" $colour_sku_arg }}

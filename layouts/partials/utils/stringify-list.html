@@ -1,0 +1,5 @@
+{{- $result := slice -}}
+{{- range $item := . -}}
+{{- $result = append (string $item) $result -}}
+{{- end -}}
+{{- return $result -}}

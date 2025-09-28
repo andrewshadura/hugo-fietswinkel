@@ -64,11 +64,12 @@
         {{- end }}
       {{- end }}
       {{- $size_name := partial "utils/get-size-name" $size }}
+      {{- $size_id := partial "utils/get-size-product-id-arg" $size }}
       {{- $item_id := $productID }}
       {{- if $colour_sku }}
       {{-   $item_id = $colour_sku }}
       {{- end }}
-      {{- $item_id = replace $item_id "{size}" (anchorize $size_name) }}
+      {{- $item_id = replace $item_id "{size}" (anchorize $size_id) }}
       {{- $item_id = replace $item_id "{colour}" $colour_sku_arg }}
       {{- if $colour }}
       {{-   if not (or $colour_sku (strings.Contains $productID "{colour}") $params.Colour) }}

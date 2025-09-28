@@ -1,0 +1,11 @@
+{{- $name := partial "utils/get-size-name" . }}
+{{- $p := split . "{" }}
+{{- $sku_part := "" }}
+{{- $sku := index (split (index $p 1) "}") 0 }}
+{{- if not (strings.Contains $sku "=") }}
+{{-   $sku_part = $sku }}
+{{- end }}
+{{- if not $sku }}
+{{-   $sku_part = $name }}
+{{- end }}
+{{- return $sku_part }}

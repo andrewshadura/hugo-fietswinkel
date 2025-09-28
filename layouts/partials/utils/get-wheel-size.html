@@ -1,0 +1,13 @@
+{{- $page := . }}
+{{- $wheel_size := "" }}
+{{- if $page.Params.Parameters }}
+{{-   $wheel_size = $page.Params.Parameters.Wheel_size }}
+{{- end }}
+{{- if $page.Params.Wheel_size }}
+{{-   $wheel_size = $page.Params.Wheel_size }}
+{{- end }}
+{{- $p := split $wheel_size " " }}
+{{- $p0 := index $p 0 }}
+{{- $p = split $p0 "\"" }}
+{{- $p0 = index $p 0 }}
+{{- return (printf "%s\"" $p0) }}

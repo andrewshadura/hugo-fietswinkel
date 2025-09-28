@@ -1,4 +1,6 @@
-{{- $p := split . "(" }}
+{{- $p := split . "{" }}
+{{- $front := index $p 0 }}
+{{- $p = split $front "(" }}
 {{- $name := index $p 0 }}
 {{- $name = trim (index $p 0) " " }}
 {{- return $name }}
