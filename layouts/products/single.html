@@ -185,12 +185,24 @@ Stock status: {{ $stock_status }}
         </div>
         {{ if .Params.Colour }}
         <div class="my-4 variants-box">
-          <h5>{{ with "Colours" }}{{ i18n . | default . }}{{ end }}</h5>
+          {{- $seen_colours := slice }}
+          {{- $colour_variants := slice (page) }}
+          {{- if page.Params.Model }}
+          {{- $colour_variants = append (where .Parent.Pages "Params.Model" page.Params.Model) $colour_variants }}
+          {{- else }}
+          {{-   if page.Params.Group_ID }}
+          {{-   $colour_variants = append (where .Parent.Pages "Params.Group_ID" page.Params.Group_ID) $colour_variants }}
+          {{-   end }}
+          {{- end }}
+          <h5>{{ with "Colours" }}{{ i18n . (len $colour_variants) | default . }}{{ end }}</h5>
           <div class="btn-group color-buttons" role="group" aria-label="{{ with "Colours" }}{{ i18n . | default . }}{{ end }}">
-            {{ range where .Parent.Pages "Params.Model" page.Params.Model }}
+
+            {{ range $colour_variants }}
             {{ $active := eq page.Params.Colour .Params.Colour }}
             {{ $page := . }}
-            {{ if eq (path.Dir (path.Clean $page.Permalink)) (path.Clean page.Parent.Permalink) }}
+            <!-- { if and (eq (path.Dir (path.Clean $page.Permalink)) (path.Clean page.Parent.Permalink)) (not (in $seen_colours .Params.Colour)) } -->
+            {{ if and (eq (path.Clean $page.Parent.Permalink) (path.Clean page.Parent.Permalink)) (not (in $seen_colours (partial "utils/get-colour-name" .Params.Colour))) }}
+            {{ $seen_colours = append (partial "utils/get-colour-name" .Params.Colour) $seen_colours }}
             <span title="{{ path.Dir (path.Clean $page.RelPermalink) }}={{ path.Clean page.Parent.RelPermalink }}"></span>
             {{ with .Params.Colour }}
             {{ $name := partial "utils/get-colour-name" . }}
@@ -243,10 +255,11 @@ Stock status: {{ $stock_status }}
         {{- $colour_swatch := .Params.Colour_Swatch }}
         {{ range .Params.Options }}
         {{- if .colours }}
+        {{- $colours := .colours }}
         {{- $default_colour := partial "utils/get-colour-name" (index .colours 0) }}
         {{- if $.Params.Default_Colour }}{{- $default_colour = $.Params.Default_Colour }}{{ end }}
         <div class="my-4 variants-box">
-          <h5>{{ with "Colours" }}{{ i18n . | default . }}{{ end }}</h5>
+          <h5>{{ with "Colours" }}{{ i18n . (len $colours) | default . }}{{ end }}</h5>
           <div class="btn-group color-buttons" role="group" aria-label="{{ with "Colours" }}{{ i18n . | default . }}{{ end }}">
             {{ $active := false }}
             {{ range .colours }}
@@ -481,6 +494,8 @@ Stock status: {{ $stock_status }}
           {{ $name := partial "utils/get-colour-name" .Params.Colour }}
           data-item-colour="{{ $name | anchorize }}"
           data-item-colour_label="{{ i18n $name | default $name }}"
+          {{- else }}
+          data-item-colour=""
           {{- end }}
           {{- if .Params.Size }}
           data-item-size="{{ partial "utils/get-size-name" .Params.Size }}"

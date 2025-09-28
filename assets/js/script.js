@@ -175,12 +175,16 @@ $(window).on('load', function () {
     const $button = $("#cart-primary-button")
     $button.attr("data-item-price", price / 100)
     $button.attr("data-item-image", $(".product-slider .slick-track .slick-slide:first-child > img")[0].src)
-    $button.attr("data-item-colour", getSelectedColour())
+    let colour = getSelectedColour()
+    $button.attr("data-item-colour", colour)
     $button.attr("data-item-colour_label", getSelectedColourLabel())
     options = collectOptions()
     for (const i in options) {
       const urlized = i.replaceAll(" ", "-")
       $button.attr(`data-item-option_${urlized}`, options[i])
+    }
+    if (e && colour) {
+      window.history.replaceState(null, "", `${window.location.pathname}?colour=${colour}`)
     }
     updateSku()
   }
