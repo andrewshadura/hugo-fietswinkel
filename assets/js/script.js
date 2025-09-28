@@ -113,6 +113,9 @@ $(window).on('load', function () {
     let variant = null
 
     let extras = $(".product-option :selected").map(function() {
+      if (!this.dataset.name) {
+        return 0
+      }
       if (this.dataset.variant) {
         variant = this.dataset.variant
       }
