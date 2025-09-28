@@ -230,7 +230,7 @@ Stock status: {{ $stock_status }}
         </div>
         {{ end }}
         {{ if .Params.Sizes }}
-        <div class="my-4 variants-box">
+        <div class="my-4 variants-box" style="overflow-x: scroll">
           <h5>{{ with "Sizes" }}{{ i18n . | default . }}{{ end }}</h5>
           <div class="btn-group btn-group-toggle" data-toggle="buttons" role="group" aria-label="{{ with "Sizes" }}{{ i18n . | default . }}{{ end }}">
             {{- $one_size_only := eq (len .Params.Sizes) 1 }}
@@ -247,6 +247,14 @@ Stock status: {{ $stock_status }}
                 <span class="size-name">{{ $name }}</span><br><span class="size-detail">{{ $size }}</span>
               </input>
             </label>
+            {{- end }}
+
+            {{ if .Params.Other_Sizes }}
+            <a class="btn btn-light btn-sizes product-option active" href="{{ relref . .Params.Other_Sizes }}">
+              <span class="size-name">{{ with "Other sizes:" }}{{ i18n . | default . }}{{ end }}</span>
+              <br>
+              {{ with "Other sizes: Subtext" }}{{ i18n . | default "see here" }}{{ end }}
+            </a>
             {{ end }}
           </div>
         </div>
