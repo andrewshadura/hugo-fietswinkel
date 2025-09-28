@@ -51,7 +51,7 @@
 {{-     $stock_found = true }}
 {{-     $stock_qty = cond (gt $stock_qty $stock_this.qty) $stock_qty $stock_this.qty }}
 {{-     if $stock_this.date_available }}
-{{-       $stock_date = cond (gt $stock_date $stock_this.date_available) $stock_date $stock_this.date_available }}
+{{-       $stock_date = cond (lt $stock_date $stock_this.date_available) $stock_date $stock_this.date_available }}
 {{-       $stock_orderable = true }}
 {{-     end }}
 {{-     if not (or
