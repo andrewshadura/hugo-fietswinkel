@@ -241,7 +241,12 @@
       <div class="col-4">
         <div class="card border-primary text-center">
           <div class="card-body">
-            <img src="{{ .image | absURL }}" class="client-img" alt="{{ .name | markdownify }}">
+            {{- if .image }}
+            <img src="{{ .image | absURL }}" class="client-img" alt="{{ .name | markdownify }}"
+                 data-image="{{ .image | absURL }}"
+                 data-remote="{{ .image | absURL }}"
+                 data-toggle="lightbox" data-gallery="review-images">
+            {{- end }}
             <p class="quoted">{{ .content | markdownify }}</p>
             <h6 class="font-weight-medium">{{ .name | markdownify }}</h6>
             <small>{{ .designation | markdownify }}</small>
