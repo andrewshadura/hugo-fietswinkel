@@ -19,4 +19,8 @@
     {{ $image = $imageResource.Permalink }}
   {{ end }}
 {{ end }}
+{{ if and (not $image) ($page.Params.Img_Url) }}
+{{   $image = $page.Params.Img_Url }}
+{{   warnf "img_url set, using for missing cover: %s" $image }}
+{{ end }}
 {{ return $image }}
