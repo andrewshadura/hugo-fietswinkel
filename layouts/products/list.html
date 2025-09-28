@@ -75,13 +75,17 @@
       {{- $image := partial "utils/get-image" . }}
       {{- $params := partial "utils/get-params" . }}
       {{- $defaultStock := 100 }}
+      {{- if page.Params.ZoomOut }}
+      <div class="col-lg-2 col-sm-3 mb-4">
+      {{- else }}
       <div class="col-lg-4 col-sm-6 mb-4">
+      {{- end }}
         <div class="card border-0 text-center">
           <a href="{{ .Permalink }}">
             <img src="{{ $image }}" alt="{{ .Title }}" class="card-img-top">
           </a>
           <div class="card-body">
-            <a href="{{ .Permalink }}" class="h4">{{ .Title }}
+            <a href="{{ .Permalink }}" {{- if page.Params.ZoomOut }} class="h6" {{- else -}} class="h4" {{- end -}}>{{ .Title }}
               {{- if .Params.Variant }}&nbsp;<small>{{ .Params.Variant }}</small>{{ end }}
             </a>
             {{ if .Params.Colour }}
