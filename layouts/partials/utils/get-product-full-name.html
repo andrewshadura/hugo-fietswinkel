@@ -3,6 +3,9 @@
 {{- $name := $page.Title }}
 {{- if $params.Full_Name }}
 {{-   $name = $params.Full_Name }}
+{{-   if strings.Contains $name "{name}" }}
+{{-     $name = replace $name "{name}" $page.Title }}
+{{-   end }}
 {{- else }}
 {{-   if $params.Name_Prefix }}
 {{-     $name = printf "%s %s" $params.Name_Prefix $name }}

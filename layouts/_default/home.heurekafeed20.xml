@@ -71,8 +71,78 @@
       {{- end }}
       <SHOPITEM>
           <ITEM_ID>{{ substr $item_id 0 36 }}</ITEM_ID>
-          <PRODUCTNAME>{{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}</PRODUCTNAME>
-          <PRODUCT>{{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}</PRODUCT>
+          <PRODUCTNAME>{{- if strings.Contains $full_name "{" -}}
+            {{- $final_full_name := $full_name -}}
+            {{- if $colour -}}
+              {{- $final_full_name = replace $final_full_name "{colour}" (default (i18n $colour) $colour) -}}
+            {{- else -}}
+              {{- $final_full_name = replace $final_full_name "{colour}" "" -}}
+            {{- end }}
+            {{- if $size_name -}}
+              {{- $final_full_name = replace $final_full_name "{size}" $size_name -}}
+            {{- else -}}
+              {{- $final_full_name = replace $final_full_name "{size}" "" -}}
+            {{- end -}}
+            {{- if $params.Variant -}}
+              {{- $final_full_name = replace $final_full_name "{variant}" $params.Variant -}}
+            {{- else -}}
+              {{- $final_full_name = replace $final_full_name "{variant}" "" -}}
+            {{- end -}}
+            {{- if $params.Parameters -}}
+              {{- if and $params.Parameters $params.Parameters.Wheel_size -}}
+                {{- $final_full_name = replace $final_full_name "{wheel_size}" (partial "utils/get-wheel-size" $page) -}}
+              {{- else -}}
+                {{- $final_full_name = replace $final_full_name "{wheel_size}" "" -}}
+              {{- end -}}
+              {{- if $params.Parameters.Model_year }}
+                {{- $final_full_name = replace $final_full_name "{model_year}" $params.Parameters.Model_year }}
+              {{- end }}
+            {{- end -}}
+            {{- if $params.Model_year }}
+              {{- $final_full_name = replace $final_full_name "{model_year}" $params.Model_year }}
+            {{- end }}
+          {{- $final_full_name = replace $final_full_name "  " " " -}}
+          {{- $final_full_name -}}
+          {{- else -}}
+            {{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}
+          {{- end -}}
+          </PRODUCTNAME>
+          <PRODUCT>{{- if strings.Contains $full_name "{" -}}
+            {{- $final_full_name := $full_name -}}
+            {{- if $colour -}}
+              {{- $final_full_name = replace $final_full_name "{colour}" (default (i18n $colour) $colour) -}}
+            {{- else -}}
+              {{- $final_full_name = replace $final_full_name "{colour}" "" -}}
+            {{- end }}
+            {{- if $size_name -}}
+              {{- $final_full_name = replace $final_full_name "{size}" $size_name -}}
+            {{- else -}}
+              {{- $final_full_name = replace $final_full_name "{size}" "" -}}
+            {{- end -}}
+            {{- if $params.Variant -}}
+              {{- $final_full_name = replace $final_full_name "{variant}" $params.Variant -}}
+            {{- else -}}
+              {{- $final_full_name = replace $final_full_name "{variant}" "" -}}
+            {{- end -}}
+            {{- if $params.Parameters -}}
+              {{- if and $params.Parameters $params.Parameters.Wheel_size -}}
+                {{- $final_full_name = replace $final_full_name "{wheel_size}" (partial "utils/get-wheel-size" $page) -}}
+              {{- else -}}
+                {{- $final_full_name = replace $final_full_name "{wheel_size}" "" -}}
+              {{- end -}}
+              {{- if $params.Parameters.Model_year }}
+                {{- $final_full_name = replace $final_full_name "{model_year}" $params.Parameters.Model_year }}
+              {{- end }}
+            {{- end -}}
+            {{- if $params.Model_year }}
+              {{- $final_full_name = replace $final_full_name "{model_year}" $params.Model_year }}
+            {{- end }}
+          {{- $final_full_name = replace $final_full_name "  " " " -}}
+          {{- $final_full_name -}}
+          {{- else -}}
+            {{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}
+          {{- end -}}
+          </PRODUCT>
           <DESCRIPTION>
             {{- $descr_slice := slice }}
             {{- if $page.Description }}{{ $descr_slice = append $page.Description $descr_slice }}{{ end }}
