@@ -137,6 +137,17 @@ Stock status: {{ $stock_status }}
           </div>
           {{ end }}
         </div>
+        {{- $image_badges := .Params.Image_Badges }}
+        {{- if .Params.Image_Badge }}
+        {{- $image_badges = $image_badges | append .Params.Image_Badge }}
+        {{- end }}
+        {{- with $image_badges }}
+        <div class="image-badges" style="position: absolute; left: 0; top: 0">
+        {{- range . }}
+        <img src="{{ .url }}" width="{{ .size }} " class="image-badge" style="display: block; padding: 3px">
+        {{- end }}
+        </div>
+        {{- end }}
       </div>
       <div class="col-lg-5 offset-lg-1">
         <h4 class="font-weight-medium p-name" itemprop="name">{{ .Title }}
