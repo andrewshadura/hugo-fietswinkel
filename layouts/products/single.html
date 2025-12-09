@@ -162,10 +162,10 @@ Stock status: {{ $stock_status }}
         {{ end }}
         <div class="my-4" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
           {{ if .Params.PriceBefore }}
-          <s>{{ .Params.PriceBefore | lang.FormatCurrency 2 .Site.Params.currency }}</s>
+          <s>{{ partial "utils/format-currency.html" .Params.PriceBefore }}</s>
           {{ end }}
           <meta itemprop="priceCurrency" content="{{ .Site.Params.currency }}" />
-          <span class="lead text-primary font-weight-medium p-price" itemprop="price" content="{{ .Params.Price }}">{{ .Params.Price | lang.FormatCurrency 2 .Site.Params.currency }}</span>
+          <span class="lead text-primary font-weight-medium p-price" itemprop="price" content="{{ partial "utils/convert-currency.html" .Params.Price }}">{{ partial "utils/format-currency.html" .Params.Price }}</span>
           {{ with $params.condition }}
           {{ else }}
           <link itemprop="itemCondition" href="http://schema.org/NewCondition"/>
@@ -335,7 +335,7 @@ Stock status: {{ $stock_status }}
               {{- end }}
               {{ if .includes }}data-includes="{{ transform.Remarshal "json" .includes}}"{{ end }}
             >
-            {{ i18n .label | default (i18n (humanize .label)) | default .label }}{{ if .price }} ({{ if ge .price 0 }}+{{ else }}−{{ end }}{{ .price | math.Abs | lang.FormatCurrency 2 site.Params.currency }}){{ end }}
+            {{ i18n .label | default (i18n (humanize .label)) | default .label }}{{ if .price }} ({{ if ge .price 0 }}+{{ else }}−{{ end }}{{ partial "utils/format-currency.html" (math.Abs .price) }}){{ end }}
             </option>
             {{ end }}
           </select>

@@ -151,12 +151,17 @@ var Cart = {
 Cart.currencyFormat = (function(Cart) {
     Cart.currency = 'EUR'
     const cartCurrency = document.querySelector("[data-cart-currency]")
+    let precision = 2
     if (cartCurrency) {
         Cart.currency = cartCurrency.dataset.cartCurrency
+        if ("cartCurrencyPrecision" in cartCurrency.dataset) {
+            precision = cartCurrency.dataset.cartCurrencyPrecision
+        }
     }
     return new Intl.NumberFormat(
         document.documentElement.lang, {
             style: 'currency',
+            maximumFractionDigits: precision,
             currency: Cart.currency
         }
     )
