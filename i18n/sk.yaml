@@ -122,10 +122,13 @@ Read more:
 Colour:
   other: Farba
 Colours:
+  one: Farba
   other: Farby
 Sizes:
+  one: Veľkosť
   other: Veľkosti
 Variants:
+  one: Variant
   other: Varianty
 Products List:
   other: V našej ponuke
@@ -225,3 +228,5 @@ On request:
   other: Na objednávku
 "List badge: In showroom":
   other: Skladom
+Model year:
+  other: Modelový rok
