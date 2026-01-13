@@ -168,6 +168,11 @@
       deliveryTypeInput.value = Cart.deliveryType
       form.appendChild(deliveryTypeInput)
 
+      const deliveryPriceInput = document.createElement('input')
+      deliveryPriceInput.name = 'delivery_price'
+      deliveryPriceInput.value = Cart.deliveryPrice
+      form.appendChild(deliveryPriceInput)
+
       document.body.appendChild(form)
       form.submit()
     }
