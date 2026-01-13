@@ -10,4 +10,7 @@
 {{- $p0 := index $p 0 }}
 {{- $p = split $p0 "\"" }}
 {{- $p0 = index $p 0 }}
-{{- return (printf "%s\"" $p0) }}
+{{- if $wheel_size }}
+{{-   $wheel_size = printf "%s\"" $p0 }}
+{{- end }}
+{{- return $wheel_size }}
