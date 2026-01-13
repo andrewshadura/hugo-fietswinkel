@@ -563,6 +563,9 @@ const stock_per_id = {{ $stock_per_id }}
           {{- if $shipping_weight }}
           data-item-shipping-weight="{{ $shipping_weight }}"
           {{- end }}
+          {{- if .Params.Min_Shipping_Weight }}
+          data-item-min-shipping-weight="{{ .Params.Min_Shipping_Weight }}"
+          {{- end }}
           data-item-instock="{{ int $params.instock }}"
           data-item-name="{{ .Title }}" data-item-image="{{ $image }}"
           data-item-price="{{ .Params.Price }}" data-item-url="{{ .Permalink }}" data-item-description="{{ .Params.ShortDescription | default .Description | markdownify }}">
