@@ -80,6 +80,89 @@ $(window).on('load', function () {
     }
   });
 
+  function getImagesForColour(colour_id, colour_prefix) {
+    if (!colour_images || !colour_id) {
+      return []
+    }
+
+    const prefix = colour_prefix || ''
+    const base_path = window.location.pathname.replace(/\/$/, '') + "/colours/" + prefix + colour_id
+
+    // Find all images matching this color
+    const matching_images = []
+
+    // Check for main image
+    const main_image = base_path + ".jpg"
+    if (colour_images.indexOf(main_image) >= 0) {
+      matching_images.push(main_image)
+    }
+
+    // Check for numbered images (_2, _3, _4, etc.)
+    for (let i = 2; i <= 20; i++) {
+      const numbered_image = base_path + "_" + i + ".jpg"
+      if (colour_images.indexOf(numbered_image) >= 0) {
+        matching_images.push(numbered_image)
+      } else {
+        // Stop searching once we hit a gap
+        break
+      }
+    }
+
+    return matching_images
+  }
+
+  function updateSliderImages(images) {
+    const $slider = $('.product-slider')
+    const currentSlideCount = $slider.find('.slick-track .slick-slide:not(.slick-cloned)').length
+
+    if (images.length === 0) {
+      // No images provided, restore original images
+      for (let i = 0; i < currentSlideCount; i++) {
+        const orig_image = $slider.find(`.slick-track .slick-slide:not(.slick-cloned):nth-child(${i + 1})`).data("image")
+        if (orig_image) {
+          $slider.find(`.slick-track .slick-slide:nth-child(${i + 1})`).attr("data-remote", orig_image)
+          $slider.find(`.slick-track .slick-slide:nth-child(${i + 1}) > img`).attr("src", orig_image)
+          $slider.find(`ul.slick-dots li:nth-child(${i + 1}) > img`).attr("src", orig_image)
+        }
+      }
+      return
+    }
+
+    // Update existing slides with new images (using direct DOM manipulation like original)
+    for (let i = 0; i < Math.min(images.length, currentSlideCount); i++) {
+      const image = images[i]
+      $slider.find(`.slick-track .slick-slide:nth-child(${i + 1})`).attr("data-remote", image)
+      $slider.find(`.slick-track .slick-slide:nth-child(${i + 1}) > img`).attr("src", image)
+      $slider.find(`ul.slick-dots li:nth-child(${i + 1}) > img`).attr("src", image)
+    }
+
+    // If we have more images than slides, add new slides using Slick API
+    if (images.length > currentSlideCount) {
+      for (let i = currentSlideCount; i < images.length; i++) {
+        const image = images[i]
+        const slideHtml = `<div data-image="${image}" data-remote="${image}"><img class="img-fluid w-100" src="${image}" alt="product-image"></div>`
+        $slider.slick('slickAdd', slideHtml)
+      }
+    }
+
+    // If we have fewer images than slides, remove extra slides using Slick API
+    if (images.length < currentSlideCount) {
+      for (let i = currentSlideCount - 1; i >= images.length; i--) {
+        $slider.slick('slickRemove', i)
+      }
+    }
+
+    // After adding/removing, update the slick-track for all slides to ensure consistency
+    if (images.length !== currentSlideCount) {
+      for (let i = 0; i < images.length; i++) {
+        const image = images[i]
+        $slider.find(`.slick-track .slick-slide:nth-child(${i + 1})`).attr("data-remote", image)
+        $slider.find(`.slick-track .slick-slide:nth-child(${i + 1}) > img`).attr("src", image)
+        $slider.find(`ul.slick-dots li:nth-child(${i + 1}) > img`).attr("src", image)
+      }
+    }
+  }
+
   function recalculatePrice(e) {
     if (e && e.target.tagName.toLowerCase() == 'select') {
       const target = e.target.children[e.target.selectedIndex]
@@ -100,8 +183,8 @@ $(window).on('load', function () {
 
     let base_price = Math.round(parseFloat($(".p-price").attr("content")) * 100)
 
-    let image = null
-    let image2 = null
+    let images = []
+    let dataset_images = []
 
     let options = normaliseSelectedOptions(collectAllOptions())
     console.log(options)
@@ -120,12 +203,12 @@ $(window).on('load', function () {
         variant = this.dataset.variant
       }
 
+      // Collect any dataset images for backward compatibility
       if (this.dataset.image) {
-        image = this.dataset.image
+        dataset_images.push(this.dataset.image)
       }
-
       if (this.dataset.image2) {
-        image2 = this.dataset.image2
+        dataset_images.push(this.dataset.image2)
       }
 
       return options[this.dataset.name][this.value].price
@@ -136,40 +219,29 @@ $(window).on('load', function () {
       $(".p-variant-name").text(variant)
     }
 
-    const image_candidates = prepareImageCandidates()
-    if (!image) {
-      // TODO: try next candidates too
-      if ((colour_images || []) && (colour_images.indexOf(image_candidates[0][0]) >= 0)) {
-        image = image_candidates[0][0]
-      }
-    }
-    if (!image2) {
-      if ((colour_images || []) && (colour_images.indexOf(image_candidates[0][1]) >= 0)) {
-        image2 = image_candidates[0][1]
+    // Get all images for the selected color
+    const selectedColours = $(".color-button.product-option:checked")
+    if (selectedColours.length && typeof colour_images !== 'undefined') {
+      const colour_id = selectedColours[0].id.replace("colour-", "")
+      const colour_prefixes = Object.values(collectOptionArgs("colourPrefix")).filter((x) => x)
+
+      // Try each prefix until we find images
+      for (const prefix of colour_prefixes.concat([''])) {
+        const found_images = getImagesForColour(colour_id, prefix)
+        if (found_images.length > 0) {
+          images = found_images
+          break
+        }
       }
     }
 
-    if (image) {
-        $(".product-slider .slick-track .slick-slide:first-child").attr("data-remote", image)
-        $(".product-slider .slick-track .slick-slide:first-child > img").attr("src", image)
-        $(".product-slider ul.slick-dots li:first-child > img").attr("src", image)
-    } else {
-        const orig_image = $(".product-slider .slick-track .slick-slide:first-child").data("image")
-        $(".product-slider .slick-track .slick-slide:first-child").attr("data-remote", orig_image)
-        $(".product-slider .slick-track .slick-slide:first-child > img").attr("src", orig_image)
-        $(".product-slider ul.slick-dots li:first-child > img").attr("src", orig_image)
+    // Use dataset images if we found any (backward compatibility)
+    if (dataset_images.length > 0) {
+      images = dataset_images
     }
 
-    if (image2) {
-        $(".product-slider .slick-track .slick-slide:nth-child(2)").attr("data-remote", image2)
-        $(".product-slider .slick-track .slick-slide:nth-child(2) > img").attr("src", image2)
-        $(".product-slider ul.slick-dots li:nth-child(2) > img").attr("src", image2)
-    } else {
-        const orig_image = $(".product-slider .slick-track .slick-slide:nth-child(2)").data("image")
-        $(".product-slider .slick-track .slick-slide:nth-child(2)").attr("data-remote", orig_image)
-        $(".product-slider .slick-track .slick-slide:nth-child(2) > img").attr("src", orig_image)
-        $(".product-slider ul.slick-dots li:nth-child(2) > img").attr("src", orig_image)
-    }
+    // Update slider with the images
+    updateSliderImages(images)
 
     let price = base_price + extras
 
@@ -283,40 +355,6 @@ $(window).on('load', function () {
   window.collectSelectedOptions = collectSelectedOptions
   window.collectAllOptions = collectAllOptions
   window.normaliseSelectedOptions = normaliseSelectedOptions
-
-  function prepareImageCandidates() {
-    let image_candidates = []
-    let image_fallback = []
-
-    const orig_image = $(".product-slider .slick-track .slick-slide:first-child").data("image")
-    const orig_image2 = $(".product-slider .slick-track .slick-slide:nth-child(2)").data("image")
-
-    let selectedColours = $(".color-button.product-option:checked")
-    if (selectedColours.length) {
-      const colour_id = selectedColours[0].id.replace("colour-", "")
-
-      let colour_prefixes = Object.values(collectOptionArgs("colourPrefix")).filter((x) => x)
-      colour_prefixes.push('')
-
-      for (const i in colour_prefixes) {
-        const path = colour_prefixes.slice(i).join('')
-        image_candidates.push(
-          [
-            window.location.pathname.replace(/\/$/, '') + "/colours/" + path + colour_id + ".jpg",
-            window.location.pathname.replace(/\/$/, '') + "/colours/" + path + colour_id + "_2.jpg"
-          ]
-        )
-      }
-    }
-    image_candidates.push(
-      [
-        orig_image,
-        orig_image2
-      ]
-    )
-
-    return image_candidates
-  }
 
   function updateSku() {
     const orig_sku = $("[itemprop='orig-sku']")[0]
