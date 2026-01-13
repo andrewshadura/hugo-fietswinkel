@@ -507,6 +507,14 @@ const stock_per_id = {{ $stock_per_id }}
         </div>
         {{ end }}
         {{ end }}
+        {{- $shipping_weight := "" }}
+        {{- if .Params.Shipping_Weight }}
+        {{-   $shipping_weight = index (split .Params.Shipping_Weight " ") 0 }}
+        {{- else if .Params.Parameters }}
+        {{-   if .Params.Parameters.Weight }}
+        {{-     $shipping_weight = index (split .Params.Parameters.Weight " ") 0 }}
+        {{-   end }}
+        {{- end }}
         <button
           id="cart-primary-button"
           {{ if eq (default false $params.instoreonly) true }}
@@ -551,6 +559,9 @@ const stock_per_id = {{ $stock_per_id }}
           {{- end }}
           {{- if .Params.EAN }}
           data-item-ean="{{ .Params.EAN }}"
+          {{- end }}
+          {{- if $shipping_weight }}
+          data-item-shipping-weight="{{ $shipping_weight }}"
           {{- end }}
           data-item-instock="{{ int $params.instock }}"
           data-item-name="{{ .Title }}" data-item-image="{{ $image }}"
