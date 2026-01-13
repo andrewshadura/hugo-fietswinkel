@@ -182,12 +182,16 @@ Rear light:
   other: Zadné svetlo
 Lock:
   other: Zámok
+Front fork:
+  other: Predná vidlica
 Kickstand:
   other: Stojan
 Saddle:
   other: Sedlo
 Handles:
   other: Rukoväte
+Material:
+  other: Materiál
 Front carrier:
   other: Predný nosič
 Rear carrier:
@@ -202,6 +206,12 @@ Front brake:
   other: Predné brzdy
 Rear brake:
   other: Zadné brzdy
+Disc brake:
+  other: Kotúčové brzdy
+Hub dynamo:
+  other: Dynamo náboj
+Drivetrain:
+  other: Pohon
 Tyres:
   other: Plášte
 Power supply:
@@ -228,5 +238,17 @@ On request:
   other: Na objednávku
 "List badge: In showroom":
   other: Skladom
+Depth:
+  other: Hĺbka
+Volume:
+  other: Objem
+Length:
+  other: Dĺžka
+Accu type:
+  other: Typ batérie
+Gear hub:
+  other: Prevodový náboj
 Model year:
   other: Modelový rok
+Often bought together:
+  other: Odporúčame kúpiť aj
