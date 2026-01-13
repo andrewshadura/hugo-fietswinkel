@@ -150,16 +150,20 @@
           {{- $param_keys = append $param_keys (slice $k) }}
           {{- end }}
           {{- range $param := intersect site.Params.ParameterOrder $param_keys }}
+          {{-   if index $params.Parameters $param }}
           <PARAM>
             <PARAM_NAME>{{ i18n (humanize $param) | default (humanize $param) }}</PARAM_NAME>
             <VAL>{{ index $params.Parameters $param }}</VAL>
           </PARAM>
+          {{-   end }}
           {{- end }}
           {{- range $param := complement site.Params.ParameterOrder $param_keys }}
+          {{-   if index $params.Parameters $param }}
           <PARAM>
             <PARAM_NAME>{{ i18n (humanize $param) | default (humanize $param) }}</PARAM_NAME>
             <VAL>{{ i18n (index $params.Parameters $param | humanize) | default (index $params.Parameters $param) }}</VAL>
           </PARAM>
+          {{-   end }}
           {{- end }}
           <PRICE_VAT>{{ $params.Price }}</PRICE_VAT>
           {{- if $params.Group_ID }}
@@ -188,23 +192,36 @@
           {{-   end }}
           {{- end }}
           {{- range $k, $v := $params.Heureka }}
-          {{- if $v }}
-          {{- if reflect.IsSlice $v }}
-          {{-   range $vv := $v }}
-          {{-     if reflect.IsMap $vv }}
-          {{-       printf "<%s>" (upper $k) | safeHTML }}
-          {{-       range $kkk, $vvv := $vv }}
-          {{-         printf "<%s>" (upper $kkk) | safeHTML }}{{ $vvv }}{{ printf "</%s>" (upper $kkk) | safeHTML -}}
+          {{-   if ne $k "params" }}
+          {{-     if $v }}
+          {{-       if reflect.IsSlice $v }}
+          {{-         range $vv := $v }}
+          {{-           if reflect.IsMap $vv }}
+          {{-             printf "<%s>" (upper $k) | safeHTML }}
+          {{-             range $kkk, $vvv := $vv }}
+          {{-               printf "<%s>" (upper $kkk) | safeHTML }}{{ $vvv }}{{ printf "</%s>" (upper $kkk) | safeHTML -}}
+          {{-             end }}
+          {{-             printf "</%s>" (upper $k) | safeHTML -}}
+          {{-           else }}
+          {{-             printf "<%s>" (upper $k) | safeHTML }}{{ $vv }}{{ printf "</%s>" (upper $k) | safeHTML -}}
+          {{-           end }}
+          {{-         end }}
+          {{-       else }}
+          {{-         printf "<%s>" (upper $k) | safeHTML }}{{ $v }}{{ printf "</%s>" (upper $k) | safeHTML -}}
           {{-       end }}
-          {{-       printf "</%s>" (upper $k) | safeHTML -}}
-          {{-     else }}
-          {{-       printf "<%s>" (upper $k) | safeHTML }}{{ $vv }}{{ printf "</%s>" (upper $k) | safeHTML -}}
+          {{-     end }}
+          {{-   else }}
+          {{-     range $kkk, $vvv := $v }}
+          {{-       if $vvv }}}
+          <PARAM>
+            <PARAM_NAME>{{ $kkk }}</PARAM_NAME>
+            <VAL>
+              {{- trim (partialCached "utils/format" (dict "s" $vvv "params" $item_ctx) $vvv $item_ctx) " " -}}
+            </VAL>
+          </PARAM>
+          {{-       end }}
           {{-     end }}
           {{-   end }}
-          {{- else }}
-          {{-   printf "<%s>" (upper $k) | safeHTML }}{{ $v }}{{ printf "</%s>" (upper $k) | safeHTML -}}
-          {{- end }}
-          {{- end }}
           {{- end }}
       </SHOPITEM>
       {{- end }}
