@@ -29,7 +29,7 @@
     {{- $images := partial "utils/get-images" . | after 1 }}
 
     {{- $productID := partial "utils/get-product-id" . }}
-    {{- $params := .Params }}
+    {{- $params := partial "utils/get-params" . }}
 
     {{- if and $productID (or (eq (default false $params.orderable) true) (gt (int $params.instock) 0)) }}
     {{- $page := . }}
