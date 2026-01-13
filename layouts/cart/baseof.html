@@ -34,23 +34,23 @@
       Cart.remove(id)
     }
 
-    function selectDelivery(e) {
-      if (!e.target.checked) {
-        return
+    function updateDeliveryPrice(option) {
+      if (!option) {
+        return null
       }
-      const price = parseFloat(e.target.dataset.deliveryPrice)
+      const price = parseFloat(option.dataset.deliveryPrice)
       const basePrice = Number.isFinite(price) ? price : 0
       let deliveryPrice = Math.floor(basePrice * 100)
       const detailsCountry = Cart.deliveryDetails && Cart.deliveryDetails.country
-      const deliveryCountries = (e.target.dataset.deliveryCountries || "")
+      const deliveryCountries = (option.dataset.deliveryCountries || "")
         .split(",")
         .map(country => country.trim())
       const defaultCountry = deliveryCountries[0]
       const countryCode = detailsCountry || defaultCountry
       let weightPrices = {}
-      if (e.target.dataset.deliveryWeightPrices) {
+      if (option.dataset.deliveryWeightPrices) {
         try {
-          weightPrices = JSON.parse(e.target.dataset.deliveryWeightPrices)
+          weightPrices = JSON.parse(option.dataset.deliveryWeightPrices)
         } catch (error) {
           weightPrices = {}
         }
@@ -70,21 +70,38 @@
         }
       }
 
-      Cart.deliveryPrice = deliveryPrice
-      Cart.deliveryType = e.target.value
+      const optionPriceElement = document.querySelector(`#cart-summary #shipping-${option.value}-price`)
+      if (optionPriceElement) {
+        optionPriceElement.innerHTML = Cart.currencyFormat.format(deliveryPrice / 100)
+      }
+
+      return deliveryPrice
+    }
+
+    function recalculateSelectedDelivery(option) {
+      const selectedOption = option || document.querySelector("#cart-summary input[name=delivery]:checked")
+      if (!selectedOption) {
+        return
+      }
+
+      const deliveryPrice = updateDeliveryPrice(selectedOption)
+      if (typeof deliveryPrice === "number" && !Number.isNaN(deliveryPrice)) {
+        Cart.deliveryPrice = deliveryPrice
+      }
+      Cart.deliveryType = selectedOption.value
 
       const totalElement = document.querySelector("#cart-summary .cart-total")
       totalElement.innerHTML = Cart.currencyFormat.format(Cart.total() / 100)
 
       const priceElement = document.querySelector("#cart-summary .cart-delivery-total")
-      priceElement.innerHTML = Cart.currencyFormat.format(deliveryPrice / 100)
+      priceElement.innerHTML = Cart.currencyFormat.format(Cart.deliveryPrice / 100)
 
       const checkoutButton = document.querySelector("#cart-checkout")
       if (checkoutButton) {
-        priceElement.innerHTML = Cart.currencyFormat.format(deliveryPrice / 100)
-        const detailsRequired = e.target.dataset.deliveryDetailsRequired
+        priceElement.innerHTML = Cart.currencyFormat.format(Cart.deliveryPrice / 100)
+        const detailsRequired = selectedOption.dataset.deliveryDetailsRequired
         if (detailsRequired == "true") {
-          const detailsElement = document.querySelector(`#cart-summary .cart-delivery-details[name=${e.target.value}-delivery-details]`)
+          const detailsElement = document.querySelector(`#cart-summary .cart-delivery-details[name=${selectedOption.value}-delivery-details]`)
           if (detailsElement) {
             checkoutButton.disabled = detailsElement.value == ""
           }
@@ -93,6 +110,21 @@
         }
       }
     }
+
+    function selectDelivery(e) {
+      if (!e.target.checked) {
+        return
+      }
+      recalculateSelectedDelivery(e.target)
+    }
+
+    function updateDeliveryPrices() {
+      const deliveryOptions = document.querySelectorAll("#cart-summary input[name=delivery]")
+      deliveryOptions.forEach(option => updateDeliveryPrice(option))
+      recalculateSelectedDelivery()
+    }
+
+    document.addEventListener("DOMContentLoaded", updateDeliveryPrices())
 
     function performCheckout() {
       const cart = Cart.get()

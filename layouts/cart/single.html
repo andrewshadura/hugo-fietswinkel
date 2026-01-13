@@ -66,7 +66,7 @@
                 {{ range $i, $e := site.Params.shipping }}
                 <div class="row" style="text-wrap: balance">
                   <div class="col-9">
-                    <input type="radio" id="{{ .name }}" name="delivery"
+                    <input type="radio" id="{{- printf "shipping-%s-option" .name -}}" name="delivery"
                            data-delivery-price="{{ .price }}"
                            data-delivery-countries="{{ with .countries }}{{ delimit . "," }}{{ end }}"
                            {{- $weight_prices := dict -}}
@@ -93,7 +93,7 @@
                            {{ if $i }}{{ else }}checked{{ end }}
                            data-delivery-details-required="{{ with .button}}{{ cond . "true" "false" }}{{ else }}false{{ end }}"
                            value="{{ .name }}">
-                    <label class="d-inline" for="{{ .name }}">{{ i18n .description | default .description }}</label>
+                    <label class="d-inline" for="{{- printf "shipping-%s-option" .name -}}">{{ i18n .description | default .description }}</label>
                     {{ if .details }}
                     <br>
                     <small>{{ .details | markdownify }}</small>
@@ -103,7 +103,7 @@
                     {{ partial (printf "shipping-%s-button.html" .name) . }}
                     {{ end }}
                   </div>
-                    <div class="col-3 text-right">
+                    <div class="col-3 text-right" id="{{- printf "shipping-%s-price" .name -}}">
                     {{ if .price }}
                     {{ .price | lang.FormatCurrency 2 (site.Params.currency) }}
                     {{ else }}
