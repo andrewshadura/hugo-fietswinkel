@@ -67,6 +67,27 @@
                   <div class="col-9">
                     <input type="radio" id="{{ .name }}" name="delivery"
                            data-delivery-price="{{ .price }}"
+                           data-delivery-countries="{{ with .countries }}{{ delimit . "," }}{{ end }}"
+                           {{- $weight_prices := dict -}}
+                           {{- with .weight_prices -}}
+                             {{- range $cc, $tiers := . -}}
+                               {{- $newTiers := slice -}}
+                               {{- range $tiers -}}
+                                 {{- $maxw := .max_weight -}}
+                                 {{- $p := partial "utils/parse-weight.html" $maxw -}}
+                                 {{- with $p.grams -}}
+                                   {{- $maxw = . -}}
+                                 {{- end -}}
+
+                                 {{- $newTiers = $newTiers | append (dict
+                                     "max_weight" $maxw
+                                     "price"      .price
+                                   ) -}}
+                               {{- end -}}
+                               {{- $weight_prices = merge $weight_prices (dict $cc $newTiers) -}}
+                             {{- end -}}
+                           {{- end -}}
+                           data-delivery-weight-prices='{{ with $weight_prices }}{{ . | jsonify }}{{ end }}'
                            onchange="selectDelivery(event)"
                            {{ if $i }}{{ else }}checked{{ end }}
                            data-delivery-details-required="{{ with .button}}{{ cond . "true" "false" }}{{ else }}false{{ end }}"

@@ -65,6 +65,39 @@ var Cart = {
     total: function() {
         return Cart.subtotal() + Cart.deliveryPrice
     },
+    calculateDeliveryPrice: function(tiers) {
+        const cart = Cart.get()
+        let minTotalWeight = 0
+        let totalWeight = Object.values(cart).reduce((sum, entry) => {
+            const item = entry.item || {}
+            const minWeight = parseFloat(item.minshippingweight)
+            const weight = parseFloat(item.shippingweight)
+            if (typeof minWeight === "number" && !Number.isNaN(minWeight)) {
+                minTotalWeight = Math.max(minTotalWeight, minWeight)
+            }
+            if (typeof weight === "number" && !Number.isNaN(weight)) {
+                return sum + weight * entry.quantity
+            }
+            return sum
+        }, 0)
+        totalWeight = Math.max(totalWeight, minTotalWeight)
+
+        const selectedTier = tiers.find(tier => {
+            const maxWeight = parseFloat(tier.max_weight)
+            return typeof maxWeight === "number" && !Number.isNaN(maxWeight) && totalWeight <= maxWeight
+        })
+
+        if (!selectedTier) {
+            return null
+        }
+
+        const price = parseFloat(selectedTier.price)
+        if (typeof price !== "number" || Number.isNaN(price)) {
+            return null
+        }
+
+        return Math.floor(price * 100)
+    },
     empty: function() {
         return Object.keys(Cart.get()).length == 0
     },

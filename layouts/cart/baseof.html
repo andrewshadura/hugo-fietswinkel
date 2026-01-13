@@ -38,19 +38,50 @@
       if (!e.target.checked) {
         return
       }
-      const price = e.target.dataset.deliveryPrice
-      Cart.deliveryPrice = Math.floor(parseFloat(price * 100))
+      const price = parseFloat(e.target.dataset.deliveryPrice)
+      const basePrice = Number.isFinite(price) ? price : 0
+      let deliveryPrice = Math.floor(basePrice * 100)
+      const detailsCountry = Cart.deliveryDetails && Cart.deliveryDetails.country
+      const deliveryCountries = (e.target.dataset.deliveryCountries || "")
+        .split(",")
+        .map(country => country.trim())
+      const defaultCountry = deliveryCountries[0]
+      const countryCode = detailsCountry || defaultCountry
+      let weightPrices = {}
+      if (e.target.dataset.deliveryWeightPrices) {
+        try {
+          weightPrices = JSON.parse(e.target.dataset.deliveryWeightPrices)
+        } catch (error) {
+          weightPrices = {}
+        }
+      }
+      const countryKey = countryCode ? countryCode.toLowerCase() : null
+      let tiers = []
+      if (countryKey && countryKey in weightPrices) {
+        tiers = Array.isArray(weightPrices[countryKey]) ? weightPrices[countryKey] : []
+      } else if (countryCode && countryCode in weightPrices) {
+        tiers = Array.isArray(weightPrices[countryCode]) ? weightPrices[countryCode] : []
+      }
+
+      if (tiers.length > 0) {
+        const calculatedPrice = Cart.calculateDeliveryPrice(tiers)
+        if (typeof calculatedPrice === "number" && !Number.isNaN(calculatedPrice)) {
+          deliveryPrice = calculatedPrice
+        }
+      }
+
+      Cart.deliveryPrice = deliveryPrice
       Cart.deliveryType = e.target.value
 
       const totalElement = document.querySelector("#cart-summary .cart-total")
       totalElement.innerHTML = Cart.currencyFormat.format(Cart.total() / 100)
 
       const priceElement = document.querySelector("#cart-summary .cart-delivery-total")
-      priceElement.innerHTML = Cart.currencyFormat.format(price)
+      priceElement.innerHTML = Cart.currencyFormat.format(deliveryPrice / 100)
 
       const checkoutButton = document.querySelector("#cart-checkout")
       if (checkoutButton) {
-        priceElement.innerHTML = Cart.currencyFormat.format(price)
+        priceElement.innerHTML = Cart.currencyFormat.format(deliveryPrice / 100)
         const detailsRequired = e.target.dataset.deliveryDetailsRequired
         if (detailsRequired == "true") {
           const detailsElement = document.querySelector(`#cart-summary .cart-delivery-details[name=${e.target.value}-delivery-details]`)
