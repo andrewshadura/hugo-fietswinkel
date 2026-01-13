@@ -29,6 +29,7 @@
     {{- $images := partial "utils/get-images" . | after 1 }}
 
     {{- $productID := partial "utils/get-product-id" . }}
+    {{- $defaultProductID := partial "utils/get-default-product-id" . }}
     {{- $params := partial "utils/get-params" . }}
 
     {{- if and $productID (or (eq (default false $params.orderable) true) (gt (int $params.instock) 0)) }}
@@ -116,6 +117,8 @@
       <g:link>{{ $page.Permalink | absURL }}{{ if $args }}?{{ end }}{{ querify $args }}</g:link>
       {{- if $params.Group_ID }}
       <g:item_group_id>{{ $params.Group_ID }}</g:item_group_id>
+      {{- else if or $colour $size_name }}
+      <g:item_group_id>{{ replace (substr (string $defaultProductID) 0 36) "." "-" | anchorize }}</g:item_group_id>
       {{- end }}
       {{- if $product }}
       <g:gtin>{{ $product.ean }}</g:gtin>
