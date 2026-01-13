@@ -26,6 +26,7 @@
 {{- $sku_lists := partialCached "utils/get-sku-lists" . }}
 {{- $stock_lists := partialCached "utils/get-stock-lists" . }}
 {{- $product_ids := partial "utils/get-all-product-ids" . }}
+{{- $stock_per_id := dict }}
 <!-- <pre> -->
 {{- $stock_found := false }}
 {{- $stock_status := "" }}
@@ -78,8 +79,18 @@ Updating status from {{ $stock_status }} to {{ $stock_this.availability }} -->
 Stock for {{ $item_id }} ({{ $ean }}): {{ $stock_qty }} available now{{ if $stock_date }}, more at {{ $stock_date }}{{ end }}
 Stock status: {{ $stock_status }}
 -->
+{{- $stock_per_id = merge $stock_per_id (dict
+  $item_id (dict
+    "status" $stock_status
+    "date" $stock_date
+    "qty" $stock_qty
+    "ean" $ean
+)) }}
 {{- end }}
 <!-- </pre> -->
+<script>
+const stock_per_id = {{ $stock_per_id }}
+</script>
 
 {{- $static_stock := in (slice "true" "yes" true) (default false $params.static_stock) }}
 {{- if not $static_stock }}
@@ -417,6 +428,7 @@ Stock status: {{ $stock_status }}
           {{   end }}
           {{ else }}
           {{   if $available_in }}
+            <span class="badge badge-info badge-medium badge-availability">
               {{ i18n "Available in" ($available_in | time | time.Format "January 2006") }}
             </span>
           {{   else }}
