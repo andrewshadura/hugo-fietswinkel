@@ -1,0 +1,5 @@
+{{- $out := .s -}}
+{{- range $k, $v := .params -}}
+  {{- $out = partial "utils/format-walk" (dict "out" $out "path" $k "val" $v) -}}
+{{- end -}}
+{{- return $out -}}

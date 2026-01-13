@@ -1,0 +1,14 @@
+{{- $out  := .out -}}
+{{- $path := .path -}}
+{{- $val  := .val -}}
+
+{{- if reflect.IsMap $val -}}
+  {{- range $k, $v := $val -}}
+    {{- $childPath := printf "%s.%s" $path $k -}}
+    {{- $out = partial "utils/format-walk" (dict "out" $out "path" $childPath "val" $v) -}}
+  {{- end -}}
+{{- else -}}
+  {{- $out = replace $out (printf "{%s}" $path) (printf "%v" (or $val "")) -}}
+{{- end -}}
+
+{{- return $out -}}
