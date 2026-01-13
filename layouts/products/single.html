@@ -397,10 +397,12 @@ Stock status: {{ $stock_status }}
             </span>
           {{   end }}
           {{   if $available_in }}
-            <span class="badge badge-info badge-medium">
+            <span class="badge badge-info badge-medium badge-availability">
               {{ i18n "Available in (other sizes)" ($available_in | time | time.Format "January 2006") }}
             </span>
           {{   else }}
+            <span class="badge badge-info badge-medium badge-availability d-none">
+            </span>
             {{ if .Params.Lead_Time }}
             {{ if le .Params.Lead_Time 14 }}
             <span class="badge badge-info badge-medium">
@@ -415,10 +417,11 @@ Stock status: {{ $stock_status }}
           {{   end }}
           {{ else }}
           {{   if $available_in }}
-            <span class="badge badge-info badge-medium">
               {{ i18n "Available in" ($available_in | time | time.Format "January 2006") }}
             </span>
           {{   else }}
+            <span class="badge badge-info badge-medium badge-availability d-none">
+            </span>
            {{   if and $stock_found (in (slice "in_stock" "low_stock") $stock_status) }}
             {{ if .Params.Lead_Time }}
             {{   if le .Params.Lead_Time 14 }}
