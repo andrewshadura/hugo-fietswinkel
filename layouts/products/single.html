@@ -495,26 +495,45 @@ const stock_per_id = {{ $stock_per_id }}
         <meta itemprop="size" content="{{ . }}" />
         {{ end }}
         {{ if .Params.Parameters }}
-        {{ if .Params.Parameters.Weight }}
-        {{ $weightValue := index (split .Params.Parameters.Weight " ") 0 }}
-        {{ $weightUnitText := index (split .Params.Parameters.Weight " ") 1 }}
-        {{ $weightUnitCode := index (dict "kg" "KGM" "g" "GRM") $weightUnitText }}
-        <div itemprop="weight" itemscope itemtype="https://schema.org/QuantitativeValue">
-          {{ if $weightUnitCode }}
-          <meta itemprop="unitCode" content="{{ $weightUnitCode }}" />
-          {{ end }}
-          <meta itemprop="value" content="{{ $weightValue }}" />
-        </div>
+          {{- with .Params.Parameters.Weight -}}
+            {{- $w := partial "utils/parse-weight.html" . -}}
+            {{- with $w.grams -}}
+              <div itemprop="weight" itemscope itemtype="https://schema.org/QuantitativeValue">
+                {{- with $w.unitCode -}}
+                  <meta itemprop="unitCode" content="{{ . }}" />
+                {{- end -}}
+                <meta itemprop="value" content="{{ $w.value }}" />
+              </div>
+            {{- end -}}
+          {{- end -}}
         {{ end }}
-        {{ end }}
-        {{- $shipping_weight := "" }}
-        {{- if .Params.Shipping_Weight }}
-        {{-   $shipping_weight = index (split .Params.Shipping_Weight " ") 0 }}
-        {{- else if .Params.Parameters }}
-        {{-   if .Params.Parameters.Weight }}
-        {{-     $shipping_weight = index (split .Params.Parameters.Weight " ") 0 }}
-        {{-   end }}
-        {{- end }}
+
+        {{- $shipping_weight := "" -}}
+
+        {{- with .Params.Shipping_Weight -}}
+          {{- $w := partial "utils/parse-weight.html" . -}}
+          {{- with $w.grams -}}
+            {{- $shipping_weight = printf "%v" . -}}
+          {{- end -}}
+        {{- else -}}
+          {{- if .Params.Parameters -}}
+            {{- with .Params.Parameters.Weight -}}
+              {{- $w := partial "utils/parse-weight.html" . -}}
+              {{- with $w.grams -}}
+                {{- $shipping_weight = printf "%v" . -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+
+        {{- $min_shipping_weight := "" -}}
+
+        {{- with .Params.Min_Shipping_Weight -}}
+          {{- $w := partial "utils/parse-weight.html" . -}}
+          {{- with $w.grams -}}
+            {{- $min_shipping_weight = printf "%v" . -}}
+          {{- end -}}
+        {{- end -}}
         <button
           id="cart-primary-button"
           {{ if eq (default false $params.instoreonly) true }}
@@ -563,8 +582,8 @@ const stock_per_id = {{ $stock_per_id }}
           {{- if $shipping_weight }}
           data-item-shipping-weight="{{ $shipping_weight }}"
           {{- end }}
-          {{- if .Params.Min_Shipping_Weight }}
-          data-item-min-shipping-weight="{{ .Params.Min_Shipping_Weight }}"
+          {{- if $min_shipping_weight }}
+          data-item-min-shipping-weight="{{ $min_shipping_weight }}"
           {{- end }}
           data-item-instock="{{ int $params.instock }}"
           data-item-name="{{ .Title }}" data-item-image="{{ $image }}"

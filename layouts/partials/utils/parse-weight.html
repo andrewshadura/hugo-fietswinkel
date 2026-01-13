@@ -1,0 +1,41 @@
+{{- /* Input: . = raw weight string, e.g. "15kg", "15 kg", "100g", "1,5 kg", "100"
+      Returns dict:
+        - value    (float)
+        - unit     ("g"|"kg")
+        - unitCode ("GRM"|"KGM")
+        - grams    (float)  // kg converted to g
+      On failure returns empty dict (so .grams is nil).
+*/ -}}
+
+{{- $out := dict -}}
+
+{{- $raw := trim (. | lower) " " -}}
+
+{{- if $raw -}}
+  {{- $m := findRESubmatch `^\s*([0-9]+(?:[.,][0-9]+)?)\s*([a-z]+)?\s*$` $raw -}}
+  {{- if gt (len $m) 0 -}}
+    {{- $valStr := index (index $m 0) 1 -}}
+    {{- $unitRaw := index (index $m 0) 2 | default "g" | lower -}}
+
+    {{- $unitMap := dict
+      "kg" "kg" "kgs" "kg" "kilogram" "kg" "kilograms" "kg"
+      "g"  "g"  "gr"  "g"  "gram"     "g"  "grams"     "g"
+    -}}
+    {{- $unit := (index $unitMap $unitRaw) | default $unitRaw -}}
+
+
+    {{- if or (eq $unit "g") (eq $unit "kg") -}}
+      {{- $value := float (replace $valStr "," ".") -}}
+      {{- $unitCode := index (dict "kg" "KGM" "g" "GRM") $unit -}}
+
+      {{- $grams := $value -}}
+      {{- if eq $unit "kg" -}}
+        {{- $grams = mul $value 1000 -}}
+      {{- end -}}
+
+      {{- $out = dict "value" $value "unit" $unit "unitCode" $unitCode "grams" $grams -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $out -}}
