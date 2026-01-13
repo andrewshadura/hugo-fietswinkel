@@ -636,6 +636,36 @@ Stock status: {{ $stock_status }}
             </div>
           </div>
         </div>
+        {{ if .Params.Buy_Also }}
+        <div class="card my-4">
+          <div class="card-body">
+            <h5 class="card-title">
+              {{ with "Often bought together" }}{{ i18n . | default . }}{{ end }}
+            </h5>
+            {{- range $p := .Params.Buy_Also }}
+            {{- $page := site.GetPage $p }}
+            {{- $full_name := partial "utils/get-product-full-name" $page }}
+            <div class="card py-1 border-0"><a href="{{ $page.RelPermalink }}">
+              <div class="row no-gutters">
+                <div class="col-md-4">
+                  {{ $img := index (partial "utils/get-images" $page) 0 }}
+                  {{ $img = $img.Resize "600x q83 picture Lanczos" }}
+                  <img src="{{ $img.RelPermalink }}" class="img-fluid">
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body">
+                    <h5 class="card-title" style="font-weight: 500">{{ $full_name }}</h5>
+                    <p class="card-text">
+  <span class="lead text-primary font-weight-medium">{{ partial "utils/format-currency.html" $page.Params.Price }}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{- end }}
+          </div>
+        </div>
+        {{ end }}
       </div>
       <div class="col-12 mt-1">
         <ul class="nav nav-tabs border-bottom-0" id="myTab" role="tablist">
