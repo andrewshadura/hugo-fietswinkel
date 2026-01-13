@@ -54,6 +54,23 @@
       {{- end }}
       {{- $item_id = replace $item_id "{size}" (anchorize $size_id) }}
       {{- $item_id = replace $item_id "{colour}" $colour_sku_arg }}
+      {{- $item_ctx := merge $params.Parameters (dict
+        "colour" (default $colour (i18n $colour))
+        "size" $size_name
+        "size_id" $size_id
+        "variant" $params.Variant
+        "variant_description" $params.Variant_Description
+        "manufacturer" $params.Manufacturer
+        "model" $params.Model
+        "name_prefix" $params.Name_prefix
+        "description" $params.Description
+        "title" $params.Title
+        "wheel_size" (partial "utils/get-wheel-size" $page)
+        "model_year" (or $params.Model_year $params.Parameters.Model_year)
+      ) -}}
+      {{- if strings.Contains $item_id "{" -}}
+        {{- $item_id = trim (partialCached "utils/format" (dict "s" $item_id "params" $item_ctx) $item_id $item_ctx) " " -}}
+      {{- end }}
       {{- if $colour }}
       {{-   if not (or $colour_sku (strings.Contains $productID "{colour}") $params.Colour) }}
       {{-     $item_id = printf "%s-%s" $item_id (anchorize $colour) }}
@@ -73,72 +90,17 @@
           <ITEM_ID>{{ substr $item_id 0 36 }}</ITEM_ID>
           <PRODUCTNAME>{{- if strings.Contains $full_name "{" -}}
             {{- $final_full_name := $full_name -}}
-            {{- if $colour -}}
-              {{- $final_full_name = replace $final_full_name "{colour}" (default (i18n $colour) $colour) -}}
-            {{- else -}}
-              {{- $final_full_name = replace $final_full_name "{colour}" "" -}}
-            {{- end }}
-            {{- if $size_name -}}
-              {{- $final_full_name = replace $final_full_name "{size}" $size_name -}}
-            {{- else -}}
-              {{- $final_full_name = replace $final_full_name "{size}" "" -}}
-            {{- end -}}
-            {{- if $params.Variant -}}
-              {{- $final_full_name = replace $final_full_name "{variant}" $params.Variant -}}
-            {{- else -}}
-              {{- $final_full_name = replace $final_full_name "{variant}" "" -}}
-            {{- end -}}
-            {{- if $params.Parameters -}}
-              {{- if and $params.Parameters $params.Parameters.Wheel_size -}}
-                {{- $final_full_name = replace $final_full_name "{wheel_size}" (partial "utils/get-wheel-size" $page) -}}
-              {{- else -}}
-                {{- $final_full_name = replace $final_full_name "{wheel_size}" "" -}}
-              {{- end -}}
-              {{- if $params.Parameters.Model_year }}
-                {{- $final_full_name = replace $final_full_name "{model_year}" $params.Parameters.Model_year }}
-              {{- end }}
-            {{- end -}}
-            {{- if $params.Model_year }}
-              {{- $final_full_name = replace $final_full_name "{model_year}" $params.Model_year }}
-            {{- end }}
-          {{- $final_full_name = replace $final_full_name "  " " " -}}
-          {{- $final_full_name -}}
+
+          {{- $final_full_name = partialCached "utils/format" (dict "s" $final_full_name "params" $item_ctx) $final_full_name $item_ctx -}}
+          {{- trim $final_full_name " " -}}
           {{- else -}}
             {{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}
           {{- end -}}
           </PRODUCTNAME>
           <PRODUCT>{{- if strings.Contains $full_name "{" -}}
             {{- $final_full_name := $full_name -}}
-            {{- if $colour -}}
-              {{- $final_full_name = replace $final_full_name "{colour}" (default (i18n $colour) $colour) -}}
-            {{- else -}}
-              {{- $final_full_name = replace $final_full_name "{colour}" "" -}}
-            {{- end }}
-            {{- if $size_name -}}
-              {{- $final_full_name = replace $final_full_name "{size}" $size_name -}}
-            {{- else -}}
-              {{- $final_full_name = replace $final_full_name "{size}" "" -}}
-            {{- end -}}
-            {{- if $params.Variant -}}
-              {{- $final_full_name = replace $final_full_name "{variant}" $params.Variant -}}
-            {{- else -}}
-              {{- $final_full_name = replace $final_full_name "{variant}" "" -}}
-            {{- end -}}
-            {{- if $params.Parameters -}}
-              {{- if and $params.Parameters $params.Parameters.Wheel_size -}}
-                {{- $final_full_name = replace $final_full_name "{wheel_size}" (partial "utils/get-wheel-size" $page) -}}
-              {{- else -}}
-                {{- $final_full_name = replace $final_full_name "{wheel_size}" "" -}}
-              {{- end -}}
-              {{- if $params.Parameters.Model_year }}
-                {{- $final_full_name = replace $final_full_name "{model_year}" $params.Parameters.Model_year }}
-              {{- end }}
-            {{- end -}}
-            {{- if $params.Model_year }}
-              {{- $final_full_name = replace $final_full_name "{model_year}" $params.Model_year }}
-            {{- end }}
-          {{- $final_full_name = replace $final_full_name "  " " " -}}
-          {{- $final_full_name -}}
+          {{- $final_full_name = partialCached "utils/format" (dict "s" $final_full_name "params" $item_ctx) $final_full_name $item_ctx -}}
+          {{- trim $final_full_name " " -}}
           {{- else -}}
             {{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}
           {{- end -}}
