@@ -66,9 +66,19 @@
                 {{ range $i, $e := site.Params.shipping }}
                 <div class="row" style="text-wrap: balance">
                   <div class="col-9">
+                    {{- $maxPackageWeight := "" -}}
+                    {{- with .max_package_weight -}}
+                      {{- $w := partial "utils/parse-weight.html" . -}}
+                      {{- with $w.grams -}}
+                        {{- $maxPackageWeight = . -}}
+                      {{- end -}}
+                    {{- end -}}
                     <input type="radio" id="{{- printf "shipping-%s-option" .name -}}" name="delivery"
                            data-delivery-price="{{ .price }}"
                            data-delivery-countries="{{ with .countries }}{{ delimit . "," }}{{ end }}"
+                           {{- if $maxPackageWeight }}
+                           data-delivery-max-package-weight="{{ $maxPackageWeight }}"
+                           {{- end }}
                            {{- $weight_prices := dict -}}
                            {{- with .weight_prices -}}
                              {{- range $cc, $tiers := . -}}
