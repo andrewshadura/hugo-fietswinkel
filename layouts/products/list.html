@@ -112,7 +112,7 @@
             {{- end }}
           </a>
           <div class="card-body">
-            <a href="{{ .Permalink }}" {{- if page.Params.ZoomOut }} class="h6" {{- else -}} class="h4" {{- end -}}>{{ .Title }}
+            <a href="{{ .Permalink }}" {{- if page.Params.ZoomOut }} class="h6" {{- else }} class="h4" {{- end -}}>{{ .Title }}
               {{- if .Params.Variant }}&nbsp;<small>{{ .Params.Variant }}</small>{{ end }}
             </a>
             {{ if .Params.Colour }}
