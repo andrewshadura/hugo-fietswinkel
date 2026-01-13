@@ -18,7 +18,7 @@
   {{- end }}
   {{- if and $productID (or (eq (default false .Params.orderable) true) (gt (int .Params.instock) 0)) }}
   {{- $page := . }}
-  {{- $params := .Params }}
+  {{- $params := partial "utils/get-params" . }}
   {{- $image := partial "utils/get-image" . }}
   {{- $option_colours := partial "utils/get-option-colours" . }}
   {{- $colours := or $option_colours (slice $params.Colour) }}
