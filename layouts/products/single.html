@@ -369,6 +369,14 @@ Stock status: {{ $stock_status }}
         </div>
         {{ end }}
 
+        {{ if .Params.Location }}
+        <div class="my-4 variants-box">
+          <h5>Mesto</h5>
+          <i class="text-success ti-location-pin"></i>
+          <span class="lead">{{ .Params.Location }}</span>
+        </div>
+        {{ end }}
+
         {{ if .Params.Showroom_Sizes }}
         <div class="my-4">
           <i class="text-success ti-check font-weight-boldest"></i>
