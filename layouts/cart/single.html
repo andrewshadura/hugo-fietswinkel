@@ -44,9 +44,10 @@
                 type="number"
                 value="[= item.quantity =]"
                 min="0"
-                max="[= item.instock =]"
+                max="256"
                 onchange="updateQuantity(event)"
                 inputmode="numeric" /><br>
+              <!-- max="[= item.instock =]" -->
               <button
                 class="btn btn-sm btn-outline-primary"
                 data-id="[= item.id =]"
