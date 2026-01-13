@@ -29,10 +29,10 @@
     {{- $images := partial "utils/get-images" . | after 1 }}
 
     {{- $productID := partial "utils/get-product-id" . }}
-
-    {{- if $productID }}
-    {{- $page := . }}
     {{- $params := .Params }}
+
+    {{- if and $productID (or (eq (default false $params.orderable) true) (gt (int $params.instock) 0)) }}
+    {{- $page := . }}
     {{- $option_colours := partial "utils/get-option-colours" . }}
     {{- $colours := or $option_colours (slice $params.Colour) }}
     {{- $args := slice }}
