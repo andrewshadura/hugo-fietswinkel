@@ -1,2 +1,5 @@
-{{ $params := page.Params }}
-{{ return $params }}
+{{- $params := .Params }}
+{{- if $params.Parameter_defaults }}
+{{-   $params = merge (dict "parameters" $params.Parameter_defaults) $params }}
+{{- end }}
+{{- return $params }}
