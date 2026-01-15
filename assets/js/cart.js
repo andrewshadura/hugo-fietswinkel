@@ -158,7 +158,12 @@ var Cart = {
                     subtotal: Cart.currencyFormat.format(Cart.subtotal() / 100),
                     total: Cart.currencyFormat.format(Cart.total() / 100),
                 })
-                .then(html => cart_summary.innerHTML = html)
+                .then(html => {
+                    cart_summary.innerHTML = html
+                    if (window.updateDeliveryPrices) {
+                        window.updateDeliveryPrices()
+                    }
+                })
 
         }
     },

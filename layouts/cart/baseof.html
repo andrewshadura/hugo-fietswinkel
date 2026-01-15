@@ -72,7 +72,11 @@
 
       const optionPriceElement = document.querySelector(`#cart-summary #shipping-${option.value}-price`)
       if (optionPriceElement) {
-        optionPriceElement.innerHTML = Cart.currencyFormat.format(deliveryPrice / 100)
+        const currentPrice = parseInt(optionPriceElement.dataset.price, 10)
+        if (currentPrice !== deliveryPrice) {
+          optionPriceElement.innerHTML = Cart.currencyFormat.format(deliveryPrice / 100)
+          optionPriceElement.dataset.price = deliveryPrice
+        }
       }
 
       return deliveryPrice
