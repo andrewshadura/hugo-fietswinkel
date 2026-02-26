@@ -9,3 +9,19 @@ Lead time:
   other: 'Delivery within {{ .Count }} days'
 Lead time other sizes:
   other: 'Other sizes: delivery within {{ .Count }} days'
+Order paid:
+  other: Paid
+Order confirmed:
+  other: Confirmed
+Order dispatched:
+  other: Dispatched
+Order delivered:
+  other: Delivered
+Order refunded:
+  other: Refunded
+Order cancelled:
+  other: Cancelled
+Order on hold:
+  other: On hold
+Order expired:
+  other: Expired

@@ -252,3 +252,21 @@ Model year:
   other: Modelový rok
 Often bought together:
   other: Odporúčame kúpiť aj
+Order received:
+  other: Objednávka prijatá
+Order paid:
+  other: Zaplatená
+Order confirmed:
+ other: Potvrdená
+Order dispatched:
+  other: Odoslaná
+Order delivered:
+  other: Doručená
+Order refunded:
+  other: Vrátená
+Order cancelled:
+  other: Zrušená
+Order on hold:
+  other: Pozastavená
+Order expired:
+  other: Vypršala
