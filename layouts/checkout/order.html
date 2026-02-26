@@ -1,0 +1,378 @@
+{{ define "main" }}
+
+{{ partial "page-title.html" . }}
+
+<script id="cart-summary-template" type="text/template">
+<h3>{{ with "Order summary" }}{{ i18n . | default . }}{{ end }}</h3>
+<div class="row">
+  [[ if items.length > 0 ]]
+  <div class="table-responsive col-12">
+    <table class="table">
+      <thead>
+          <tr>
+            <th scope="col"> </th>
+            <th scope="col">{{ with "Product" }}{{ i18n . | default . }}{{ end }}</th>
+            <th scope="col" class="text-right">{{ with "Price" }}{{ i18n . | default . }}{{ end }}</th>
+            <th scope="col" class="text-center">{{ with "Quantity" }}{{ i18n . | default . }}{{ end }}</th>
+            <th scope="col" class="text-right">{{ with "Subtotal" }}{{ i18n . | default . }}{{ end }}</th>
+            <th> </th>
+          </tr>
+        </thead>
+        <tbody>
+          [[ for item in items ]]
+          <tr>
+            <td><img class="img-thumbnail" src="[= item.image =]" /> </td>
+            <td>
+              <a href="[= item.url =]">[= item.name =]</a>
+              [[ if item.colour ]]<br>
+              <strong>{{ with "Colour" }}{{ i18n . | default . }}{{ end }}</strong>: [= item.colour_label =]
+              [[ endif ]]
+              [[ if item.size ]]<br>
+              <strong>{{ with "Size" }}{{ i18n . | default . }}{{ end }}</strong>: [= item.size =]
+              [[ endif ]]
+            </td>
+            <td class="text-right">[= item.price =]</td>
+            <td align="center">[= item.quantity =]</td>
+            <td class="text-right">[= item.subtotal =]</td>
+            <td> </td>
+          </tr>
+          [[ endfor ]]
+          <tr class="border-top">
+            <td colspan="4" class="text-right"><strong>{{ with "Subtotal" }}{{ i18n . | default . }}{{ end }}</strong></td>
+            <td class="text-right" id="subtotal_amount">[= subtotal =]</td>
+          </tr>
+          <tr>
+            <td colspan="4" class="text-right align-middle"><strong>{{ with "Shipping" }}{{ i18n . | default . }}{{ end }}</strong></td>
+            <td class="text-right align-middle" id="shipping_price">0</td>
+          </tr>
+          <tr class="d-none" id="discounts-line">
+            <td colspan="4" class="text-right align-middle"><strong>{{ with "Discounts" }}{{ i18n . | default . }}{{ end }}</strong></td>
+            <td class="text-right align-middle" id="discounts">0</td>
+          </tr>
+          <tr>
+            <td colspan="4" class="text-right align-middle"><strong>{{ with "Total" }}{{ i18n . | default . }}{{ end }}</strong></td>
+            <td class="text-right align-middle" id="total_amount">0</td>
+          </tr>
+
+        </tbody>
+    </table>
+  </div>
+  [[ else ]]
+  <div class="col text-center py-5">
+    <h5>{{ with "The cart is empty" }}{{ i18n . | default . }}{{ end }}</h5>
+  </div>
+  [[ endif ]]
+</script>
+<script defer>
+function renderOrderProgress(order) {
+  const tiIcons = {
+    unpaid: "ti-bag",
+    paid: "ti-credit-card",
+    confirmed: "ti-thumb-up",
+    dispatched: "ti-truck",
+    refunded: "ti-back-left",
+    cancelled: "ti-close",
+    expired: "ti-na",
+    completed: "ti-check",
+    on_hold: "ti-timer",
+  }
+
+  const steps =
+    (order.status == "expired")
+      ? [
+          { key: "unpaid", label: {{ with "Order received" }}{{ i18n . | default . }}{{ end }}, icon: "unpaid" },
+          { key: "expired", label: {{ with "Order expired" }}{{ i18n . | default . }}{{ end }}, icon: "expired", tone: "danger" },
+        ]
+    : (order.status == "cancelled")
+      ? [
+          { key: "unpaid", label: {{ with "Order received" }}{{ i18n . | default . }}{{ end }}, icon: "unpaid" },
+          { key: "cancelled", label: {{ with "Order cancelled" }}{{ i18n . | default . }}{{ end }}, icon: "cancelled", tone: "danger" },
+        ]
+    : (order.status == "on_hold")
+      ? [
+          { key: "unpaid", label: {{ with "Order received" }}{{ i18n . | default . }}{{ end }}, icon: "unpaid" },
+          { key: "paid", label: {{ with "Order paid" }}{{ i18n . | default . }}{{ end }}, icon: "paid" },
+          { key: "confirmed", label: {{ with "Order confirmed" }}{{ i18n . | default . }}{{ end }}, icon: "confirmed" },
+          { key: "on_hold", label: {{ with "Order on hold" }}{{ i18n . | default . }}{{ end }}, icon: "on_hold", tone: "danger" },
+          { key: "dispatched", label: {{ with "Order dispatched" }}{{ i18n . | default . }}{{ end }}, icon: "dispatched" },
+          { key: "completed", label: {{ with "Order delivered" }}{{ i18n . | default . }}{{ end }}, icon: "completed" },
+        ]
+    : (order.status == "refunded")
+      ? (order.tracking ? [
+          { key: "unpaid", label: {{ with "Order received" }}{{ i18n . | default . }}{{ end }}, icon: "unpaid" },
+          { key: "paid", label: {{ with "Order paid" }}{{ i18n . | default . }}{{ end }}, icon: "paid" },
+          { key: "confirmed", label: {{ with "Order confirmed" }}{{ i18n . | default . }}{{ end }}, icon: "confirmed" },
+          { key: "dispatched", label: {{ with "Order dispatched" }}{{ i18n . | default . }}{{ end }}, icon: "dispatched" },
+          { key: "completed", label: {{ with "Order delivered" }}{{ i18n . | default . }}{{ end }}, icon: "completed" },
+          { key: "refunded", label: {{ with "Order refunded" }}{{ i18n . | default . }}{{ end }}, icon: "refunded", tone: "danger" },
+        ] : [
+          { key: "unpaid", label: {{ with "Order received" }}{{ i18n . | default . }}{{ end }}, icon: "unpaid" },
+          { key: "paid", label: {{ with "Order paid" }}{{ i18n . | default . }}{{ end }}, icon: "paid" },
+          { key: "confirmed", label: {{ with "Order confirmed" }}{{ i18n . | default . }}{{ end }}, icon: "confirmed" },
+          { key: "cancelled", label: {{ with "Order cancelled" }}{{ i18n . | default . }}{{ end }}, icon: "cancelled", tone: "danger" },
+          { key: "refunded", label: {{ with "Order refunded" }}{{ i18n . | default . }}{{ end }}, icon: "refunded", tone: "danger" },
+        ])
+    : [
+        { key: "unpaid", label: {{ with "Order received" }}{{ i18n . | default . }}{{ end }}, icon: "unpaid" },
+        { key: "paid", label: {{ with "Order paid" }}{{ i18n . | default . }}{{ end }}, icon: "paid" },
+        { key: "confirmed", label: {{ with "Order confirmed" }}{{ i18n . | default . }}{{ end }}, icon: "confirmed" },
+        { key: "dispatched", label: {{ with "Order dispatched" }}{{ i18n . | default . }}{{ end }}, icon: "dispatched" },
+        { key: "completed", label: {{ with "Order delivered" }}{{ i18n . | default . }}{{ end }}, icon: "completed" },
+      ]
+
+  const idx = steps.findIndex((s) => s.key === order.status)
+  if (idx < 0) {
+    throw new Error(`Unknown order_status: ${order.status}`)
+  }
+
+  let html = `<div class="order-steps">`
+  for (let i = 0; i < steps.length; i++) {
+    const s = steps[i]
+    const cls =
+      (i < idx ? "done" : "") +
+      (i === idx ? " active" : "") +
+      (s.tone === "danger" ? " danger" : "")
+
+    html += `
+      <div class="order-step ${cls}">
+        <div class="order-step-icon"><i class="${tiIcons[s.icon]}"></i></div>
+        <div class="order-step-label">${s.label}</div>
+      </div>
+    `
+
+    if (i < steps.length - 1) {
+      const lcls = (i < idx ? "done" : (i === idx - 1 ? "active" : ""))
+      html += `<div class="order-step-line ${lcls}"></div>`
+    }
+  }
+  html += `</div>`
+
+  $("#order-progress").html(html).removeClass("d-none")
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+console.log("foo")
+  const params = new URLSearchParams(window.location.search)
+  const order_id = params.get("id")
+  if (order_id) {
+    const order_key = params.get("key")
+    {{- with (site.Params.CheckoutURL) }}
+    const status_url = `{{ . | safeJS }}\/../order/${order_id}\/status?key=${order_key}`
+    {{- else }}
+    {{ $baseUrl := urls.Parse (site.BaseURL) }}
+    const status_url = `https:\/\/checkout.{{ $baseUrl.Host | safeJS }}\/order\/${order_id}\/status?key=${order_key}`
+    {{- end }}
+    $("#checking").removeClass("d-none")
+    fetch(status_url).then((response) => {
+      if (response.status === 404) {
+        $("#checking").addClass("d-none")
+        $(".payment-failure").removeClass("d-none")
+        $(".payment-failure .description").text("Order not found or link is invalid.")  // if you have a target element
+        return null
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      return response.json()
+    }).then((json) => {
+      console.log(json)
+
+      const order_status = json.status
+      if (order_status === "cancelled" || order_status === "expired" || order_status === "unpaid") {
+        $("#checking").addClass("d-none")
+        $(".payment-failure").removeClass("d-none")
+        return
+      }
+
+      renderOrderProgress(json)
+
+      const template = document.querySelector('#cart-summary-template[type="text/template"]')
+      const engine = new liquidjs.Liquid({
+        outputDelimiterLeft: '[=',
+        outputDelimiterRight: '=]',
+        tagDelimiterLeft: '[[',
+        tagDelimiterRight: ']]',
+      })
+
+      const items = json.items.map((it) => ({
+        name: it.name,
+        quantity: it.quantity,
+        price: Cart.currencyFormat.format(it.price / 100),
+        colour: it.colour,
+        colour_label: it.colour_label,
+        size: it.size,
+        subtotal: Cart.currencyFormat.format(it.subtotal / 100),
+        url: it.url,
+        image: it.image,
+      }))
+
+      const subtotal_fmt = Cart.currencyFormat.format(json.amount_subtotal / 100)
+
+      engine.parseAndRender(template.innerHTML, { items: items, subtotal: subtotal_fmt })
+        .then((html) => {
+          $("#cart-summary").html(html)
+
+          $("#shipping_price").text(Cart.currencyFormat.format(json.amount_shipping / 100))
+          $("#discounts").text(Cart.currencyFormat.format(json.amount_discount / 100))
+          if (json.amount_discount > 0) {
+            $("#discounts-line").removeClass("d-none")
+          }
+          $("#subtotal_amount").text(Cart.currencyFormat.format(json.amount_subtotal / 100))
+          $("#total_amount").text(Cart.currencyFormat.format(json.amount_total / 100))
+
+          $("#checking").addClass("d-none")
+          $(".payment-success, #cart-summary").removeClass("d-none")
+        })
+        .catch((error) => {
+          console.error(error)
+          $("#checking").addClass("d-none")
+          $(".payment-failure").removeClass("d-none")
+        })
+
+    }).catch((error) => console.error(error))
+  }
+})
+</script>
+<style>
+  .order-steps {
+    --icon-size: 42px;
+    --icon-center: calc(var(--icon-size) / 2);
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+
+  .order-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 96px;
+  }
+
+  .order-step-icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    border-radius: 9999px;
+    border: 2px solid #ced4da;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+
+    position: relative;
+    z-index: 2; /* keep icon above the line */
+  }
+
+  .order-step-icon i {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .order-step-label {
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  .order-step-line {
+    flex: 1;
+    height: 2px;
+    background: #ced4da;
+
+    /* put the line through the vertical centre of the icon */
+    margin-top: var(--icon-center);
+
+    /* extend into icons so it connects icon centres */
+    margin-left: calc(var(--icon-center) * -1);
+    margin-right: calc(var(--icon-center) * -1);
+
+    min-width: 40px;
+
+    position: relative;
+    z-index: 1;
+  }
+
+  .order-step.done .order-step-icon {
+    border-color: #198754;
+    background: #198754;
+  }
+  .order-step.done .order-step-icon i,
+  .order-step.active .order-step-icon i {
+    color: #fff;
+  }
+
+  .order-step.active .order-step-icon {
+    border-color: #198754;
+    background: #198754;
+  }
+
+  .order-step.danger .order-step-icon {
+    border-color: #dc3545;
+    background: #dc3545;
+  }
+  .order-step.danger .order-step-icon i {
+    color: #fff;
+  }
+
+  .order-step-line.done {
+    background: #198754;
+  }
+  .order-step-line.active {
+    background: #0d6efd;
+  }
+</style>
+
+<section class="section pt-0">
+  <div class="container" id="order-status">
+    <div class="row">
+      <div class="col d-flex justify-content-center">
+          <div id="order-progress" class="my-2 p-2 d-none w-100"></div>
+          <div class="payment-failure card my-2 p-2 d-none">
+            <div class="card-body row">
+              <div class="icon mx-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#dc3545" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                </svg>
+              </div>
+              <h4 class="description p-1">
+                {{ with "The payment has been cancelled." }}{{ i18n . | default . }}{{ end }}
+              </h4>
+            </div>
+          </div>
+          <div id="checking" class="my-2 p-2 d-none">
+            <div class="spinner-border spinner-border-sm mx-1" role="status">
+              <span class="sr-only">{{ with "Loading..." }}{{ i18n . | default . }}{{ end }}</span>
+            </div>
+            {{ with "Checking the status of your order" }}{{ i18n . | default . }}{{ end }}
+          </div>
+      </div>
+    </div>
+  </div>
+  <div class="container d-none" id="cart-summary">
+  </div>
+  <div class="container">
+    <div class="row payment-success payment-failure d-none">
+      <div class="col mb-2">
+          <div class="row">
+              <div class="col-sm-12 col-md-6">
+                  <button class="btn btn-lg btn-block btn-light payment-success d-none" onclick="history.back();">{{ with "Continue shopping" }}{{ i18n . | default . }}{{ end }}</button>
+              </div>
+              <div class="col-sm-12 col-md-6 text-right payment-failure d-none">
+                  <a href="{{ "cart/" | absURL }}"
+                          class="btn btn-lg btn-block btn-success text-uppercase">{{ with "Back to cart" }}{{ i18n . | default . }}{{ end }}</a>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
+{{ end }}
