@@ -86,7 +86,7 @@ Available sizes:
 Lead time:
   other: 'Na objednávku do {{ .Count }} dní'
 Lead time weeks:
-  other: 'Na objednávku do {{ .Count }} týždňov'
+  other: 'Na objednávku do {{ .Count }} týdnů'
 Lead time other sizes:
   other: 'Jiné velikosti: na objednávku do {{ .Count }} dní'
 Other sizes:
