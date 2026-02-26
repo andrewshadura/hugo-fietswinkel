@@ -1,0 +1,254 @@
+Product:
+  other: Výrobek
+Price:
+  other: Cena
+Quantity:
+  other: Množství
+Subtotal:
+  other: Medzisúčet
+Total:
+  other: Celkem
+Discounts:
+  other: Slevy
+Checking the status of your order:
+  other: Kontrolujeme stav vaší objednávky
+Your order has been placed.:
+  other: Vaše objednávka byla přijata.
+The payment has been cancelled.:
+  other: Platba byla zrušena.
+Back to cart:
+  other: Zobrazit košík
+Delete:
+  other: Odstranit
+Continue shopping:
+  other: Zpět do obchodu
+Proceed to checkout:
+  other: Přejít k pokladně
+The cart is empty:
+  other: Košík je prázdný
+Add to cart:
+  other: Vložit do košíku
+Order summary:
+  other: Souhrn objednávky
+Free:
+  other: Zdarma
+Collect in person:
+  other: Osobní odběr
+Packeta:
+  other: Zásilkovna
+Choose delivery:
+  other: Vyberte způsob doručení
+Shipping:
+  other: Doprava
+Request to order:
+  other: Objednat
+Select collection point:
+  other: Vyberte pobočku
+Contact us:
+  other: Napište nám
+Ask Your Question:
+  other: Zeptejte se nás
+Your Name:
+  other: Vaše jméno
+Your Email:
+  other: Emailová adresa
+Message:
+  other: Zpráva
+Your Message:
+  other: Vaše zpráva
+Send Now:
+  other: Odeslat
+Contact:
+  other: Kontakt
+Connect with us:
+  other: Kontakt
+Description:
+  other: Popis
+Reviews:
+  other: Recenze
+This category is currently empty, but we’re working hard to prepare it for you!:
+  other: Kategorie se právě připravuje.
+Products List:
+  other: V naší nabídce
+In showroom:
+  other: Na prodejně
+Out of stock:
+  other: Vyprodáno
+Check availability:
+  other: Zeptat se
+Available in:
+  other: K dispozici od {{ . }}
+Available in (other sizes):
+  other: 'Jiné velikosti: {{ . }}'
+Available sizes: 
+  one: 'Nyní k dispozici: velikost {{ .Sizes }}'
+  other: 'Nyní k dispozici: velikosti {{ .Sizes }}'
+Lead time:
+  other: 'Na objednávku do {{ .Count }} dní'
+Lead time weeks:
+  other: 'Na objednávku do {{ .Count }} týždňov'
+Lead time other sizes:
+  other: 'Jiné velikosti: na objednávku do {{ .Count }} dní'
+Other sizes:
+  other: Jiné velikosti
+White:
+  other: Bílá
+Yellow:
+  other: Žlutá
+Brown:
+  other: Hnědá
+Black:
+  other: Černá
+Red:
+  other: Červená
+Green:
+  other: Zelená
+Grey:
+  other: Šedá
+Orange:
+  other: Oranžová
+Blue:
+  other: Modrá
+Pink:
+  other: Růžová
+Dark brown:
+  other: Tmavě hnědá
+More colours available:
+  one: 'Ještě jedna barva k dispozici'
+  few: 'Další {{ .Count }} barvy k dispozici'
+  other: 'Dalších {{ .Count }} barev k dispozici'
+Read more:
+  other: Číst více
+Colour:
+  other: Barva
+Colours:
+  one: Barva
+  other: Barvy
+Sizes:
+  one: Velikost
+  other: Velikosti
+Variants:
+  one: Varianta
+  other: Varianty
+Products List:
+  other: V naší nabídce
+See more products:
+  other: Zobrazit celou nabídku
+Book a test:
+  other: Mám zájem
+Book a test (title):
+  other: Zeptat se na zboží
+Book a test (description):
+  other: Máte zájem o tento výrobek a chtěli byste si ho vyzkoušet? Kontaktujte nás pomocí formuláře
+request-order-description-text:
+  other: Tento výrobek momentálně nemáme skladem, ale na požádání ho můžeme objednat u našeho dodavatele. Pro objednání nás prosím kontaktujte pomocí formuláře
+Name:
+  other: Jméno
+Additional notes:
+  other: Vaše otázka
+Close:
+  other: Zavřít
+Send:
+  other: Odeslat
+Specifications:
+  other: Parametry
+Maximum load:
+  other: Maximální nosnost
+Weight:
+  other: Hmotnost
+Width:
+  other: Šířka
+Height:
+  other: Výška
+Size:
+  other: Velikost
+Variant:
+  other: Varianta
+Manufacturer:
+  other: Výrobce
+Product ID:
+  other: Kód výrobku
+Ean:
+  other: EAN
+Frame material:
+  other: Materiál rámu
+Frame type:
+  other: Typ rámu
+Wheel size:
+  other: Velikost kol
+Front light:
+  other: Přední světlo
+Rear light:
+  other: Zadní světlo
+Lock:
+  other: Zámek
+Front fork:
+  other: Přední vidlice
+Kickstand:
+  other: Stojánek
+Saddle:
+  other: Sedlo
+Handles:
+  other: Rukojeti
+Material:
+  other: Materiál
+Front carrier:
+  other: Přední nosič
+Rear carrier:
+  other: Zadní nosič
+Steering lock:
+  other: Zámek řízení
+Gears:
+  other: Převody
+Bell:
+  other: Zvonek
+Front brake:
+  other: Přední brzdy
+Rear brake:
+  other: Zadní brzdy
+Disc brake:
+  other: Kotoučové brzdy
+Hub dynamo:
+  other: Dynamo náboj
+Drivetrain:
+  other: Pohon
+Tyres:
+  other: Pneumatiky
+Power supply:
+  other: Zdroj energie
+Solar energy:
+  other: Solární energie
+Mudguard:
+  other: Blatník
+Mounting:
+  other: Montáž
+Battery:
+  other: Baterie
+Charger:
+  other: Nabíječka
+Sale price applies to showroom stock only:
+  other: Sleva platí pouze pro velikosti dostupné v obchodě
+Low stock:
+  other: Zbývá málo kusů
+No longer available:
+  other: Prodej ukončen
+Out of stock:
+  other: Vyprodáno
+On request:
+  other: Na objednávku
+"List badge: In showroom":
+  other: Skladem
+Depth:
+  other: Hloubka
+Volume:
+  other: Objem
+Length:
+  other: Délka
+Accu type:
+  other: Typ baterie
+Gear hub:
+  other: Nábojová převodovka
+Model year:
+  other: Modelový rok
+Often bought together:
+  other: Doporučujeme také zakoupit
