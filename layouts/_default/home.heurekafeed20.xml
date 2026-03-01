@@ -212,7 +212,7 @@
           {{-     end }}
           {{-   else }}
           {{-     range $kkk, $vvv := $v }}
-          {{-       if $vvv }}}
+          {{-       if $vvv }}
           <PARAM>
             <PARAM_NAME>{{ $kkk }}</PARAM_NAME>
             <VAL>
