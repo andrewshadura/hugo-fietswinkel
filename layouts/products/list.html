@@ -116,7 +116,7 @@
               {{- if .Params.Variant }}&nbsp;<small>{{ .Params.Variant }}</small>{{ end }}
             </a>
             {{ if .Params.Colour }}
-            <p class="m-0">{{ partial "utils/get-colour-name" .Params.Colour }}</p>
+            <p class="m-0">{{ with partial "utils/get-colour-name" .Params.Colour }}{{ i18n . | default . }}{{ end }}</p>
             {{ else }}
             {{ $colour_swatch := .Params.Colour_Swatch }}
             {{ range .Params.Options }}
@@ -134,7 +134,7 @@
                 {{ else }}
                   {{ printf "background: %s" $rgb | printf "style=%q" | safeHTMLAttr }}
                 {{ end }}
-                {{ printf "title=%q" $name | safeHTMLAttr }}
+                {{ printf "title=%q" (i18n $name | default $name) | safeHTMLAttr }}
                 ></span>
               {{- end }}
               {{- if gt (len .colours) 3 }}

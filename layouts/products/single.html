@@ -165,7 +165,7 @@ const stock_per_id = {{ $stock_per_id }}
           {{- if .Params.Variant }}&nbsp;<small class="p-variant-name" data-toggle="tooltip" title="{{ .Params.Variant_Description }}">{{ .Params.Variant }}</small>{{ end }}
         </h4>
         {{ if .Params.Colour }}
-        <p itemprop="color">{{ partial "utils/get-colour-name" .Params.Colour }}</p>
+        <p itemprop="color">{{ with partial "utils/get-colour-name" .Params.Colour }}{{ i18n . | default . }}{{ end }}</p>
         {{ end }}
         <!-- rating star -->
         {{ if site.Params.rating.enable }}
@@ -243,8 +243,8 @@ const stock_per_id = {{ $stock_per_id }}
               data-colour-sku-arg="{{ $sku_arg }}"
               {{- end }}
               {{ printf "background: %s" $rgb | printf "style=%q" | safeHTMLAttr }}
-              {{ printf "title=%q" $name | safeHTMLAttr }}
-               ><span class="sr-only">{{ $name }}</span></a>
+              {{ printf "title=%q" (i18n $name | default $name) | safeHTMLAttr }}
+               ><span class="sr-only">{{ i18n $name | default $name }}</span></a>
             {{ end }}
             {{ end }}
             {{ end }}
