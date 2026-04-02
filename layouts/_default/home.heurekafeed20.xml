@@ -87,6 +87,9 @@
       {{-   $product = or $product (index $sku_list $item_id) }}
       {{- end }}
       <SHOPITEM>
+          {{- if ne (substr $item_id 0 36) $item_id -}}
+          {{- warnf "SKU %s too long for Heureka, truncating" $item_id -}}
+          {{- end -}}
           <ITEM_ID>{{ substr $item_id 0 36 }}</ITEM_ID>
           <PRODUCTNAME>{{- if strings.Contains $full_name "{" -}}
             {{- $final_full_name := $full_name -}}
