@@ -1,7 +1,14 @@
 {{ $image := "" }}
 {{ $page := . }}
 {{ if $page.Params.Image }}
-  {{ $image = $page.Params.Image | absURL }}
+  {{ $res := $page.Resources.GetMatch $page.Params.Image }}
+  {{ if $res }}
+    {{ $res = $res.Resize "520x q83" }}
+    {{ $res = $res.Crop "520x360 Center" }}
+    {{ $image = $res.Permalink }}
+  {{ else }}
+    {{ $image = $page.Params.Image | absURL }}
+  {{ end }}
 {{ else }}
   {{ $imageResource := slice }}
   {{ $images := partial "utils/get-images" $page }}
