@@ -111,54 +111,57 @@ $(window).on('load', function () {
     return matching_images
   }
 
+  let originalSlideImages = null
+
   function updateSliderImages(images) {
     const $slider = $('.product-slider')
-    const currentSlideCount = $slider.find('.slick-track .slick-slide:not(.slick-cloned)').length
 
-    if (images.length === 0) {
-      // No images provided, restore original images
-      for (let i = 0; i < currentSlideCount; i++) {
-        const orig_image = $slider.find(`.slick-track .slick-slide:not(.slick-cloned):nth-child(${i + 1})`).data("image")
-        if (orig_image) {
-          $slider.find(`.slick-track .slick-slide:nth-child(${i + 1})`).attr("data-remote", orig_image)
-          $slider.find(`.slick-track .slick-slide:nth-child(${i + 1}) > img`).attr("src", orig_image)
-          $slider.find(`ul.slick-dots li:nth-child(${i + 1}) > img`).attr("src", orig_image)
-        }
-      }
-      return
+    // Capture the original slide images once, before any colour-switching modifies the slider
+    if (originalSlideImages === null) {
+      originalSlideImages = []
+      $slider.find('.slick-track .slick-slide:not(.slick-cloned)').each(function() {
+        originalSlideImages.push($(this).data('image'))
+      })
     }
 
-    // Update existing slides with new images (using direct DOM manipulation like original)
-    for (let i = 0; i < Math.min(images.length, currentSlideCount); i++) {
-      const image = images[i]
+    const origCount = originalSlideImages.length
+    const curCount = $slider.find('.slick-track .slick-slide:not(.slick-cloned)').length
+
+    // First N slots: colour images. Remaining slots: originals.
+    // When colour has more images than origCount, extra slides are added.
+    const targetImages = images.length <= origCount
+      ? [...images, ...originalSlideImages.slice(images.length)]
+      : images
+    const targetCount = targetImages.length
+
+    // Update existing slides
+    for (let i = 0; i < Math.min(targetCount, curCount); i++) {
+      const image = targetImages[i]
       $slider.find(`.slick-track .slick-slide:nth-child(${i + 1})`).attr("data-remote", image)
       $slider.find(`.slick-track .slick-slide:nth-child(${i + 1}) > img`).attr("src", image)
       $slider.find(`ul.slick-dots li:nth-child(${i + 1}) > img`).attr("src", image)
     }
 
-    // If we have more images than slides, add new slides using Slick API
-    if (images.length > currentSlideCount) {
-      for (let i = currentSlideCount; i < images.length; i++) {
-        const image = images[i]
+    // Add extra slides when the colour has more images than the original slide count
+    if (targetCount > curCount) {
+      for (let i = curCount; i < targetCount; i++) {
+        const image = targetImages[i]
         const slideHtml = `<div data-image="${image}" data-remote="${image}"><img class="img-fluid w-100" src="${image}" alt="product-image"></div>`
         $slider.slick('slickAdd', slideHtml)
       }
-    }
-
-    // If we have fewer images than slides, remove extra slides using Slick API
-    if (images.length < currentSlideCount) {
-      for (let i = currentSlideCount - 1; i >= images.length; i--) {
-        $slider.slick('slickRemove', i)
-      }
-    }
-
-    // After adding/removing, update the slick-track for all slides to ensure consistency
-    if (images.length !== currentSlideCount) {
-      for (let i = 0; i < images.length; i++) {
-        const image = images[i]
+      // Slick renumbers slides after slickAdd, so sync all positions again
+      for (let i = 0; i < targetCount; i++) {
+        const image = targetImages[i]
         $slider.find(`.slick-track .slick-slide:nth-child(${i + 1})`).attr("data-remote", image)
         $slider.find(`.slick-track .slick-slide:nth-child(${i + 1}) > img`).attr("src", image)
         $slider.find(`ul.slick-dots li:nth-child(${i + 1}) > img`).attr("src", image)
+      }
+    }
+
+    // Remove slides added by a previous colour selection that aren't needed now
+    if (targetCount < curCount) {
+      for (let i = curCount - 1; i >= targetCount; i--) {
+        $slider.slick('slickRemove', i)
       }
     }
   }
