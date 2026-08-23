@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ site.LanguageCode | default "en" }}">
+<html lang="{{ .Language.Lang | default site.LanguageCode | default "en" }}" prefix="og: https://ogp.me/ns#">
   {{- partial "head.html" . -}}
   <body class="fullscreen-background">
     {{- partial "preloader.html" . -}}
