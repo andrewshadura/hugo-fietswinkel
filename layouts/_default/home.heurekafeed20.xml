@@ -52,7 +52,7 @@
       {{- if $colour_sku }}
       {{-   $item_id = $colour_sku }}
       {{- end }}
-      {{- $item_id = replace $item_id "{size}" (anchorize $size_id) }}
+      {{- $item_id = replace $item_id "{size}" $size_id }}
       {{- $item_id = replace $item_id "{colour}" $colour_sku_arg }}
       {{- $item_ctx := merge $params.Parameters (dict
         "colour" (default $colour (i18n $colour))

@@ -6,6 +6,6 @@
 {{-   $sku_part = $sku }}
 {{- end }}
 {{- if not $sku }}
-{{-   $sku_part = $name }}
+{{-   $sku_part = (anchorize $name) }}
 {{- end }}
 {{- return $sku_part }}
