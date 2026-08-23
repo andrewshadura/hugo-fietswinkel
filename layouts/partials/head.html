@@ -8,7 +8,7 @@
     content="{{ if .Description }}{{ .Description }}{{ else if .Summary }}{{ .Summary }}{{ else if site.Params.Description }}{{ site.Params.Description }}{{ end }}">
   {{ with site.Params.author }}<meta name="author" content="{{ . }}">{{ end }}
   {{ hugo.Generator }}
-  {{- partial "components/opengraph" . }}
+  {{ partial "components/opengraph" . }}
   
   <!-- theme meta -->
   <meta name="theme-name" content="hugo-fietsenwinkel" />
@@ -27,7 +27,7 @@
   <link rel="icon" href="{{ `images/favicon.png` | absURL }} " type="image/x-icon">
 
   {{- range .AlternativeOutputFormats }}
-  {{- printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
+  {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
   {{- end }}
 
   {{- range $image := page.Resources.Match "colours/**"}}
