@@ -341,9 +341,7 @@ $(window).on('load', function () {
       let scratch = {}
       const name = this.dataset.name || this.name
       scratch[name] = Object.assign({}, this.dataset)
-      if (this.dataset.price) {
-        scratch[name].price = (parseFloat(this.dataset.price) * 100) | 0
-      }
+      scratch[name].price = (parseFloat(this.dataset.price) * 100) | 0
       if (this.dataset.includes) {
         scratch[name].includes = JSON.parse(this.dataset.includes)
       }
@@ -358,9 +356,7 @@ $(window).on('load', function () {
       const name = option.dataset.name || option.name
       scratch[name] ||= {}
       scratch[name][option.value] = Object.assign({}, option.dataset)
-      if (option.dataset.price) {
-        scratch[name][option.value].price = (parseFloat(option.dataset.price) * 100) | 0
-      }
+      scratch[name][option.value].price = (parseFloat(option.dataset.price) * 100) | 0
       if (option.dataset.includes) {
         scratch[name][option.value].includes = JSON.parse(option.dataset.includes)
       }
