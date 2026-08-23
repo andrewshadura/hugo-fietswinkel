@@ -332,6 +332,7 @@ const stock_per_id = {{ $stock_per_id }}
             <option
               data-image="{{ partial "utils/resize-image" .image }}"
               data-name="{{ $k }}"
+              data-name-label="{{ i18n (humanize $k) | default (humanize $k) }}"
               data-price="{{ .price }}"
               {{- if .description }}
               title="{{ i18n .description | default .description }}"

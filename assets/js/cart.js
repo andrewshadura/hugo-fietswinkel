@@ -102,6 +102,40 @@ var Cart = {
         return Object.keys(Cart.get()).length == 0
     },
 
+    humanizeOptionName: function(name) {
+        return name
+            .replace(/[_-]+/g, ' ')
+            .trim()
+            .split(' ')
+            .filter(Boolean)
+            .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(' ')
+    },
+
+    // Return the {label: value} map of non-colour/size options selected for
+    // a stored cart item. Prefers the untouched label map captured at
+    // add-to-cart time (see `data-item-selected-options` in script.js)
+    // Fall back to reconstructing the map from `option_<mangled key>`
+    // fields for items already sitting in a customer's cart from before
+    // that map existed, run through humanizeOptionName() as a best-effort
+    // cleanup since those keys arrive lowercase with word boundaries already gone.
+    itemOptions: function(item) {
+        try {
+            const selected = JSON.parse(item.selectedoptions)
+            if (selected && typeof selected === "object") {
+                return selected
+            }
+        } catch { /* not present, or not valid JSON — fall through */ }
+
+        return Object.fromEntries(
+            Object.entries(item)
+                .filter(x => x[0].startsWith("option_"))
+                .map(x => [x[0].replace("option_", ""), x[1]])
+                .filter(x => x[0] != "size")
+                .map(x => [Cart.humanizeOptionName(x[0]), x[1]])
+        )
+    },
+
     render: function() {
         const cart = Cart.get()
 
@@ -143,12 +177,7 @@ var Cart = {
                 colour: item.item.colour ? item.item.colour : null,
                 colour_label: item.item.colour_label,
                 size: item.item.size ? item.item.size : null,
-                options: Object.fromEntries(
-                    Object.entries(item.item)
-                        .filter(x => x[0].startsWith("option_"))
-                        .map(x => [x[0].replace("option_", ""), x[1]])
-                        .filter(x => x[0] != "size")
-                ),
+                options: Cart.itemOptions(item.item),
             }))
 
             return engine

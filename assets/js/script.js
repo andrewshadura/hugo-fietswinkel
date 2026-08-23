@@ -298,7 +298,8 @@ $(window).on('load', function () {
   function collectOptions() {
     return $(".product-option :selected, .product-option :checked").map(function() {
       let scratch = {}
-      scratch[this.dataset.name || this.name] = this.value
+      // data-name-label is the same display label the variants-box heading uses
+      scratch[this.dataset.nameLabel || this.dataset.name || this.name] = this.value
       return scratch
     }).get().reduce((total, x) => Object.assign(total, x), {})
   }

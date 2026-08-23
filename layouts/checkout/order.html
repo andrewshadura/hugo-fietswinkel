@@ -30,6 +30,9 @@
               [[ if item.size ]]<br>
               <strong>{{ with "Size" }}{{ i18n . | default . }}{{ end }}</strong>: [= item.size =]
               [[ endif ]]
+              [[ for pair in item.options ]]<br>
+              <strong>[= pair[0] =]</strong>: [= pair[1] =]
+              [[ endfor ]]
             </td>
             <td class="text-right">[= item.price =]</td>
             <td align="center">[= item.quantity =]</td>
@@ -152,7 +155,6 @@ function renderOrderProgress(order) {
 
 
 document.addEventListener("DOMContentLoaded", function() {
-console.log("foo")
   const params = new URLSearchParams(window.location.search)
   const order_id = params.get("id")
   if (order_id) {
@@ -206,6 +208,7 @@ console.log("foo")
         subtotal: Cart.currencyFormat.format(it.subtotal / 100),
         url: it.url,
         image: it.image,
+        options: it.options || it.selected_options || {},
       }))
 
       const subtotal_fmt = Cart.currencyFormat.format(json.amount_subtotal / 100)
