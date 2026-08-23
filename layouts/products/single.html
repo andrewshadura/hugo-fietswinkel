@@ -171,6 +171,7 @@ const stock_per_id = {{ $stock_per_id }}
         {{ if site.Params.rating.enable }}
         <div class="rw-ui-container"></div>
         {{ end }}
+        {{ if .Params.Price }}
         <div class="my-4" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
           {{ if .Params.PriceBefore }}
           <s>{{ partial "utils/format-currency.html" .Params.PriceBefore }}</s>
@@ -205,6 +206,7 @@ const stock_per_id = {{ $stock_per_id }}
             {{- end }}
           {{ end }}
         </div>
+        {{ end }}
         {{ if .Params.Colour }}
         <div class="my-4 variants-box">
           {{- $seen_colours := slice }}
