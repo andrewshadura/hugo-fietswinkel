@@ -30,8 +30,21 @@
           {{ end }}
         </ul>
       </div>
-      {{ $page := . }}
-      {{ with $languages := $.Site.Languages }}
+      {{- $page := . }}
+      {{- $languages := newScratch }}
+      {{- $home := site.GetPage "/" -}}
+      {{- range (append $home.Translations (slice $home)) -}}
+      {{- $lang  := .Language.Lang -}}
+      {{- $ov    := index (where (default (slice) site.Menus.languages) "Identifier" $lang) 0 -}}
+      {{- $trans := index (where $page.Translations "Lang" $lang) 0 -}}
+      {{- $languages.Set $lang (dict
+          "Lang" $lang
+          "Name" (or (and $ov $ov.Name) .Language.LanguageName)
+          "Weight" (default 9223372036854775807 .Language.Weight)
+          "URL" (or .Language.Params.externalURL (and $ov $ov.URL) (and $trans $trans.Permalink) (and (eq $lang $page.Language.Lang) $page.Permalink) .Permalink)
+          ) -}}
+      {{- end -}}
+      {{ with sort $languages.Values "Weight" "asc" }}
       <div class="collapse navbar-collapse text-center" id="navigation">
         <ul class="navbar-nav mx-auto">
           <li class="nav-item dropdown">
@@ -39,10 +52,10 @@
               <i class="ti-world"></i>
             </a>
             <div class="dropdown-menu">
-              {{ range $i, $e := $languages }}
-              {{ if $e.LanguageName }}
-              <a class="dropdown-item" href="{{ relref $page (dict "path" "/" "lang" $e.Lang) }}">{{ $e.LanguageName }}</a>
-              {{ end }}
+              {{ range . }}
+              {{   if .Name }}
+              <a class="dropdown-item" href="{{ .URL }}">{{ i18n .Name | default .Name }}</a>
+              {{   end }}
               {{ end }}
             </div>
           </li>
