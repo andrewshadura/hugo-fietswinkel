@@ -261,6 +261,12 @@ $(window).on('load', function () {
       const urlized = i.replaceAll(" ", "-")
       $button.attr(`data-item-option_${urlized}`, options[i])
     }
+    // The per-key attributes above lose their original label (browsers
+    // ASCII-lowercase attribute names and the dataset accessor merges
+    // hyphens), so also carry the untouched {label: value} map through as
+    // one JSON blob for display purposes. Deliberately not named
+    // "option_..." so it can't be mistaken for one of the options above.
+    $button.attr("data-item-selected-options", JSON.stringify(options))
     if (e && colour) {
       window.history.replaceState(null, "", `${window.location.pathname}?colour=${colour}`)
     }
