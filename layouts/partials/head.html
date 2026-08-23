@@ -4,7 +4,8 @@
 
   {{ "<!-- Mobile Responsive Meta -->" | safeHTML }}
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ with site.Params.description }}{{ . }}{{ end }}{{ end }}">
+  <meta name="description"
+    content="{{ if .Description }}{{ .Description }}{{ else if .Summary }}{{ .Summary }}{{ else if site.Params.Description }}{{ site.Params.Description }}{{ end }}">
   {{ with site.Params.author }}<meta name="author" content="{{ . }}">{{ end }}
   {{ hugo.Generator }}
   {{- partial "components/opengraph" . }}
