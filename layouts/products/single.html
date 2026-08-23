@@ -330,7 +330,7 @@ const stock_per_id = {{ $stock_per_id }}
             <option
               data-image="{{ partial "utils/resize-image" .image }}"
               data-name="{{ $k }}"
-              data-price="{{ .price | int }}"
+              data-price="{{ .price }}"
               {{- if .description }}
               title="{{ i18n .description | default .description }}"
               {{- end }}
