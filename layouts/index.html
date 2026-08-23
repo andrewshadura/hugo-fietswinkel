@@ -129,6 +129,40 @@
 <!-- advantage -->
 {{ if $data.advantage.enable }}
 {{ with $data.advantage }}
+{{- $rich := false }}
+{{- with index .advantageList 0 }}
+{{- if .text }}
+{{- $rich = true }}
+{{- end }}
+{{- end }}
+{{ if $rich }}
+<section class="section pb-0 advantages">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-12">
+        <h2 class="text-center">{{ .title | markdownify }}</h2>
+        <p class="mb-4 text-center">{{ .subtitle | markdownify }}</p>
+        {{ range $index, $item := .advantageList }}
+        {{ $even := eq (mod $index 2) 0 }}
+        <div class="row justify-content-between align-items-center">
+          <div class="col-lg-4 col-md-6 {{ if $even -}} order-lg-first {{- else -}} order-lg-last {{ end }}">
+            {{- if $item.image }}
+            <img src="{{ $item.image }}" class="rounded-circle img-fluid">
+            {{- end }}
+          </div>
+          <div class="col-lg-8 col-md-6">
+            {{- if $item.title }}
+            <h2>{{ $item.title | markdownify }}</h2>
+            {{- end }}
+            <p>{{ $item.text | markdownify }}</p>
+          </div>
+        </div>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</section>
+{{ else }}
 <section class="section pb-0">
   <div class="container">
     <div class="row align-items-center">
@@ -147,6 +181,7 @@
     </div>
   </div>
 </section>
+{{ end }}
 {{ end }}
 {{ end }}
 <!-- /advantage -->
