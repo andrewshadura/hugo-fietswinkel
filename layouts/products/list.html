@@ -8,6 +8,36 @@
 {{- end }}
 {{- $truncated := and .Truncated (not .Params.DontTruncate) }}
 
+{{- with .Params.groups }}
+<style>
+.group-heading {
+  display: flex;
+  align-items: center;
+  /*
+  font-variant: small-caps;
+  text-transform: lowercase;
+  */
+  text-transform: uppercase;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  margin: 1.5rem 0 1rem;
+}
+.group-heading::before,
+.group-heading::after {
+  content: "";
+  border-bottom: 1px solid rgba(0,0,0,.1);
+}
+.group-heading::before {
+  flex: 0.03;
+  margin-right: 0.75em;
+}
+.group-heading::after {
+  flex: 0.9;
+  margin-left: 0.75em;
+}
+</style>
+{{- end }}
+
 <section class="section pt-0">
   <div class="container">
     {{ if .PlainWords }}
@@ -69,15 +99,67 @@
       {{- end }}
       {{- end }}
       {{- $pages = append $pages_other $pages_first }}
-      {{- range $pages }}
-      {{- partial "product-card-list.html" (dict "page" . "section" page) }}
-      {{ else }}
+      {{- $groups := default slice .Params.groups }}
+      {{- $allSlugs := slice }}
+      {{- range $groups }}
+      {{-   if reflect.IsMap . }}
+      {{-     range $k, $v := . }}
+      {{-       $allSlugs = $allSlugs | append $k }}
+      {{-     end }}
+      {{-   else }}
+      {{-     $allSlugs = $allSlugs | append . }}
+      {{-   end }}
+      {{- end }}
+      {{- $section := page }}
+      {{- range $groups }}
+      {{-   $slug := "" }}
+      {{-   $label := "" }}
+      {{-   if reflect.IsMap . }}
+      {{-     range $k, $v := . }}
+      {{-       $slug = $k }}
+      {{-       $label = $v }}
+      {{-     end }}
+      {{-   else }}
+      {{-     $slug = . }}
+      {{-     $label = i18n . | default . }}
+      {{-   end }}
+      {{-   $grouped := where $pages ".Params.group" $slug }}
+      {{-   if $grouped }}
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <h3 class="group-heading">{{ $label }}</h3>
+      </div>
+    </div>
+    <div class="row">
+      {{-   range $grouped }}
+      {{-     partial "product-card-list.html" (dict "page" . "section" $section) }}
+      {{-   end }}
+      {{-   end }}
+      {{- end }}
+      {{- $ungrouped := $pages }}
+      {{- if $groups }}
+      {{-   $ungrouped = where $pages ".Params.group" "eq" nil }}
+      {{- end }}
+      {{- if and $groups $ungrouped }}
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <hr>
+      </div>
+    </div>
+    <div class="row">
+      {{- end }}
+      {{- range $ungrouped }}
+      {{- partial "product-card-list.html" (dict "page" . "section" $section) }}
+      {{- end }}
+      {{- if not $pages }}
       <div class="col">
         <div class="card border-0 text-center font-weight-bold">
       {{ with "This category is currently empty, but we’re working hard to prepare it for you!" }}{{ i18n . | default . }}{{ end }}
         </div>
       </div>
-      {{ end }}
+      {{- end }}
       {{ if .Params.Footer }}
     </div>
     <div class="row">
