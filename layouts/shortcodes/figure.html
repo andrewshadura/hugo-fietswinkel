@@ -3,7 +3,9 @@
 {{- if not (hasPrefix $image "/") }}
 {{- $i := page.Resources.GetMatch $image }}
 {{- if $i }}
+{{- if not (.Get "noresize") }}
 {{- $i = $i.Resize (printf "%dx q93" (.Get "width" | default $defwidth | int | mul 1.5 | int)) }}
+{{- end }}
 {{- $image = $i.Permalink }}
 {{- end }}
 {{- end }}
