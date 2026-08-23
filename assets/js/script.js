@@ -222,7 +222,10 @@ $(window).on('load', function () {
       $(".p-variant-name").text(variant)
     }
 
-    // Get all images for the selected color
+    // Get all images for the selected color, or (when the product has no
+    // colour swatches at all) for a plain option's own sku, paired with
+    // its image-prefix: same colours/ folder, same numbered-suffix
+    // lookup, just keyed by the option's sku instead of a colour id
     const selectedColours = $(".color-button.product-option:checked")
     if (selectedColours.length && typeof colour_images !== 'undefined') {
       const colour_id = selectedColours[0].id.replace("colour-", "")
@@ -234,6 +237,19 @@ $(window).on('load', function () {
         if (found_images.length > 0) {
           images = found_images
           break
+        }
+      }
+    } else if (typeof colour_images !== 'undefined') {
+      const option_sku = getSelectedOptionSku()
+      if (option_sku) {
+        const image_prefixes = getSelectedOptionImagePrefixes()
+
+        for (const prefix of image_prefixes.concat([''])) {
+          const found_images = getImagesForColour(option_sku, prefix)
+          if (found_images.length > 0) {
+            images = found_images
+            break
+          }
         }
       }
     }
@@ -287,6 +303,22 @@ $(window).on('load', function () {
 
   function getSelectedColourSku() {
     return ($(".color-button.product-option:checked, a.color-button.active").attr("data-colour-sku") || "")
+  }
+
+  // A plain (non-colour) option can carry its own sku id, identifying a
+  // genuinely distinct part rather than just a price modifier on the base
+  // product. Unlike colour, this is a single value per page: only one
+  // plain option group is expected to set it.
+  function getSelectedOptionSku() {
+    return $(".product-option-select :selected").map(function() {
+      return this.dataset.sku
+    }).get().filter((x) => x)[0] || ""
+  }
+
+  function getSelectedOptionImagePrefixes() {
+    return $(".product-option-select :selected").map(function() {
+      return this.dataset.imagePrefix
+    }).get().filter((x) => x)
   }
 
   function collectOptionArgs(arg) {
@@ -378,6 +410,11 @@ $(window).on('load', function () {
       if (colour_sku) {
         new_sku = colour_sku
       }
+      // A plain option's own sku is more specific than the colour, so it wins if both are set.
+      const option_sku = getSelectedOptionSku()
+      if (option_sku) {
+        new_sku = option_sku
+      }
       if (selected_size) {
         new_sku = new_sku.replace("{size}", selected_size.dataset.sizeId)
         $("#cart-primary-button").attr("data-item-size", selected_size.dataset.size)
@@ -431,7 +468,8 @@ $(window).on('load', function () {
       if (value) {
         const selectedOption = $(`#${urlized}-select [value="${value}"],
             #${urlized}-select [data-variant="${value}"],
-            #${urlized}-select [data-option-id="${value}"]
+            #${urlized}-select [data-option-id="${value}"],
+            #${urlized}-select [data-sku="${value}"]
 `)
         if (selectedOption.length) {
           selectedOption[0].selected = true
