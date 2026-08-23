@@ -21,6 +21,9 @@
           <li class="mb-3"><i class="ti-location-pin text-primary mr-2"></i>{{ site.Params.location }}
           </li>
         </ul>
+        {{- with site.Data.contact.contact.office.extra }}
+        <p>{{ . | markdownify }}</p>
+        {{- end }}
       </div>
       <div class="col-lg-3 offset-lg-1 col-sm-6">
         {{ with site.Data.contact.contact.openingHours }}
