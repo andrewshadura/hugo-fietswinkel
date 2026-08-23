@@ -230,6 +230,9 @@
 
 <!-- testimonial -->
 {{ if $data.testimonial.enable }}
+{{ $rating_map := dict "1" "one" "2" "two" "3" "three" "4" "four" "5" "five" }}
+{{ $rating_inv_map := dict "one" "1" "two" "2" "three" "3" "four" "4" "five" "5" }}
+
 {{ with $data.testimonial }}
 <section class="section">
   <div class="container">
@@ -239,30 +242,40 @@
       </div>
     </div>
     <div class="row testimonial-slider">
-      {{ range .testimonialItem }}
-      <div class="col-4">
+      {{- range .testimonialItem }}
+      <div class="col" itemscope itemtype="https://schema.org/Review">
         <div class="card border-primary text-center">
           <div class="card-body">
             {{- if .image }}
-            <img src="{{ .image | absURL }}" class="client-img" alt="{{ .name | markdownify }}"
+            <img src="{{ .image | absURL }}" class="client-img" alt="{{ .name | markdownify }}" itemprop="image"
                  data-image="{{ .image | absURL }}"
                  data-remote="{{ .image | absURL }}"
+                 data-title="{{ with "Review from" }}{{ i18n . | default . }}{{ end }} {{ .name | markdownify }}"
+                 data-footer="{{ .content | markdownify }}"
                  data-toggle="lightbox" data-gallery="review-images">
             {{- end }}
-            <p class="quoted">{{ .content | markdownify }}</p>
-            <h6 class="font-weight-medium">{{ .name | markdownify }}</h6>
+            <p class="quoted" itemprop="reviewBody">{{ .content | markdownify }}</p>
+            {{- if .link }}
+            <link itemprop="sameAs" href="{{ .link }}">
+            <h6 class="font-weight-medium" itemprop="author" itemscope itemtype="https://schema.org/Person"><a href="{{ .link }}"><span itemprop="name">{{ .name | markdownify }}</span></a></h6>
+            {{- else }}
+            <h6 class="font-weight-medium" itemprop="author" itemscope itemtype="https://schema.org/Person">{{ .name | markdownify }}</h6>
+            {{- end }}
+            {{- if .designation }}
             <small>{{ .designation | markdownify }}</small>
-            <ul class="list-inline rating {{ .rating | lower }} mt-3">
+            {{- end }}
+            <ul class="list-inline rating {{ index $rating_map .rating | default .rating | lower }} mt-3" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
               <li class="list-inline-item mx-0"><i class="ti-star"></i></li>
               <li class="list-inline-item mx-0"><i class="ti-star"></i></li>
               <li class="list-inline-item mx-0"><i class="ti-star"></i></li>
               <li class="list-inline-item mx-0"><i class="ti-star"></i></li>
               <li class="list-inline-item mx-0"><i class="ti-star"></i></li>
+              <meta itemprop="ratingValue" content="{{ index $rating_inv_map .rating | default .rating }}">
             </ul>
           </div>
         </div>
       </div>
-      {{ end }}
+      {{- end }}
     </div>
   </div>
 </section>
