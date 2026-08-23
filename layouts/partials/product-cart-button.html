@@ -1,0 +1,118 @@
+{{- $page := .page -}}
+{{- $availability := .availability -}}
+{{- $stock_found := $availability.stock_found -}}
+{{- $can_add_to_cart := default true $availability.can_add_to_cart -}}
+{{- $can_request_order := default false $availability.can_request_order -}}
+
+{{- $params := partial "utils/get-params" $page -}}
+{{- $image := partial "utils/get-image" $page -}}
+
+{{- $shipping_weight := "" -}}
+{{- with $page.Params.Shipping_Weight -}}
+  {{- $w := partial "utils/parse-weight.html" . -}}
+  {{- with $w.grams -}}
+    {{- $shipping_weight = printf "%v" . -}}
+  {{- end -}}
+{{- else -}}
+  {{- if $page.Params.Parameters -}}
+    {{- with $page.Params.Parameters.Weight -}}
+      {{- $w := partial "utils/parse-weight.html" . -}}
+      {{- with $w.grams -}}
+        {{- $shipping_weight = printf "%v" . -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $min_shipping_weight := "" -}}
+{{- with $page.Params.Min_Shipping_Weight -}}
+  {{- $w := partial "utils/parse-weight.html" . -}}
+  {{- with $w.grams -}}
+    {{- $min_shipping_weight = printf "%v" . -}}
+  {{- end -}}
+{{- end -}}
+
+<button
+  id="cart-primary-button"
+  {{ if eq (default false $params.instoreonly) true }}
+  class="btn btn-primary"
+  {{   if or (gt (int $params.instock) 0) }}
+  data-toggle="modal" data-target="#modal-book-test"
+  {{   else }}
+  {{   if $can_request_order }}
+  class="btn btn-primary"
+  data-toggle="modal" data-target="#modal-request-order"
+  {{   end }}
+  {{   end }}
+  {{ else }}
+  {{   if $can_request_order }}
+  class="btn btn-primary"
+  data-toggle="modal" data-target="#modal-request-order"
+  {{   else }}
+  {{     if $can_add_to_cart }}
+  class="cart-add-item btn btn-primary"
+  {{     else }}
+  class="btn btn-primary"
+  {{     end }}
+  {{   end }}
+  {{ end }}
+  data-item-id="{{ partial "utils/get-default-product-id" $page }}"
+  {{- if $page.Params.Colour }}
+  {{ $name := partial "utils/get-colour-name" $page.Params.Colour }}
+  data-item-colour="{{ $name | anchorize }}"
+  data-item-colour_label="{{ i18n $name | default $name }}"
+  {{- else }}
+  data-item-colour=""
+  {{- end }}
+  {{- if $page.Params.Size }}
+  data-item-size="{{ partial "utils/get-size-name" $page.Params.Size }}"
+  data-item-size-id="{{ partial "utils/get-size-product-id-arg" $page.Params.Size }}"
+  {{- else if $page.Params.Sizes }}
+  data-item-size="{{ partial "utils/get-size-name" (index $page.Params.Sizes 0) }}"
+  data-item-size-id="{{ partial "utils/get-size-product-id-arg" (index $page.Params.Sizes 0) }}"
+  {{- else }}
+  data-item-size=""
+  data-item-size-id=""
+  {{- end }}
+  {{- if $page.Params.EAN }}
+  data-item-ean="{{ $page.Params.EAN }}"
+  {{- end }}
+  {{- if $shipping_weight }}
+  data-item-shipping-weight="{{ $shipping_weight }}"
+  {{- end }}
+  {{- if $min_shipping_weight }}
+  data-item-min-shipping-weight="{{ $min_shipping_weight }}"
+  {{- end }}
+  data-item-instock="{{ int $params.instock }}"
+  data-item-name="{{ $page.Title }}" data-item-image="{{ $image }}"
+  data-item-price="{{ $page.Params.Price }}" data-item-url="{{ $page.Permalink }}" data-item-description="{{ $page.Params.ShortDescription | default $page.Description | markdownify }}">
+  {{ if $stock_found }}
+    {{ if $can_add_to_cart }}
+      {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}
+    {{ else }}
+      {{ if $can_request_order }}
+        {{ with "Request to order" }}{{ i18n . | default . }}{{ end }}
+      {{ else }}
+        {{ with "Out of stock" }}{{ i18n . | default . }}{{ end }}
+      {{ end }}
+    {{ end }}
+  {{ else }}
+    {{ if eq (int $params.instock) 0 }}
+      {{ if eq (default false $params.orderable) true }}
+        {{ with "Request to order" }}{{ i18n . | default . }}{{ end }}
+      {{ else }}
+        {{ if $params.Available_In }}
+          {{ with "Check availability" }}{{ i18n . | default . }}{{ end }}
+        {{ else }}
+          {{ with "Out of stock" }}{{ i18n . | default . }}{{ end }}
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      {{ if or (eq (default false $params.instoreonly) true) site.Params.disableCart }}
+        {{ with "Book a test" }}{{ i18n . | default . }}{{ end }}
+      {{ else }}
+        {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+</button>
