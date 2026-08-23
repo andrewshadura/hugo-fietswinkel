@@ -131,6 +131,17 @@
     document.addEventListener("DOMContentLoaded", updateDeliveryPrices())
 
     function performCheckout() {
+      const checkboxContainer = document.getElementById('cart-checkout-checkboxes')
+      if (checkboxContainer) {
+        const requiredBoxes = checkboxContainer.querySelectorAll('.required-checkbox')
+        for (const box of requiredBoxes) {
+          if (!box.reportValidity()) {
+            box.scrollIntoView({behavior: 'smooth', block: 'center'})
+            return
+          }
+        }
+      }
+
       const cart = Cart.get()
 
       const line_items = Object.values(cart).map(item => ({
@@ -176,6 +187,15 @@
       deliveryPriceInput.name = 'delivery_price'
       deliveryPriceInput.value = Cart.deliveryPrice
       form.appendChild(deliveryPriceInput)
+
+      if (checkboxContainer) {
+        checkboxContainer.querySelectorAll('input[type="checkbox"]').forEach(box => {
+          const fieldInput = document.createElement('input')
+          fieldInput.name = 'checkbox_' + box.id.replace('checkout-cb-', '')
+          fieldInput.value = box.checked
+          form.appendChild(fieldInput)
+        })
+      }
 
       document.body.appendChild(form)
       form.submit()

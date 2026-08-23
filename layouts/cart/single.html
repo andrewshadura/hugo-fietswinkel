@@ -150,6 +150,37 @@
 </div>
 <div class="row">
   <div class="col mb-2">
+      [[ if items.length > 0 ]]
+      {{ with site.Params.checkout_checkboxes }}
+      <div id="cart-checkout-checkboxes" class="mb-3">
+        {{ range . }}
+        {{- if eq .type "notice" }}
+        <div class="checkout-notice pb-3">
+          {{- .label | markdownify -}}
+          {{- with .details }}<div class="checkout-checkbox-details">{{ . | markdownify }}</div>{{- end }}
+          {{- with .fine_print }}<small class="form-text text-muted">{{ . | markdownify }}</small>{{- end }}
+        </div>
+        {{- else }}
+        <div class="form-check{{ if .required }} checkout-checkbox-required{{ end }}">
+          <input class="form-check-input{{ if .required }} required-checkbox{{ end }}"
+                 type="checkbox" id="checkout-cb-{{ .id }}"
+                 {{- if .default_checked }} checked{{- end }}
+                 {{- if .required }} required{{- end }}>
+          <label class="form-check-label" for="checkout-cb-{{ .id }}">
+            {{- .label | markdownify -}}
+          </label>
+          {{- with .details }}
+          <div class="checkout-checkbox-details">{{ . | markdownify }}</div>
+          {{- end }}
+          {{- with .fine_print }}
+          <small class="form-text text-muted">{{ . | markdownify }}</small>
+          {{- end }}
+        </div>
+        {{- end }}
+        {{ end }}
+      </div>
+      {{ end }}
+      [[ endif ]]
       <div class="row">
           <div class="col-sm-12 col-md-6">
               <button class="btn btn-lg btn-block btn-light" onclick="history.back();">{{ with "Continue shopping" }}{{ i18n . | default . }}{{ end }}</button>
