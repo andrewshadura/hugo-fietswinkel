@@ -113,7 +113,7 @@
                     {{ partial (printf "shipping-%s-button.html" .name) . }}
                     {{ end }}
                   </div>
-                    <div class="col-3 text-right" id="{{- printf "shipping-%s-price" .name -}}" data-price="{{- .price -}}}">
+                    <div class="col-3 text-right" id="{{- printf "shipping-%s-price" .name -}}" data-price="{{- .price -}}">
                     {{ if .price }}
                     {{ .price | lang.FormatCurrency 2 (site.Params.currency) }}
                     {{ else }}
