@@ -4,28 +4,50 @@
 
 {{ with $data.carousel }}
 {{ if .enable }}
-<section class="section-sm">
-  <div class="container">
-    <div id="carouselIndicators" class="carousel slide" data-ride="carousel">
+    {{- $images := .images -}}
+    {{- if and .image_sets .active_set -}}
+      {{- $images = index .image_sets .active_set -}}
+    {{- end -}}
+    <div id="homeCarousel" class="carousel slide img-cover" data-interval="7000" data-ride="carousel" data-pause="false">
       <ol class="carousel-indicators">
-        {{ range $i, $v := .items }}
-        <li data-target="#carouselIndicators" data-slide-to="{{ $i }}"{{ if (eq $i 0) }} class="active"{{ end }}></li>
+        {{ range $i, $v := $images }}
+        <li data-target="#homeCarousel" data-slide-to="{{ $i }}"{{ if (eq $i 0) }} class="active"{{ end }}></li>
         {{ end }}
       </ol>
+      <div class="carousel-caption d-block">
+        <h1><span>{{ .title | markdownify }}</span></h1>
+        <p class="lead"><span>{{ .subtitle | markdownify }}</span></p>
+        {{- if .link }}
+        <a href="{{ .link | safeURL }}" class="btn btn-light btn-lg mr-3">{{ .label }}</a>
+        {{- end }}
+        {{ range $v := .buttons }}
+          <a href="{{ $v.link | safeURL }}" class="btn btn-outline-light btn-lg mr-3">{{ $v.label }}</a>
+        {{ end }}
+      </div>
       <div class="carousel-inner">
-        {{ range $i, $v := .items }}
+        {{ range $i, $v := $images }}
         <div class="carousel-item{{ if (eq $i 0) }} active{{ end }}">
-          <img class="d-block w-100" src="{{ $v.image }}" alt="{{ $v.title | markdownify }}">
-          <div class="carousel-caption d-none d-md-block">
-            <h5>{{ $v.title | markdownify }}</h5>
-            <p>{{ $v.content | markdownify }}</p>
+          {{ $image := resources.Get $v.image }}
+          {{ $unused := $image.RelPermalink }}
+          {{ $image := $image.Resize "1200x Lanczos" }}
+          {{ $colors := $image.Colors }}
+          {{ if $v.attribution }}
+          <div class="attribution">
+            <small>{{ with "Photo credit" }}{{ i18n . | default . }}{{ end }}: {{ $v.attribution }}</small>
+            {{ range $c := $colors -}}
+            <span {{ printf "color: %s; background-color: %s; width: 10px; height: 10px; display: inline-block;" $c $c | printf "style=%q" | safeHTMLAttr }}></span>
+            {{- end }}
           </div>
+          {{ end }}
+          <img class="d-block img-cover" src="{{ $image.RelPermalink }}" alt="{{ $v.title | markdownify }}"
+          {{ if $v.filter }}
+          {{ $v.filter | printf "filter: %s" | printf "style=%q" | safeHTMLAttr }}
+          {{ end }}
+          >
         </div>
         {{ end }}
       </div>
     </div>
-  </div>
-</section>
 {{ end }}
 {{ end }}
 
