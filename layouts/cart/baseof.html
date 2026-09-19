@@ -63,11 +63,26 @@
         tiers = Array.isArray(weightPrices[countryCode]) ? weightPrices[countryCode] : []
       }
 
+      const fixedWeight = parseFloat(option.dataset.deliveryFixedWeight)
+      const fixedWeightGrams = Number.isFinite(fixedWeight) ? fixedWeight : 0
+
       if (tiers.length > 0) {
-        const calculatedPrice = Cart.calculateDeliveryPrice(tiers)
+        const calculatedPrice = Cart.calculateDeliveryPrice(tiers, fixedWeightGrams)
         if (typeof calculatedPrice === "number" && !Number.isNaN(calculatedPrice)) {
           deliveryPrice = calculatedPrice
         }
+      }
+
+      const maxPackageWeight = parseFloat(option.dataset.deliveryMaxPackageWeight)
+      let eligible = true
+      if (Number.isFinite(maxPackageWeight)) {
+        const totalWeight = Cart.calculateTotalWeight(fixedWeightGrams)
+        eligible = totalWeight <= maxPackageWeight
+      }
+      option.disabled = !eligible
+      const rowElement = document.querySelector(`#cart-summary #shipping-${option.value}-row`)
+      if (rowElement) {
+        rowElement.style.display = eligible ? "" : "none"
       }
 
       const optionPriceElement = document.querySelector(`#cart-summary #shipping-${option.value}-price`)
@@ -88,6 +103,8 @@
         return
       }
 
+      const previousDeliveryType = Cart.deliveryType
+
       const deliveryPrice = updateDeliveryPrice(selectedOption)
       if (typeof deliveryPrice === "number" && !Number.isNaN(deliveryPrice)) {
         Cart.deliveryPrice = deliveryPrice
@@ -107,6 +124,15 @@
         if (detailsRequired == "true") {
           const detailsElement = document.querySelector(`#cart-summary .cart-delivery-details[name=${selectedOption.value}-delivery-details]`)
           if (detailsElement) {
+            // The shipping fieldset gets fully re-rendered on every cart mutation, wiping this
+            // hidden input back to empty even though Cart.deliveryDetails (a plain JS object)
+            // survives. If the details we already have genuinely belong to this same option
+            // (same delivery type as before this re-render), restore them instead of forcing
+            // the customer to re-pick.
+            if (detailsElement.value == "" && previousDeliveryType === selectedOption.value &&
+                Cart.deliveryDetails && Object.keys(Cart.deliveryDetails).length > 0) {
+              detailsElement.value = JSON.stringify(Cart.deliveryDetails)
+            }
             checkoutButton.disabled = detailsElement.value == ""
           }
         } else {
@@ -125,6 +151,19 @@
     function updateDeliveryPrices() {
       const deliveryOptions = document.querySelectorAll("#cart-summary input[name=delivery]")
       deliveryOptions.forEach(option => updateDeliveryPrice(option))
+
+      // If the currently-selected option just became ineligible (e.g. a heavy item was added
+      // while an envelope-style, weight-capped option was selected), fall back to the first
+      // still-eligible option in config order instead of leaving a disabled, hidden option
+      // checked.
+      const checkedOption = document.querySelector("#cart-summary input[name=delivery]:checked")
+      if (!checkedOption || checkedOption.disabled) {
+        const fallback = Array.from(deliveryOptions).find(option => !option.disabled)
+        if (fallback) {
+          fallback.checked = true
+        }
+      }
+
       recalculateSelectedDelivery()
     }
 

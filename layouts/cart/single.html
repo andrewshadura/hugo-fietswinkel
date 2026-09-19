@@ -66,7 +66,7 @@
               <fieldset>
                 <legend>{{ with "Choose delivery" }}{{ i18n . | default . }}{{ end }}</legend>
                 {{ range $i, $e := site.Params.shipping }}
-                <div class="row" style="text-wrap: balance">
+                <div class="row" style="text-wrap: balance" id="{{- printf "shipping-%s-row" .name -}}">
                   <div class="col-9">
                     {{- $maxPackageWeight := "" -}}
                     {{- with .max_package_weight -}}
@@ -75,11 +75,21 @@
                         {{- $maxPackageWeight = . -}}
                       {{- end -}}
                     {{- end -}}
+                    {{- $fixedWeight := "" -}}
+                    {{- with .packaging_weight -}}
+                      {{- $w := partial "utils/parse-weight.html" . -}}
+                      {{- with $w.grams -}}
+                        {{- $fixedWeight = . -}}
+                      {{- end -}}
+                    {{- end -}}
                     <input type="radio" id="{{- printf "shipping-%s-option" .name -}}" name="delivery"
                            data-delivery-price="{{ .price }}"
                            data-delivery-countries="{{ with .countries }}{{ delimit . "," }}{{ end }}"
                            {{- if $maxPackageWeight }}
                            data-delivery-max-package-weight="{{ $maxPackageWeight }}"
+                           {{- end }}
+                           {{- if $fixedWeight }}
+                           data-delivery-fixed-weight="{{ $fixedWeight }}"
                            {{- end }}
                            {{- $weight_prices := dict -}}
                            {{- with .weight_prices -}}

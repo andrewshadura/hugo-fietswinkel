@@ -65,10 +65,10 @@ var Cart = {
     total: function() {
         return Cart.subtotal() + Cart.deliveryPrice
     },
-    calculateDeliveryPrice: function(tiers) {
+    calculateTotalWeight: function(fixedWeight = 0) {
         const cart = Cart.get()
         let minTotalWeight = 0
-        let totalWeight = Object.values(cart).reduce((sum, entry) => {
+        let itemWeight = Object.values(cart).reduce((sum, entry) => {
             const item = entry.item || {}
             const minWeight = parseFloat(item.minshippingweight)
             const weight = parseFloat(item.shippingweight)
@@ -80,7 +80,12 @@ var Cart = {
             }
             return sum
         }, 0)
-        totalWeight = Math.max(totalWeight, minTotalWeight)
+        itemWeight = Math.max(itemWeight, minTotalWeight)
+        const fixed = parseFloat(fixedWeight)
+        return itemWeight + (Number.isFinite(fixed) ? fixed : 0)
+    },
+    calculateDeliveryPrice: function(tiers, fixedWeight = 0) {
+        const totalWeight = Cart.calculateTotalWeight(fixedWeight)
 
         const selectedTier = tiers.find(tier => {
             const maxWeight = parseFloat(tier.max_weight)
