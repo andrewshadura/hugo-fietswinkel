@@ -65,13 +65,13 @@
 
 {{ "<!-- Cart handling -->" | safeHTML }}
 {{ range (slice "js/liquidjs/liquid.browser.umd.js" "js/cart.js") }}
-{{ $script := resources.Get . | minify}}
-<script src="{{ $script.Permalink }}"></script>
+{{ $script := resources.Get . | minify }}
+<script src="{{ $script.Permalink }}?h={{ md5 $script.Content }}"></script>
 {{ end }}
 
 {{ "<!-- Main Script -->" | safeHTML }}
-{{ $script := resources.Get "js/script.js" | minify}}
-<script src="{{ $script.Permalink }}"></script>
+{{ $script := resources.Get "js/script.js" | minify }}
+<script src="{{ $script.Permalink }}?h={{ md5 $script.Content }}"></script>
 
 {{ with site.Params.googleAnalyticsID }}
 {{ "<!-- Google Analytics -->" | safeHTML }}
