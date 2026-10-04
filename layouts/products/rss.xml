@@ -43,6 +43,7 @@
 
     {{- $sizes := or $params.Sizes (slice $params.Size) }}
     {{- $full_name := partial "utils/get-product-full-name" . }}
+    {{- $variants := partial "utils/get-option-variants" . }}
 
     {{- range $size := $sizes }}
     {{- range $colour := $colours }}
@@ -101,35 +102,60 @@
       {{-     $item_id = printf "%s-%s" $item_id (anchorize $size_name) }}
       {{-   end }}
       {{- end }}
+      {{- range $variant := (or $variants (slice dict)) }}
+      {{- $v_item_id := $item_id }}
+      {{- $v_args := $args }}
+      {{- $v_image := $image }}
+      {{- $v_name := "" }}
+      {{- $v_price := $params.Price }}
+      {{- $v_price_before := $params.PriceBefore }}
+      {{- if $variant }}
+      {{-   if $variant.sku }}
+      {{-     $v_item_id = $variant.sku }}
+      {{-   end }}
+      {{-   $v_args = $v_args | append (replace $variant.group " " "-") (or $variant.sku $variant.label) }}
+      {{-   $v_name = i18n $variant.label | default $variant.label }}
+      {{-   if ne $variant.price 0. }}
+      {{-     $v_price = printf "%.2f" (add (float $params.Price) $variant.price) }}
+      {{-     with $params.PriceBefore }}
+      {{-       $v_price_before = printf "%.2f" (add (float .) $variant.price) }}
+      {{-     end }}
+      {{-   end }}
+      {{-   with $variant.image }}
+      {{-     with $page.Resources.GetMatch . }}
+      {{-       $v_image = .Permalink }}
+      {{-     end }}
+      {{-   end }}
+      {{- end }}
       {{- $product := dict }}
       {{- range $sku_list := $sku_lists }}
-      {{-   $product = or $product (index $sku_list $item_id) }}
+      {{-   $product = or $product (index $sku_list $v_item_id) }}
       {{- end }}
     <item>
       <g:title>{{- if strings.Contains $full_name "{" -}}
         {{- $final_full_name := $full_name -}}
         {{- $final_full_name = partialCached "utils/format" (dict "s" $final_full_name "params" $item_ctx) $final_full_name $item_ctx -}}
-        {{- trim $final_full_name " " -}}
+        {{- trim $final_full_name " " -}}{{ with $v_name }} {{ . }}{{ end }}
       {{- else -}}
-        {{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}
+        {{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}{{ with $v_name }} {{ . }}{{ end }}
       {{- end -}}</g:title>
-      <g:id>{{ $item_id }}</g:id>
-      <g:link>{{ $page.Permalink | absURL }}{{ if $args }}?{{ end }}{{ querify $args }}</g:link>
+      <g:id>{{ $v_item_id }}</g:id>
+      <g:link>{{ $page.Permalink | absURL }}{{ if $v_args }}?{{ end }}{{ querify $v_args }}</g:link>
       {{- if $params.Group_ID }}
       <g:item_group_id>{{ $params.Group_ID }}</g:item_group_id>
-      {{- else if or $colour $size_name }}
+      {{- else if or $colour $size_name $variant }}
       <g:item_group_id>{{ replace (substr (string $defaultProductID) 0 36) "." "-" | anchorize }}</g:item_group_id>
       {{- end }}
       {{- if $product }}
       <g:gtin>{{ $product.ean }}</g:gtin>
-      {{- else }}
+      {{- else if not $variant.sku }}
       {{-   if $params.EAN }}
       <g:gtin>{{ $params.EAN }}{{ $colour_suffix }}</g:gtin>
       {{-   end }}
       {{- end }}
       {{- if $product }}
       <g:mpn>{{ $product.oem_id }}</g:mpn>
-      {{- else }}
+      {{- else if not $variant.sku }}
       {{-   if $params.MPN }}
       <g:mpn>{{ $params.MPN }}{{ $colour_suffix }}</g:mpn>
       {{-   else }}
@@ -155,21 +181,21 @@
       {{- if $params.Manufacturer }}
       <g:brand>{{ $params.Manufacturer }}</g:brand>
       {{- end }}
-      <g:image_link>{{ $image }}</g:image_link>
+      <g:image_link>{{ $v_image }}</g:image_link>
       {{- range $images }}
       <g:additional_image_link>{{ .Permalink }}</g:additional_image_link>
       {{- end }}
       {{- if $params.PriceBefore }}
-      <g:price>{{ $params.PriceBefore }} {{ site.Params.currency }}</g:price>
+      <g:price>{{ $v_price_before }} {{ site.Params.currency }}</g:price>
       {{- if and $params.Showroom_Sale_only $size }}
       {{- if or (in $params.Showroom_Sizes $size_name) (in $params.Showroom_Sizes (int $size_name)) }}
-      <g:sale_price>{{ $params.Price }} {{ site.Params.currency }}</g:sale_price>
+      <g:sale_price>{{ $v_price }} {{ site.Params.currency }}</g:sale_price>
       {{- end }}
       {{- else }}
-      <g:sale_price>{{ $params.Price }} {{ site.Params.currency }}</g:sale_price>
+      <g:sale_price>{{ $v_price }} {{ site.Params.currency }}</g:sale_price>
       {{- end }}
       {{- else }}
-      <g:price>{{ $params.Price }} {{ site.Params.currency }}</g:price>
+      <g:price>{{ $v_price }} {{ site.Params.currency }}</g:price>
       {{- end }}
       {{- if $params.Shipping_Weight }}
       <g:shipping_weight>{{ $params.Shipping_Weight }}</g:shipping_weight>
@@ -201,9 +227,10 @@
       {{- if $page.Date }}
       <pubDate>{{ $page.Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
       {{- end }}
-      <guid>{{ $page.Permalink | absURL }}{{ if $args }}?{{ end }}{{ querify $args }}</guid>
+      <guid>{{ $page.Permalink | absURL }}{{ if $v_args }}?{{ end }}{{ querify $v_args }}</guid>
       <g:description>{{ $page.Summary | html }}</g:description>
     </item>
+    {{- end }}
     {{- end }}
     {{- end }}
     {{- end }}

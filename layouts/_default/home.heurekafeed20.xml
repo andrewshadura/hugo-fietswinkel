@@ -27,6 +27,7 @@
   {{- $colour_sku_arg := "" }}
   {{- $sizes := or $params.Sizes (slice $params.Size) }}
   {{- $full_name := partial "utils/get-product-full-name" . }}
+  {{- $variants := partial "utils/get-option-variants" . }}
 
     {{- range $size := $sizes }}
       {{- range $colour := $colours }}
@@ -82,30 +83,51 @@
       {{-     $item_id = printf "%s-%s" $item_id (anchorize $size_name) }}
       {{-   end }}
       {{- end }}
+      {{- range $variant := (or $variants (slice dict)) }}
+      {{- $v_item_id := $item_id }}
+      {{- $v_args := $args }}
+      {{- $v_image := $image }}
+      {{- $v_name := "" }}
+      {{- $v_price := $params.Price }}
+      {{- if $variant }}
+      {{-   if $variant.sku }}
+      {{-     $v_item_id = $variant.sku }}
+      {{-   end }}
+      {{-   $v_args = $v_args | append (replace $variant.group " " "-") (or $variant.sku $variant.label) }}
+      {{-   $v_name = i18n $variant.label | default $variant.label }}
+      {{-   if ne $variant.price 0. }}
+      {{-     $v_price = printf "%.2f" (add (float $params.Price) $variant.price) }}
+      {{-   end }}
+      {{-   with $variant.image }}
+      {{-     with $page.Resources.GetMatch . }}
+      {{-       $v_image = .Permalink }}
+      {{-     end }}
+      {{-   end }}
+      {{- end }}
       {{- $product := dict }}
       {{- range $sku_list := $sku_lists }}
-      {{-   $product = or $product (index $sku_list $item_id) }}
+      {{-   $product = or $product (index $sku_list $v_item_id) }}
       {{- end }}
       <SHOPITEM>
-          {{- if ne (substr $item_id 0 36) $item_id -}}
-          {{- warnf "SKU %s too long for Heureka, truncating" $item_id -}}
+          {{- if ne (substr $v_item_id 0 36) $v_item_id -}}
+          {{- warnf "SKU %s too long for Heureka, truncating" $v_item_id -}}
           {{- end -}}
-          <ITEM_ID>{{ substr $item_id 0 36 }}</ITEM_ID>
+          <ITEM_ID>{{ substr $v_item_id 0 36 }}</ITEM_ID>
           <PRODUCTNAME>{{- if strings.Contains $full_name "{" -}}
             {{- $final_full_name := $full_name -}}
 
           {{- $final_full_name = partialCached "utils/format" (dict "s" $final_full_name "params" $item_ctx) $final_full_name $item_ctx -}}
-          {{- trim $final_full_name " " -}}
+          {{- trim $final_full_name " " -}}{{ with $v_name }} {{ . }}{{ end }}
           {{- else -}}
-            {{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}
+            {{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}{{ with $v_name }} {{ . }}{{ end }}
           {{- end -}}
           </PRODUCTNAME>
           <PRODUCT>{{- if strings.Contains $full_name "{" -}}
             {{- $final_full_name := $full_name -}}
           {{- $final_full_name = partialCached "utils/format" (dict "s" $final_full_name "params" $item_ctx) $final_full_name $item_ctx -}}
-          {{- trim $final_full_name " " -}}
+          {{- trim $final_full_name " " -}}{{ with $v_name }} {{ . }}{{ end }}
           {{- else -}}
-            {{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}
+            {{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}{{ with $v_name }} {{ . }}{{ end }}
           {{- end -}}
           </PRODUCT>
           <DESCRIPTION>
@@ -124,14 +146,14 @@
               ) "\r" "&#xD;"
               | safeHTML}}
           </DESCRIPTION>
-          <URL>{{ $page.Permalink | absURL }}{{ if $args }}?{{ end }}{{ querify $args }}</URL>
-          <IMGURL>{{ $image }}</IMGURL>
+          <URL>{{ $page.Permalink | absURL }}{{ if $v_args }}?{{ end }}{{ querify $v_args }}</URL>
+          <IMGURL>{{ $v_image }}</IMGURL>
           {{- if $second_image }}
           <IMGURL_ALTERNATIVE>{{ $second_image.Permalink }}</IMGURL_ALTERNATIVE>
           {{- end }}
           {{- if $product }}
           <EAN>{{ $product.ean }}</EAN>
-          {{- else }}
+          {{- else if not $variant.sku }}
           {{-   if $params.EAN }}
           <EAN>{{ $params.EAN }}</EAN>
           {{-   end }}
@@ -168,10 +190,10 @@
           </PARAM>
           {{-   end }}
           {{- end }}
-          <PRICE_VAT>{{ $params.Price }}</PRICE_VAT>
+          <PRICE_VAT>{{ $v_price }}</PRICE_VAT>
           {{- if $params.Group_ID }}
           <ITEMGROUP_ID>{{ replace (substr (string $params.Group_ID) 0 36) "." "-" | anchorize }}</ITEMGROUP_ID>
-          {{- else if or $colour $size_name }}
+          {{- else if or $colour $size_name $variant }}
           <ITEMGROUP_ID>{{ replace (substr (string $defaultProductID) 0 36) "." "-" | anchorize }}</ITEMGROUP_ID>
           {{- end }}
           {{- if $params.Heurekacategory }}
@@ -227,6 +249,7 @@
           {{-   end }}
           {{- end }}
       </SHOPITEM>
+      {{- end }}
       {{- end }}
     {{- end }}
   {{- end }}

@@ -1,0 +1,39 @@
+{{- /*
+  Variants of a product page that come from a plain (non-colour) option
+  group whose options carry their own `sku:`, e.g. the indicator chain
+  types on a single page. Each one is a distinct part with its own supplier
+  data, so the feeds list it as a separate item.
+
+  Returns a slice of dicts (group, label, sku, price, image), one per option
+  of the first such group, in page order; an option without `sku:` stands
+  for the page's own productID. Returns an empty slice when no option group
+  has per-option SKUs (the page is a single item).
+
+  Only one group is considered, matching getSelectedOptionSku() in
+  assets/js/script.js.
+*/ -}}
+{{- $variants := slice }}
+{{- range .Params.Options }}
+{{-   range $group, $opts := . }}
+{{-     if and (ne $group "colours") (reflect.IsSlice $opts) (not $variants) }}
+{{-       $has_sku := false }}
+{{-       range $opts }}
+{{-         if and (reflect.IsMap .) .sku }}
+{{-           $has_sku = true }}
+{{-         end }}
+{{-       end }}
+{{-       if $has_sku }}
+{{-         range $opts }}
+{{-           $variants = $variants | append (dict
+                "group" $group
+                "label" (string .label)
+                "sku" (string (default "" .sku))
+                "price" (float (default 0 .price))
+                "image" (string (default "" .image))
+              ) }}
+{{-         end }}
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}
+{{- return $variants -}}
