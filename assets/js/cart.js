@@ -101,7 +101,7 @@ var Cart = {
             return null
         }
 
-        return Math.floor(price * 100)
+        return Math.round(price * 100)
     },
     empty: function() {
         return Object.keys(Cart.get()).length == 0
@@ -213,7 +213,7 @@ var Cart = {
                         cartitem[name] = item[key]
                     }
                 }
-                cartitem["price"] = Math.floor(parseFloat(cartitem["price"]) * 100)
+                cartitem["price"] = Math.round(parseFloat(cartitem["price"]) * 100)
                 Cart.add(cartitem)
             }
         }

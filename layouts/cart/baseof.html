@@ -40,7 +40,7 @@
       }
       const price = parseFloat(option.dataset.deliveryPrice)
       const basePrice = Number.isFinite(price) ? price : 0
-      let deliveryPrice = Math.floor(basePrice * 100)
+      let deliveryPrice = Math.round(basePrice * 100)
       const detailsCountry = Cart.deliveryDetails && (Cart.deliveryDetails.zone || Cart.deliveryDetails.country)
       const deliveryCountries = (option.dataset.deliveryCountries || "")
         .split(",")
