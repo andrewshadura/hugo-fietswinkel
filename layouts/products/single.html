@@ -120,6 +120,11 @@ const stock_per_id = {{ $stock_per_id }}
 )}}
 {{- $can_request_order = true }}
 {{- end }}
+{{- /* Without supplier stock, front matter decides: the button says
+       "Out of stock" (or "Check availability") here, so it can't add. */}}
+{{- if and (not $stock_found) (eq (int $params.instock) 0) (ne (default false $params.orderable) true) }}
+{{- $can_add_to_cart = false }}
+{{- end }}
 <script>
   can_add_to_cart = {{ $can_add_to_cart }};
   can_request_order = {{ $can_request_order }};
