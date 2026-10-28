@@ -1,0 +1,26 @@
+{{- /* Shipping weight of a product page, as the cart uses it.
+       Returns dict:
+         - grams      shipping_weight, else parameters.weight (0 if unknown)
+         - min_grams  min_shipping_weight: the least an order containing
+                      this product weighs (0 if unset) */ -}}
+{{- $grams := 0 -}}
+{{- with .Params.Shipping_Weight -}}
+  {{- with (partial "utils/parse-weight.html" .).grams -}}
+    {{- $grams = . -}}
+  {{- end -}}
+{{- else -}}
+  {{- with .Params.Parameters -}}
+    {{- with .Weight -}}
+      {{- with (partial "utils/parse-weight.html" .).grams -}}
+        {{- $grams = . -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $min_grams := 0 -}}
+{{- with .Params.Min_Shipping_Weight -}}
+  {{- with (partial "utils/parse-weight.html" .).grams -}}
+    {{- $min_grams = . -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "grams" $grams "min_grams" $min_grams -}}

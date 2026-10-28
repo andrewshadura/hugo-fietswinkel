@@ -7,29 +7,14 @@
 {{- $params := partial "utils/get-params" $page -}}
 {{- $image := partial "utils/get-image" $page -}}
 
+{{- $weight := partial "utils/get-shipping-weight.html" $page -}}
 {{- $shipping_weight := "" -}}
-{{- with $page.Params.Shipping_Weight -}}
-  {{- $w := partial "utils/parse-weight.html" . -}}
-  {{- with $w.grams -}}
-    {{- $shipping_weight = printf "%v" . -}}
-  {{- end -}}
-{{- else -}}
-  {{- if $page.Params.Parameters -}}
-    {{- with $page.Params.Parameters.Weight -}}
-      {{- $w := partial "utils/parse-weight.html" . -}}
-      {{- with $w.grams -}}
-        {{- $shipping_weight = printf "%v" . -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
+{{- with $weight.grams -}}
+  {{- $shipping_weight = printf "%v" . -}}
 {{- end -}}
-
 {{- $min_shipping_weight := "" -}}
-{{- with $page.Params.Min_Shipping_Weight -}}
-  {{- $w := partial "utils/parse-weight.html" . -}}
-  {{- with $w.grams -}}
-    {{- $min_shipping_weight = printf "%v" . -}}
-  {{- end -}}
+{{- with $weight.min_grams -}}
+  {{- $min_shipping_weight = printf "%v" . -}}
 {{- end -}}
 
 <button

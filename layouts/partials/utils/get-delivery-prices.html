@@ -1,0 +1,49 @@
+{{- /* Shipping methods that can deliver a product to a country, priced as
+       the cart prices them. Context: dict "page" <page> "country" <code>.
+       The product's shipping weight (utils/get-shipping-weight, plus the
+       method's packaging_weight) picks the first tier in
+       weight_prices.<country> it fits, else the method's flat price.
+       A method whose tiers or max_package_weight the product exceeds
+       can't deliver it; in-store-only products have no methods.
+       Returns a slice of dict "method" <site.Params.shipping entry>
+       "price" <float>. */ -}}
+{{- $page := .page -}}
+{{- $country := .country -}}
+{{- $out := slice -}}
+{{- if ne (default false $page.Params.instoreonly) true -}}
+  {{- $weight := partial "utils/get-shipping-weight.html" $page -}}
+  {{- range $method := site.Params.shipping -}}
+    {{- $grams := math.Max $weight.grams $weight.min_grams -}}
+    {{- with $method.packaging_weight -}}
+      {{- with (partial "utils/parse-weight.html" .).grams -}}
+        {{- $grams = add $grams . -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $price := float $method.price -}}
+    {{- $fits := true -}}
+    {{- with $method.max_package_weight -}}
+      {{- with (partial "utils/parse-weight.html" .).grams -}}
+        {{- $fits = le $grams . -}}
+      {{- end -}}
+    {{- end -}}
+    {{- with $method.weight_prices -}}
+      {{- with index . $country -}}
+        {{- $tier := false -}}
+        {{- range . -}}
+          {{- if and (not $tier) (le $grams (partial "utils/parse-weight.html" .max_weight).grams) -}}
+            {{- $tier = . -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if $tier -}}
+          {{- $price = float $tier.price -}}
+        {{- else -}}
+          {{- $fits = false -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if $fits -}}
+      {{- $out = $out | append (dict "method" $method "price" $price) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

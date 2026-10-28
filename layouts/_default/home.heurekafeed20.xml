@@ -19,6 +19,14 @@
   {{- if and $productID (or (eq (default false .Params.orderable) true) (gt (int .Params.instock) 0)) }}
   {{- $page := . }}
   {{- $params := partial "utils/get-params" . }}
+  {{- $delivery := slice }}
+  {{- if not (and $params.Heureka $params.Heureka.delivery) }}
+  {{-   range $d := partial "utils/get-delivery-prices.html" (dict "page" . "country" (site.Params.heurekaCountry | default "sk")) }}
+  {{-     with $d.method.heureka_ids }}
+  {{-       $delivery = $delivery | append (dict "ids" . "price" $d.price) }}
+  {{-     end }}
+  {{-   end }}
+  {{- end }}
   {{- $image := partial "utils/get-image" . }}
   {{- $option_colours := partial "utils/get-option-colours" . }}
   {{- $colours := or $option_colours (slice $params.Colour) }}
@@ -247,6 +255,12 @@
           </PARAM>
           {{-       end }}
           {{-     end }}
+          {{-   end }}
+          {{- end }}
+          {{- range $delivery }}
+          {{-   $price := .price }}
+          {{-   range .ids }}
+          <DELIVERY><DELIVERY_ID>{{ . }}</DELIVERY_ID><DELIVERY_PRICE>{{ printf "%.2f" $price }}</DELIVERY_PRICE></DELIVERY>
           {{-   end }}
           {{- end }}
       </SHOPITEM>
