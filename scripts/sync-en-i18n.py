@@ -3,8 +3,7 @@
 
 Keys are English labels, so a plain key gets itself as its English text:
 
-    Add to cart:
-      other: Add to cart
+    Add to cart: Add to cart
 
 Keys that need real English are reported instead and must be added by
 hand: plural forms, templates ({{ .Count }}), and identifiers such as
@@ -27,11 +26,18 @@ def load(path):
     return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
 
 
+def forms(value):
+    """Plural forms of an entry; "key: text" is short for "other: text"."""
+    return value if isinstance(value, dict) else {"other": value}
+
+
 def needs_translation(key, values):
     """True if the key itself can't serve as its English text."""
     if re.fullmatch(r"[a-z0-9-]+", key) or "(" in key or ": " in key:
         return True
-    return any(set(v) != {"other"} or "{{" in v["other"] for v in values)
+    return any(
+        set(forms(v)) != {"other"} or "{{" in forms(v)["other"] for v in values
+    )
 
 
 def main():
@@ -60,7 +66,7 @@ def main():
         if text and not text.endswith("\n"):
             text += "\n"
         for key in plain:
-            text += yaml.safe_dump({key: {"other": key}}, allow_unicode=True,
+            text += yaml.safe_dump({key: key}, allow_unicode=True,
                                    sort_keys=False, width=1000)
         en_yaml.write_text(text, encoding="utf-8")
         print(f"added {len(plain)} key(s) to {en_yaml.name}")

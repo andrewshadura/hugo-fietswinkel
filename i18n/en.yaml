@@ -1,40 +1,24 @@
-Available in:
-  other: 'Available in: {{ . }}'
-Available in (other sizes):
-  other: 'Other sizes: available in {{ . }}'
+Available in: 'Available in: {{ . }}'
+Available in (other sizes): 'Other sizes: available in {{ . }}'
 Available sizes:
   one: 'Available now: size {{ first .Sizes }}'
   other: 'Available now: sizes {{ delimit .Sizes ", " }}'
-Lead time:
-  other: 'Delivery within {{ .Count }} days'
-Lead time other sizes:
-  other: 'Other sizes: delivery within {{ .Count }} days'
-Order paid:
-  other: Paid
-Order confirmed:
-  other: Confirmed
-Order dispatched:
-  other: Dispatched
-Order delivered:
-  other: Delivered
-Order refunded:
-  other: Refunded
-Order cancelled:
-  other: Cancelled
-Order on hold:
-  other: On hold
-Order expired:
-  other: Expired
-RRP:
-  other: RRP
-Recommended retail price:
-  other: Recommended retail price
-Order received:
-  other: Received
-Lead time weeks:
-  other: 'Delivery within {{ .Count }} weeks'
+Lead time: Delivery within {{ .Count }} days
+Lead time other sizes: 'Other sizes: delivery within {{ .Count }} days'
+Order paid: Paid
+Order confirmed: Confirmed
+Order dispatched: Dispatched
+Order delivered: Delivered
+Order refunded: Refunded
+Order cancelled: Cancelled
+Order on hold: On hold
+Order expired: Expired
+RRP: RRP
+Recommended retail price: Recommended retail price
+Order received: Received
+Lead time weeks: Delivery within {{ .Count }} weeks
 More colours available:
-  one: 'One more colour available'
+  one: One more colour available
   other: '{{ .Count }} more colours available'
 Colours:
   one: Colour
@@ -45,229 +29,116 @@ Sizes:
 Variants:
   one: Variant
   other: Variants
-Book a test (title):
-  other: Book a test
-Book a test (description):
-  other: Interested in this product and would like to try it out? Get in touch using the form below.
-request-order-description-text:
-  other: This product isn't currently in stock, but we can order it from the supplier on request. Get in touch using the form below to place an order.
-'List badge: In showroom':
-  other: In showroom
-Ean:
-  other: EAN
-Product:
-  other: Product
-Price:
-  other: Price
-Quantity:
-  other: Quantity
-Subtotal:
-  other: Subtotal
-Total:
-  other: Total
-Discounts:
-  other: Discounts
-Checking the status of your order:
-  other: Checking the status of your order
-Your order has been placed.:
-  other: Your order has been placed.
-The payment has been cancelled.:
-  other: The payment has been cancelled.
-Back to cart:
-  other: Back to cart
-Delete:
-  other: Delete
-Continue shopping:
-  other: Continue shopping
-Proceed to checkout:
-  other: Proceed to checkout
-The cart is empty:
-  other: The cart is empty
-Add to cart:
-  other: Add to cart
-Order summary:
-  other: Order summary
-Free:
-  other: Free
-Collect in person:
-  other: Collect in person
-Packeta:
-  other: Packeta
-Choose delivery:
-  other: Choose delivery
-Shipping:
-  other: Shipping
-Request to order:
-  other: Request to order
-Select collection point:
-  other: Select collection point
-Contact us:
-  other: Contact us
-Ask Your Question:
-  other: Ask Your Question
-Your Name:
-  other: Your Name
-Your Email:
-  other: Your Email
-Message:
-  other: Message
-Your Message:
-  other: Your Message
-Send Now:
-  other: Send Now
-Contact:
-  other: Contact
-Connect with us:
-  other: Connect with us
-Description:
-  other: Description
-Reviews:
-  other: Reviews
-This category is currently empty, but we’re working hard to prepare it for you!:
-  other: This category is currently empty, but we’re working hard to prepare it for you!
-Products List:
-  other: Products List
-In showroom:
-  other: In showroom
-Out of stock:
-  other: Out of stock
-Check availability:
-  other: Check availability
-Other sizes:
-  other: Other sizes
-White:
-  other: White
-Yellow:
-  other: Yellow
-Brown:
-  other: Brown
-Black:
-  other: Black
-Red:
-  other: Red
-Green:
-  other: Green
-Grey:
-  other: Grey
-Orange:
-  other: Orange
-Blue:
-  other: Blue
-Pink:
-  other: Pink
-Dark brown:
-  other: Dark brown
-Read more:
-  other: Read more
-Colour:
-  other: Colour
-See more products:
-  other: See more products
-Book a test:
-  other: Book a test
-Name:
-  other: Name
-Additional notes:
-  other: Additional notes
-Close:
-  other: Close
-Send:
-  other: Send
-Specifications:
-  other: Specifications
-Maximum load:
-  other: Maximum load
-Weight:
-  other: Weight
-Width:
-  other: Width
-Height:
-  other: Height
-Size:
-  other: Size
-Variant:
-  other: Variant
-Manufacturer:
-  other: Manufacturer
-Product ID:
-  other: Product ID
-Frame material:
-  other: Frame material
-Frame type:
-  other: Frame type
-Wheel size:
-  other: Wheel size
-Front light:
-  other: Front light
-Rear light:
-  other: Rear light
-Lock:
-  other: Lock
-Front fork:
-  other: Front fork
-Kickstand:
-  other: Kickstand
-Saddle:
-  other: Saddle
-Handles:
-  other: Handles
-Material:
-  other: Material
-Front carrier:
-  other: Front carrier
-Rear carrier:
-  other: Rear carrier
-Steering lock:
-  other: Steering lock
-Gears:
-  other: Gears
-Bell:
-  other: Bell
-Front brake:
-  other: Front brake
-Rear brake:
-  other: Rear brake
-Disc brake:
-  other: Disc brake
-Hub dynamo:
-  other: Hub dynamo
-Drivetrain:
-  other: Drivetrain
-Tyres:
-  other: Tyres
-Power supply:
-  other: Power supply
-Solar energy:
-  other: Solar energy
-Mudguard:
-  other: Mudguard
-Mounting:
-  other: Mounting
-Battery:
-  other: Battery
-Charger:
-  other: Charger
-Sale price applies to showroom stock only:
-  other: Sale price applies to showroom stock only
-Low stock:
-  other: Low stock
-No longer available:
-  other: No longer available
-On request:
-  other: On request
-Depth:
-  other: Depth
-Volume:
-  other: Volume
-Length:
-  other: Length
-Accu type:
-  other: Accu type
-Gear hub:
-  other: Gear hub
-Model year:
-  other: Model year
-Often bought together:
-  other: Often bought together
-Email:
-  other: Email
+Book a test (title): Book a test
+Book a test (description): Interested in this product and would like to try it out? Get in touch using the form below.
+request-order-description-text: This product isn't currently in stock, but we can order it from the supplier on request. Get in touch using the form below to place an order.
+'List badge: In showroom': In showroom
+Ean: EAN
+Product: Product
+Price: Price
+Quantity: Quantity
+Subtotal: Subtotal
+Total: Total
+Discounts: Discounts
+Checking the status of your order: Checking the status of your order
+Your order has been placed.: Your order has been placed.
+The payment has been cancelled.: The payment has been cancelled.
+Back to cart: Back to cart
+Delete: Delete
+Continue shopping: Continue shopping
+Proceed to checkout: Proceed to checkout
+The cart is empty: The cart is empty
+Add to cart: Add to cart
+Order summary: Order summary
+Free: Free
+Collect in person: Collect in person
+Packeta: Packeta
+Choose delivery: Choose delivery
+Shipping: Shipping
+Request to order: Request to order
+Select collection point: Select collection point
+Contact us: Contact us
+Ask Your Question: Ask Your Question
+Your Name: Your Name
+Your Email: Your Email
+Message: Message
+Your Message: Your Message
+Send Now: Send Now
+Contact: Contact
+Connect with us: Connect with us
+Description: Description
+Reviews: Reviews
+This category is currently empty, but we’re working hard to prepare it for you!: This category is currently empty, but we’re working hard to prepare it for you!
+Products List: Products List
+In showroom: In showroom
+Out of stock: Out of stock
+Check availability: Check availability
+Other sizes: Other sizes
+White: White
+Yellow: Yellow
+Brown: Brown
+Black: Black
+Red: Red
+Green: Green
+Grey: Grey
+Orange: Orange
+Blue: Blue
+Pink: Pink
+Dark brown: Dark brown
+Read more: Read more
+Colour: Colour
+See more products: See more products
+Book a test: Book a test
+Name: Name
+Additional notes: Additional notes
+Close: Close
+Send: Send
+Specifications: Specifications
+Maximum load: Maximum load
+Weight: Weight
+Width: Width
+Height: Height
+Size: Size
+Variant: Variant
+Manufacturer: Manufacturer
+Product ID: Product ID
+Frame material: Frame material
+Frame type: Frame type
+Wheel size: Wheel size
+Front light: Front light
+Rear light: Rear light
+Lock: Lock
+Front fork: Front fork
+Kickstand: Kickstand
+Saddle: Saddle
+Handles: Handles
+Material: Material
+Front carrier: Front carrier
+Rear carrier: Rear carrier
+Steering lock: Steering lock
+Gears: Gears
+Bell: Bell
+Front brake: Front brake
+Rear brake: Rear brake
+Disc brake: Disc brake
+Hub dynamo: Hub dynamo
+Drivetrain: Drivetrain
+Tyres: Tyres
+Power supply: Power supply
+Solar energy: Solar energy
+Mudguard: Mudguard
+Mounting: Mounting
+Battery: Battery
+Charger: Charger
+Sale price applies to showroom stock only: Sale price applies to showroom stock only
+Low stock: Low stock
+No longer available: No longer available
+On request: On request
+Depth: Depth
+Volume: Volume
+Length: Length
+Accu type: Accu type
+Gear hub: Gear hub
+Model year: Model year
+Often bought together: Often bought together
+Email: Email
