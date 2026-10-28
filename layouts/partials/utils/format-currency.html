@@ -1,1 +1,11 @@
-{{- . | lang.FormatCurrency 2 site.Params.currency -}}
+{{- /* Formats an amount in site.Params.currency. A language can replace
+       Hugo's built-in format for a currency with the optional i18n entry
+       currency-format-<code>, e.g. currency-format-EUR: '€{{ .Amount }}';
+       .Amount is the number in the language's own format. */ -}}
+{{- $amount := . -}}
+{{- $currency := site.Params.currency -}}
+{{- with i18n (printf "currency-format-%s" $currency) (dict "Amount" (lang.FormatNumber 2 $amount)) -}}
+{{- . -}}
+{{- else -}}
+{{- $amount | lang.FormatCurrency 2 $currency -}}
+{{- end -}}

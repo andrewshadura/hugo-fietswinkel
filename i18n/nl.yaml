@@ -60,3 +60,4 @@ Colours: Kleuren
 Close: Sluiten
 RRP: AVP
 Recommended retail price: Adviesverkoopprijs
+currency-format-EUR: "€\u00a0{{ .Amount }}"

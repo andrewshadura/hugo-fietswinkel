@@ -142,3 +142,4 @@ Gear hub: Gear hub
 Model year: Model year
 Often bought together: Often bought together
 Email: Email
+currency-format-EUR: '€{{ .Amount }}'
