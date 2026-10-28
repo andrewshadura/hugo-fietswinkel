@@ -172,12 +172,14 @@ const stock_per_id = {{ $stock_per_id }}
         <div class="rw-ui-container"></div>
         {{ end }}
         {{ if .Params.Price }}
+        {{- $price := partial "utils/get-price" . }}
         <div class="my-4" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-          {{ if .Params.PriceBefore }}
-          <s>{{ partial "utils/format-currency.html" .Params.PriceBefore }}</s>
+          {{ if $price.sale }}
+          <s class="p-price-regular" data-price="{{ partial "utils/convert-currency.html" $price.regular }}">{{ partial "utils/format-currency.html" $price.regular }}</s>
           {{ end }}
           <meta itemprop="priceCurrency" content="{{ .Site.Params.currency }}" />
-          <span class="lead text-primary font-weight-medium p-price" itemprop="price" content="{{ partial "utils/convert-currency.html" .Params.Price }}">{{ partial "utils/format-currency.html" .Params.Price }}</span>
+          <span class="lead text-primary font-weight-medium p-price" itemprop="price" content="{{ partial "utils/convert-currency.html" $price.price }}">{{ partial "utils/format-currency.html" $price.price }}</span>
+          {{- partial "product-rrp.html" $price }}
           {{ with $params.condition }}
           {{ else }}
           <link itemprop="itemCondition" href="http://schema.org/NewCondition"/>
@@ -536,7 +538,7 @@ const stock_per_id = {{ $stock_per_id }}
                   <input type="tel" class="form-control mb-2" id="phone" name="phone" placeholder="+421">
                   <input type="hidden" name="item-name" value="{{ .Params.Title }}">
                   <input type="hidden" name="item-id" class="sku" value="{{ partial "utils/get-default-product-id" . }}">
-                  <input type="hidden" name="item-price" value="{{ .Params.Price }}">
+                  <input type="hidden" name="item-price" value="{{ (partial "utils/get-price" .).price }}">
                   <input type="hidden" name="item-colour" value="{{ .Params.Colour }}">
                   {{ if .Params.Sizes }}
                   <input type="hidden" name="item-size" value="">
@@ -569,7 +571,7 @@ const stock_per_id = {{ $stock_per_id }}
                   <input type="tel" class="form-control mb-2" id="phone" name="phone" placeholder="+421">
                   <input type="hidden" name="item-name" value="{{ .Params.Title }}">
                   <input type="hidden" name="item-id" class="sku" value="{{ partial "utils/get-default-product-id" . }}">
-                  <input type="hidden" name="item-price" value="{{ .Params.Price }}">
+                  <input type="hidden" name="item-price" value="{{ (partial "utils/get-price" .).price }}">
                   <input type="hidden" name="item-colour" value="{{ .Params.Colour }}">
                   {{ if .Params.Sizes }}
                   <input type="hidden" name="item-size" value="">
@@ -605,7 +607,7 @@ const stock_per_id = {{ $stock_per_id }}
                   <div class="card-body">
                     <h5 class="card-title" style="font-weight: 500">{{ $full_name }}</h5>
                     <p class="card-text">
-  <span class="lead text-primary font-weight-medium">{{ partial "utils/format-currency.html" $page.Params.Price }}</span>
+  <span class="lead text-primary font-weight-medium">{{ partial "utils/format-currency.html" (partial "utils/get-price" $page).price }}</span>
                     </p>
                   </div>
                 </div>

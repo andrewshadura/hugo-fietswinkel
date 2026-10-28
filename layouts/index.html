@@ -264,14 +264,11 @@
             <a href="{{ .Permalink }}" class="h4">{{ .Title }}</a>
             <p>{{ .Params.Description }}</p>
             <div class="mb-4">
-              {{ if .Params.PriceBefore }}
-              <s>{{ .Params.PriceBefore | lang.FormatCurrency 2 .Site.Params.currency }}</s>
-              {{ end }}
-              <span class="lead text-primary">{{ .Params.Price | lang.FormatCurrency 2 .Site.Params.currency }}</span>
+              {{- partial "product-price.html" . }}
             </div>
             <button class="cart-add-item btn btn-sm btn-outline-primary" data-item-id="{{ .Params.ProductID }}"
               data-item-name="{{ .Title }}" {{ range first 1 .Params.Images }} data-item-image="{{ $image }}"
-              {{ end }} data-item-price="{{ .Params.Price }}" data-item-url="{{ .Permalink }}" data-item-description="{{ .Description }}">
+              {{ end }} data-item-price="{{ (partial "utils/get-price" .).price }}" data-item-url="{{ .Permalink }}" data-item-description="{{ .Description }}">
               {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}
             </button>
           </div>

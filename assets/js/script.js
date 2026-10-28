@@ -266,6 +266,11 @@ $(window).on('load', function () {
 
     let formatted_price = Cart.currencyFormat.format(price / 100)
     $(".p-price").text(formatted_price)
+    const $regular = $(".p-price-regular")
+    if ($regular.length) {
+      const regular_price = Math.round(parseFloat($regular.attr("data-price")) * 100) + extras
+      $regular.text(Cart.currencyFormat.format(regular_price / 100))
+    }
     const $button = $("#cart-primary-button")
     $button.attr("data-item-price", price / 100)
     $button.attr("data-item-image", $(".product-slider .slick-track .slick-slide:first-child > img")[0].src)

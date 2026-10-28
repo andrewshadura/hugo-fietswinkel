@@ -91,10 +91,7 @@
       {{ end }}
       {{ if $page.Params.Price }}
       <div class="mb-4">
-        {{ if $page.Params.PriceBefore }}
-        <s>{{ $page.Params.PriceBefore | lang.FormatCurrency 2 $page.Site.Params.currency }}</s>
-        {{ end }}
-        <span class="lead text-primary">{{ $page.Params.Price | lang.FormatCurrency 2 $page.Site.Params.currency }}</span>
+        {{- partial "product-price.html" $page }}
       </div>
       {{ end }}
     </div>

@@ -1,0 +1,64 @@
+{{- /*
+  Resolves the price of a product page at build time.
+
+  Front matter:
+    price       regular price
+    salePrice   reduced price (optional)
+    saleFrom    first day of the sale, inclusive (optional)
+    saleUntil   last day of the sale, inclusive (optional)
+    rrp         recommended retail price (optional)
+
+  A sale is active when salePrice is below price, the build date is within
+  saleFrom..saleUntil, and — when saleFrom is set — the sale has run for fewer
+  than site.Params.saleMaxDays days (default 30, 0 = no limit). After that
+  the sale price becomes the plain price: it is no longer announced as a
+  reduction from a price that was last charged over saleMaxDays days ago.
+
+  Deprecated: priceBefore. With it, price is the reduced price and
+  priceBefore the regular one; it has no dates.
+
+  Returns: dict "price" (payable now) "regular" "sale" (bool) "rrp" (0 if unset)
+*/ -}}
+{{- $p := .Params -}}
+{{- $regular := float (default 0 $p.price) -}}
+{{- $price := $regular -}}
+{{- $sale := false -}}
+{{- $salePrice := float (default 0 $p.salePrice) -}}
+{{- if and (gt $salePrice 0) (lt $salePrice $regular) -}}
+  {{- $day := 86400 -}}
+  {{- $now := now.Unix -}}
+  {{- $active := true -}}
+  {{- $expired := false -}}
+  {{- with $p.saleFrom -}}
+    {{- $from := (time.AsTime .).Unix -}}
+    {{- $maxDays := 30 -}}
+    {{- if isset site.Params "salemaxdays" -}}
+      {{- $maxDays = int site.Params.saleMaxDays -}}
+    {{- end -}}
+    {{- if lt $now $from -}}
+      {{- $active = false -}}
+    {{- else if and (gt $maxDays 0) (ge $now (add $from (mul $maxDays $day))) -}}
+      {{- $expired = true -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $p.saleUntil -}}
+    {{- if ge $now (add (time.AsTime .).Unix $day) -}}
+      {{- $active = false -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $active -}}
+    {{- $price = $salePrice -}}
+    {{- if $expired -}}
+      {{- $regular = $salePrice -}}
+    {{- else -}}
+      {{- $sale = true -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if $p.priceBefore -}}
+  {{- $before := float $p.priceBefore -}}
+  {{- if gt $before $regular -}}
+    {{- $sale = true -}}
+    {{- $regular = $before -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "price" $price "regular" $regular "sale" $sale "rrp" (float (default 0 $p.rrp)) -}}

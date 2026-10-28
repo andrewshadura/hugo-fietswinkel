@@ -1,0 +1,6 @@
+{{- /* Price block for product cards and lists; context: the product page. */ -}}
+{{- $price := partial "utils/get-price" . -}}
+{{- if $price.sale }}
+<s>{{ partial "utils/format-currency.html" $price.regular }}</s>
+{{- end }}
+<span class="lead text-primary">{{ partial "utils/format-currency.html" $price.price }}</span>

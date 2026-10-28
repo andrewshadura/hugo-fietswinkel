@@ -85,7 +85,7 @@
   {{- end }}
   data-item-instock="{{ int $params.instock }}"
   data-item-name="{{ $page.Title }}" data-item-image="{{ $image }}"
-  data-item-price="{{ $page.Params.Price }}" data-item-url="{{ $page.Permalink }}" data-item-description="{{ $page.Params.ShortDescription | default $page.Description | markdownify }}">
+  data-item-price="{{ (partial "utils/get-price" $page).price }}" data-item-url="{{ $page.Permalink }}" data-item-description="{{ $page.Params.ShortDescription | default $page.Description | markdownify }}">
   {{ if $stock_found }}
     {{ if $can_add_to_cart }}
       {{ with "Add to cart" }}{{ i18n . | default . }}{{ end }}

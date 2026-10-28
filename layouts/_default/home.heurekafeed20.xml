@@ -88,7 +88,8 @@
       {{- $v_args := $args }}
       {{- $v_image := $image }}
       {{- $v_name := "" }}
-      {{- $v_price := $params.Price }}
+      {{- $price := partial "utils/get-price" $page }}
+      {{- $v_price := printf "%.2f" $price.price }}
       {{- if $variant }}
       {{-   if $variant.sku }}
       {{-     $v_item_id = $variant.sku }}
@@ -96,7 +97,7 @@
       {{-   $v_args = $v_args | append (replace $variant.group " " "-") (or $variant.sku $variant.label) }}
       {{-   $v_name = i18n $variant.label | default $variant.label }}
       {{-   if ne $variant.price 0. }}
-      {{-     $v_price = printf "%.2f" (add (float $params.Price) $variant.price) }}
+      {{-     $v_price = printf "%.2f" (add $price.price $variant.price) }}
       {{-   end }}
       {{-   with $variant.image }}
       {{-     with $page.Resources.GetMatch . }}

@@ -107,8 +107,9 @@
       {{- $v_args := $args }}
       {{- $v_image := $image }}
       {{- $v_name := "" }}
-      {{- $v_price := $params.Price }}
-      {{- $v_price_before := $params.PriceBefore }}
+      {{- $price := partial "utils/get-price" $page }}
+      {{- $v_price := printf "%.2f" $price.price }}
+      {{- $v_price_before := printf "%.2f" $price.regular }}
       {{- if $variant }}
       {{-   if $variant.sku }}
       {{-     $v_item_id = $variant.sku }}
@@ -116,10 +117,8 @@
       {{-   $v_args = $v_args | append (replace $variant.group " " "-") (or $variant.sku $variant.label) }}
       {{-   $v_name = i18n $variant.label | default $variant.label }}
       {{-   if ne $variant.price 0. }}
-      {{-     $v_price = printf "%.2f" (add (float $params.Price) $variant.price) }}
-      {{-     with $params.PriceBefore }}
-      {{-       $v_price_before = printf "%.2f" (add (float .) $variant.price) }}
-      {{-     end }}
+      {{-     $v_price = printf "%.2f" (add $price.price $variant.price) }}
+      {{-     $v_price_before = printf "%.2f" (add $price.regular $variant.price) }}
       {{-   end }}
       {{-   with $variant.image }}
       {{-     with $page.Resources.GetMatch . }}
@@ -185,8 +184,11 @@
       {{- range $images }}
       <g:additional_image_link>{{ .Permalink }}</g:additional_image_link>
       {{- end }}
-      {{- if $params.PriceBefore }}
+      {{- if $price.sale }}
       <g:price>{{ $v_price_before }} {{ site.Params.currency }}</g:price>
+      {{- if and $params.saleFrom $params.saleUntil }}
+      <g:sale_price_effective_date>{{ (time.AsTime $params.saleFrom).Format "2006-01-02T15:04Z07:00" }}/{{ ((time.AsTime $params.saleUntil).AddDate 0 0 1).Format "2006-01-02T15:04Z07:00" }}</g:sale_price_effective_date>
+      {{- end }}
       {{- if and $params.Showroom_Sale_only $size }}
       {{- if or (in $params.Showroom_Sizes $size_name) (in $params.Showroom_Sizes (int $size_name)) }}
       <g:sale_price>{{ $v_price }} {{ site.Params.currency }}</g:sale_price>

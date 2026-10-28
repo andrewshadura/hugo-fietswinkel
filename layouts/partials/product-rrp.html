@@ -1,0 +1,7 @@
+{{- /* Recommended retail price line; context: the dict from utils/get-price.
+       Shown only when it differs from the payable price by more than 0.50. */ -}}
+{{- if gt .rrp 0 -}}
+{{- if gt (math.Round (mul (math.Abs (sub .rrp .price)) 100)) 50 }}
+<small class="d-block text-muted product-rrp"><abbr title="{{ with "Recommended retail price" }}{{ i18n . | default . }}{{ end }}">{{ with "RRP" }}{{ i18n . | default . }}{{ end }}</abbr> {{ partial "utils/format-currency.html" .rrp }}</small>
+{{- end -}}
+{{- end -}}
