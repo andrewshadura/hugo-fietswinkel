@@ -9,6 +9,7 @@
 {{- $full_name := .full_name }}
 {{- $item_id := .item_id }}
 {{- $args := .args }}
+{{- $name_ctx := .item_ctx }}
 {{- $suffix := "" }}
 {{- if $variant }}
 {{-   with $variant.sku }}
@@ -19,11 +20,20 @@
 {{-   end }}
 {{-   with $variant.options }}
 {{-     $labels := slice }}
+{{-     $in_name := false }}
 {{-     range $opt := . }}
+{{-       $label := i18n $opt.label | default $opt.label }}
 {{-       $args = $args | append (replace $opt.group " " "-") $opt.label }}
-{{-       $labels = $labels | append (i18n $opt.label | default $opt.label) }}
+{{-       $labels = $labels | append $label }}
+{{- /* full_name can place an option's label by its sku_args key, e.g. {mount} */}}
+{{-       range $k, $_ := $opt.sku_args }}
+{{-         $name_ctx = merge $name_ctx (dict $k $label) }}
+{{-         if strings.Contains $full_name (printf "{%s}" $k) }}
+{{-           $in_name = true }}
+{{-         end }}
+{{-       end }}
 {{-     end }}
-{{-     $suffix = delimit $labels ", " }}
+{{-     $suffix = cond $in_name "" (delimit $labels ", ") }}
 {{-   else }}
 {{-     $args = $args | append (replace $variant.group " " "-") (or $variant.sku $variant.label) }}
 {{-     $suffix = i18n $variant.label | default $variant.label }}
@@ -31,7 +41,7 @@
 {{- end }}
 {{- $title := "" }}
 {{- if strings.Contains $full_name "{" }}
-{{-   $title = trim (partialCached "utils/format" (dict "s" $full_name "params" .item_ctx) $full_name .item_ctx) " " }}
+{{-   $title = trim (partialCached "utils/format" (dict "s" $full_name "params" $name_ctx) $full_name $name_ctx) " " }}
 {{- else }}
 {{-   $title = $full_name }}
 {{-   with .colour }}

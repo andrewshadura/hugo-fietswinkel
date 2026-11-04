@@ -4,7 +4,7 @@
 
   Returns a slice of dicts, one per combination, in page order:
     - args     merged sku_args of the chosen options, e.g. {mode: 7, mount: 0}
-    - options  slice of dict "group" "label" "price", one per group
+    - options  slice of dict "group" "label" "price" "sku_args", one per group
     - price    sum of the chosen options' prices
     - image    the first chosen option's image, if any
     - default  true for the combination the page preselects: in each
@@ -45,7 +45,7 @@
 {{-             $label := string .label }}
 {{-             $combinations = $combinations | append (dict
                   "args" (merge $c.args (default dict .sku_args))
-                  "options" ($c.options | append (dict "group" $group "label" $label "price" (float (default 0 .price))))
+                  "options" ($c.options | append (dict "group" $group "label" $label "price" (float (default 0 .price)) "sku_args" (default dict .sku_args)))
                   "price" (add $c.price (float (default 0 .price)))
                   "image" (or $c.image (string (default "" .image)))
                   "default" (and $c.default (eq $label $default))
