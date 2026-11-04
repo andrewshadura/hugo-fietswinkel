@@ -335,9 +335,15 @@ const stock_per_id = {{ $stock_per_id }}
         <div class="my-4 variants-box">
           <h5>{{ i18n (humanize $k) | default (humanize $k) }}</h5>
           <select name="{{ $k }}" id="{{ replace $k " " "-"}}-select" class="product-option product-option-select">
-            {{- $has_default := false }}
-            {{- range $v }}{{ if .default }}{{ $has_default = true }}{{ end }}{{ end }}
-            {{ range $v }}
+            {{- /* Mark only the option browsers would select: the first one with
+                   default: true, else the last free one (browsers keep the
+                   last of several selected options), else none (the first). */}}
+            {{- $selected := -1 }}
+            {{- range $i, $o := $v }}{{ if and (eq $o.default true) (lt $selected 0) }}{{ $selected = $i }}{{ end }}{{ end }}
+            {{- if lt $selected 0 }}
+            {{-   range $i, $o := $v }}{{ if eq $o.price 0 }}{{ $selected = $i }}{{ end }}{{ end }}
+            {{- end }}
+            {{ range $i, $o := $v }}
             <option
               data-image="{{ partial "utils/resize-image" .image }}"
               data-name="{{ $k }}"
@@ -346,7 +352,7 @@ const stock_per_id = {{ $stock_per_id }}
               {{- if .description }}
               title="{{ i18n .description | default .description }}"
               {{- end }}
-              {{- if cond $has_default (eq .default true) (eq .price 0) }}
+              {{- if eq $i $selected }}
               selected
               {{- end }}
               {{- with .sku_args }}

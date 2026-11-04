@@ -8,7 +8,8 @@
     - price    sum of the chosen options' prices
     - image    the first chosen option's image, if any
     - default  true for the combination the page preselects: in each
-               group the option marked default: true
+               group the first option marked default: true, else the last
+               free one, else the first (as products/single.html selects)
   Returns an empty slice when no option carries sku_args.
 */ -}}
 {{- $combinations := slice }}
