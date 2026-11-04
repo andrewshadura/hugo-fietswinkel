@@ -1,0 +1,58 @@
+{{- /*
+  Combinations of the option groups whose options carry sku_args, the
+  values for placeholders in productID such as {mode} in RE-007{mode}{mount}.
+
+  Returns a slice of dicts, one per combination, in page order:
+    - args     merged sku_args of the chosen options, e.g. {mode: 7, mount: 0}
+    - options  slice of dict "group" "label" "price", one per group
+    - price    sum of the chosen options' prices
+    - image    the first chosen option's image, if any
+    - default  true for the combination the page preselects: in each
+               group the option marked default: true
+  Returns an empty slice when no option carries sku_args.
+*/ -}}
+{{- $combinations := slice }}
+{{- range .Params.Options }}
+{{-   range $group, $opts := . }}
+{{-     if and (ne $group "colours") (reflect.IsSlice $opts) }}
+{{-       $has_args := false }}
+{{-       $default := "" }}
+{{-       $marked := "" }}
+{{-       range $opts }}
+{{-         if and (reflect.IsMap .) .sku_args }}
+{{-           $has_args = true }}
+{{-         end }}
+{{-         if eq (float (default 0 .price)) 0. }}
+{{-           $default = string .label }}
+{{-         end }}
+{{-         if and (eq .default true) (eq $marked "") }}
+{{-           $marked = string .label }}
+{{-         end }}
+{{-       end }}
+{{-       $default = or $marked $default }}
+{{-       if $has_args }}
+{{-         if eq $default "" }}
+{{-           $default = string (index $opts 0).label }}
+{{-         end }}
+{{-         $base := $combinations }}
+{{-         if not $base }}
+{{-           $base = slice (dict "args" dict "options" slice "price" 0. "image" "" "default" true) }}
+{{-         end }}
+{{-         $combinations = slice }}
+{{-         range $c := $base }}
+{{-           range $opts }}
+{{-             $label := string .label }}
+{{-             $combinations = $combinations | append (dict
+                  "args" (merge $c.args (default dict .sku_args))
+                  "options" ($c.options | append (dict "group" $group "label" $label "price" (float (default 0 .price))))
+                  "price" (add $c.price (float (default 0 .price)))
+                  "image" (or $c.image (string (default "" .image)))
+                  "default" (and $c.default (eq $label $default))
+                ) }}
+{{-           end }}
+{{-         end }}
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}
+{{- return $combinations -}}

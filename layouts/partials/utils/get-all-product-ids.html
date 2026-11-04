@@ -10,6 +10,7 @@
 {{- $colour_sku := "" }}
 {{- $colour_sku_arg := "" }}
 {{- $sizes := or $params.Sizes (slice $params.Size) }}
+{{- $combinations := partial "utils/get-sku-arg-combinations.html" . }}
 {{- range $size := $sizes }}
 {{- range $colour := $colours -}}
   {{- $args = slice }}
@@ -42,7 +43,17 @@
   {{-     $item_id = printf "%s-%s" $item_id $size_name }}
   {{-   end }}
   {{- end }}
-  {{- $product_ids = append $item_id $product_ids }}
+  {{- if $combinations }}
+  {{-   range $combinations }}
+  {{-     $id := $item_id }}
+  {{-     range $k, $v := .args }}
+  {{-       $id = replace $id (printf "{%s}" $k) (string $v) }}
+  {{-     end }}
+  {{-     $product_ids = append $id $product_ids }}
+  {{-   end }}
+  {{- else }}
+  {{-   $product_ids = append $item_id $product_ids }}
+  {{- end }}
 {{- end }}
 {{- end }}
 {{- return $product_ids }}

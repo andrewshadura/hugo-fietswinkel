@@ -114,8 +114,22 @@
       {{-   if $variant.sku }}
       {{-     $v_item_id = $variant.sku }}
       {{-   end }}
-      {{-   $v_args = $v_args | append (replace $variant.group " " "-") (or $variant.sku $variant.label) }}
-      {{-   $v_name = i18n $variant.label | default $variant.label }}
+      {{-   with $variant.args }}
+      {{-     range $k, $v := . }}
+      {{-       $v_item_id = replace $v_item_id (printf "{%s}" $k) (string $v) }}
+      {{-     end }}
+      {{-   end }}
+      {{-   with $variant.options }}
+      {{-     $labels := slice }}
+      {{-     range . }}
+      {{-       $v_args = $v_args | append (replace .group " " "-") .label }}
+      {{-       $labels = $labels | append (i18n .label | default .label) }}
+      {{-     end }}
+      {{-     $v_name = delimit $labels ", " }}
+      {{-   else }}
+      {{-     $v_args = $v_args | append (replace $variant.group " " "-") (or $variant.sku $variant.label) }}
+      {{-     $v_name = i18n $variant.label | default $variant.label }}
+      {{-   end }}
       {{-   if ne $variant.price 0. }}
       {{-     $v_price = printf "%.2f" (add $price.price $variant.price) }}
       {{-     $v_price_before = printf "%.2f" (add $price.regular $variant.price) }}
@@ -147,14 +161,14 @@
       {{- end }}
       {{- if $product }}
       <g:gtin>{{ $product.ean }}</g:gtin>
-      {{- else if not $variant.sku }}
+      {{- else if not (or $variant.sku $variant.args) }}
       {{-   if $params.EAN }}
       <g:gtin>{{ $params.EAN }}{{ $colour_suffix }}</g:gtin>
       {{-   end }}
       {{- end }}
       {{- if $product }}
       <g:mpn>{{ $product.oem_id }}</g:mpn>
-      {{- else if not $variant.sku }}
+      {{- else if not (or $variant.sku $variant.args) }}
       {{-   if $params.MPN }}
       <g:mpn>{{ $params.MPN }}{{ $colour_suffix }}</g:mpn>
       {{-   else }}

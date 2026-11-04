@@ -23,4 +23,11 @@
 {{- if $colour_sku_arg }}
 {{-   $sku = replace $sku "{colour}" $colour_sku_arg }}
 {{- end }}
+{{- range partial "utils/get-sku-arg-combinations.html" . }}
+{{-   if .default }}
+{{-     range $k, $v := .args }}
+{{-       $sku = replace $sku (printf "{%s}" $k) (string $v) }}
+{{-     end }}
+{{-   end }}
+{{- end }}
 {{- return $sku }}

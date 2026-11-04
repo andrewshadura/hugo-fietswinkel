@@ -424,6 +424,15 @@ $(window).on('load', function () {
       if (sku.indexOf("{colour}") >= 0) {
         new_sku = new_sku.replace("{colour}", getSelectedColourSkuArg())
       }
+      // Options can fill other placeholders in the SKU, e.g. {mode} in
+      // AB12{mode}{mount}, from their sku_args.
+      $(".product-option-select :selected").each(function() {
+        if (this.dataset.skuArgs) {
+          for (const [key, value] of Object.entries(JSON.parse(this.dataset.skuArgs))) {
+            new_sku = new_sku.replaceAll(`{${key}}`, value)
+          }
+        }
+      })
       for (const e of $(".sku")) {
         if (e.content) {
           e.content = new_sku

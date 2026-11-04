@@ -335,6 +335,8 @@ const stock_per_id = {{ $stock_per_id }}
         <div class="my-4 variants-box">
           <h5>{{ i18n (humanize $k) | default (humanize $k) }}</h5>
           <select name="{{ $k }}" id="{{ replace $k " " "-"}}-select" class="product-option product-option-select">
+            {{- $has_default := false }}
+            {{- range $v }}{{ if .default }}{{ $has_default = true }}{{ end }}{{ end }}
             {{ range $v }}
             <option
               data-image="{{ partial "utils/resize-image" .image }}"
@@ -344,13 +346,16 @@ const stock_per_id = {{ $stock_per_id }}
               {{- if .description }}
               title="{{ i18n .description | default .description }}"
               {{- end }}
-              {{- if eq .price 0 }}
+              {{- if cond $has_default (eq .default true) (eq .price 0) }}
               selected
+              {{- end }}
+              {{- with .sku_args }}
+              data-sku-args="{{ jsonify . }}"
               {{- end }}
               data-label="{{ i18n .label | default (i18n (humanize .label)) | default .label }}"
               value="{{ .label }}"
               {{- range $k, $v := . }}
-              {{- if in (slice "image" "name" "label" "price" "includes") $k | not | and $v }}
+              {{- if in (slice "image" "name" "label" "price" "includes" "sku_args" "default") $k | not | and $v }}
               {{ printf "data-%s=%q" (replace (anchorize $k) "_" "-") (string $v) | safeHTMLAttr }}
               {{- end }}
               {{- end }}
