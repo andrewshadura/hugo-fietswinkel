@@ -26,6 +26,24 @@
 {{- $sku_lists := partialCached "utils/get-sku-lists" . }}
 {{- $stock_lists := partialCached "utils/get-stock-lists" . }}
 {{- $product_ids := partial "utils/get-all-product-ids" . }}
+{{- /* EANs of the SKUs a page's options select, so the parameter table can
+       show the selected one's; pages without option SKUs keep their ean: */}}
+{{- $ean_scratch := newScratch }}
+{{- range partial "utils/get-option-variants" . }}
+{{-   $sku := .sku }}
+{{-   with .args }}
+{{-     $sku = partial "utils/format" (dict "s" (partial "utils/get-product-id" $) "params" .) }}
+{{-   end }}
+{{-   range $sku_lists }}
+{{-     with index . $sku }}
+{{-       if and .ean (not (index (default dict ($ean_scratch.Get "eans")) $sku)) }}
+{{-         $ean_scratch.SetInMap "eans" $sku (string .ean) }}
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}
+{{- $eans := default dict ($ean_scratch.Get "eans") }}
+{{- $ean := or (index $eans (partial "utils/get-default-product-id" .)) .Params.EAN }}
 {{- $stock_per_id := dict }}
 <!-- <pre> -->
 {{- $stock_found := false }}
@@ -494,8 +512,10 @@ const stock_per_id = {{ $stock_per_id }}
         {{ if .Params.MPN }}
         <meta itemprop="mpn" content="{{ .Params.MPN }}" />
         {{ end }}
-        {{ if .Params.EAN }}
-        <meta itemprop="gtin13" content="{{ .Params.EAN }}" />
+        {{ if $ean }}
+        <meta itemprop="gtin13" content="{{ $ean }}" />
+        {{ end }}{{ with $eans }}
+        <script id="sku-eans" type="application/json">{{ . }}</script>
         {{ end }}
         {{ if .Params.Model }}
         <meta itemprop="model" content="{{ .Params.Model }}" />
@@ -669,7 +689,14 @@ const stock_per_id = {{ $stock_per_id }}
                     <td itemprop="value" class="sku">{{ partial "utils/get-default-product-id" . }}</td>
                   </tr>
                   {{- range slice "manufacturer" "model" "EAN" "maximum_load" "width" "height" "size" }}
-                  {{- if index $params . }}
+                  {{- if eq . "EAN" }}
+                  {{- if or $ean $eans }}
+                  <tr itemprop="additionalProperty" itemscope itemtype="https://schema.org/PropertyValue"{{ if not $ean }} hidden{{ end }}>
+                    <th scope="row" itemprop="name">{{ i18n (humanize .) | default (humanize .) }}</th>
+                    <td itemprop="value" class="ean">{{ $ean }}</td>
+                  </tr>
+                  {{ end }}
+                  {{- else if index $params . }}
                   <tr itemprop="additionalProperty" itemscope itemtype="https://schema.org/PropertyValue">
                     <th scope="row" itemprop="name">{{ i18n (humanize .) | default (humanize .) }}</th>
                     <td itemprop="value">{{ index $params . }}</td>

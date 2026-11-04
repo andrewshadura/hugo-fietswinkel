@@ -443,6 +443,14 @@ $(window).on('load', function () {
         }
       }
       $("#cart-primary-button").attr("data-item-id", new_sku)
+
+      // Pages whose options have their own SKUs list each one's EAN
+      const eans = document.getElementById("sku-eans")
+      if (eans) {
+        const ean = JSON.parse(eans.textContent)[new_sku] || ""
+        $(".ean").text(ean).closest("tr").prop("hidden", !ean)
+        $("meta[itemprop='gtin13']").attr("content", ean)
+      }
     }
   }
 
