@@ -103,33 +103,16 @@
       {{-   end }}
       {{- end }}
       {{- range $variant := (or $variants (slice dict)) }}
-      {{- $v_item_id := $item_id }}
-      {{- $v_args := $args }}
+      {{- $v := partial "utils/get-feed-variant" (dict
+            "variant" $variant "item_id" $item_id "args" $args "item_ctx" $item_ctx
+            "full_name" $full_name "colour" $colour "size_name" $size_name) }}
+      {{- $v_item_id := $v.item_id }}
+      {{- $v_args := $v.args }}
       {{- $v_image := $image }}
-      {{- $v_name := "" }}
       {{- $price := partial "utils/get-price" $page }}
       {{- $v_price := printf "%.2f" $price.price }}
       {{- $v_price_before := printf "%.2f" $price.regular }}
       {{- if $variant }}
-      {{-   if $variant.sku }}
-      {{-     $v_item_id = $variant.sku }}
-      {{-   end }}
-      {{-   with $variant.args }}
-      {{-     range $k, $v := . }}
-      {{-       $v_item_id = replace $v_item_id (printf "{%s}" $k) (string $v) }}
-      {{-     end }}
-      {{-   end }}
-      {{-   with $variant.options }}
-      {{-     $labels := slice }}
-      {{-     range . }}
-      {{-       $v_args = $v_args | append (replace .group " " "-") .label }}
-      {{-       $labels = $labels | append (i18n .label | default .label) }}
-      {{-     end }}
-      {{-     $v_name = delimit $labels ", " }}
-      {{-   else }}
-      {{-     $v_args = $v_args | append (replace $variant.group " " "-") (or $variant.sku $variant.label) }}
-      {{-     $v_name = i18n $variant.label | default $variant.label }}
-      {{-   end }}
       {{-   if ne $variant.price 0. }}
       {{-     $v_price = printf "%.2f" (add $price.price $variant.price) }}
       {{-     $v_price_before = printf "%.2f" (add $price.regular $variant.price) }}
@@ -145,13 +128,7 @@
       {{-   $product = or $product (index $sku_list $v_item_id) }}
       {{- end }}
     <item>
-      <g:title>{{- if strings.Contains $full_name "{" -}}
-        {{- $final_full_name := $full_name -}}
-        {{- $final_full_name = partialCached "utils/format" (dict "s" $final_full_name "params" $item_ctx) $final_full_name $item_ctx -}}
-        {{- trim $final_full_name " " -}}{{ with $v_name }} {{ . }}{{ end }}
-      {{- else -}}
-        {{ $full_name }}{{ if $colour }} {{ i18n $colour | default $colour }}{{ end }}{{ if $size_name }} {{ $size_name }}{{ end }}{{ with $v_name }} {{ . }}{{ end }}
-      {{- end -}}</g:title>
+      <g:title>{{ $v.title }}</g:title>
       <g:id>{{ $v_item_id }}</g:id>
       <g:link>{{ $page.Permalink | absURL }}{{ if $v_args }}?{{ end }}{{ querify $v_args }}</g:link>
       {{- if $params.Group_ID }}

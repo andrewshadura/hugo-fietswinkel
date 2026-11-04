@@ -25,9 +25,7 @@
 {{- end }}
 {{- range partial "utils/get-sku-arg-combinations.html" . }}
 {{-   if .default }}
-{{-     range $k, $v := .args }}
-{{-       $sku = replace $sku (printf "{%s}" $k) (string $v) }}
-{{-     end }}
+{{-     $sku = partial "utils/format" (dict "s" $sku "params" .args) }}
 {{-   end }}
 {{- end }}
 {{- return $sku }}

@@ -45,11 +45,7 @@
   {{- end }}
   {{- if $combinations }}
   {{-   range $combinations }}
-  {{-     $id := $item_id }}
-  {{-     range $k, $v := .args }}
-  {{-       $id = replace $id (printf "{%s}" $k) (string $v) }}
-  {{-     end }}
-  {{-     $product_ids = append $id $product_ids }}
+  {{-     $product_ids = append (partial "utils/format" (dict "s" $item_id "params" .args)) $product_ids }}
   {{-   end }}
   {{- else }}
   {{-   $product_ids = append $item_id $product_ids }}

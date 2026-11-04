@@ -1,0 +1,47 @@
+{{- /* One feed item of a product: the page itself (variant is an empty
+       dict) or one of utils/get-option-variants.
+       Context: dict "variant" "item_id" "args" "item_ctx" "full_name"
+       "colour" "size_name", where item_id, args (the query arguments that
+       preselect the item) and item_ctx are the page's for this colour and
+       size.
+       Returns dict "item_id" "args" "title". */ -}}
+{{- $variant := .variant }}
+{{- $full_name := .full_name }}
+{{- $item_id := .item_id }}
+{{- $args := .args }}
+{{- $suffix := "" }}
+{{- if $variant }}
+{{-   with $variant.sku }}
+{{-     $item_id = . }}
+{{-   end }}
+{{-   with $variant.args }}
+{{-     $item_id = partial "utils/format" (dict "s" $item_id "params" .) }}
+{{-   end }}
+{{-   with $variant.options }}
+{{-     $labels := slice }}
+{{-     range $opt := . }}
+{{-       $args = $args | append (replace $opt.group " " "-") $opt.label }}
+{{-       $labels = $labels | append (i18n $opt.label | default $opt.label) }}
+{{-     end }}
+{{-     $suffix = delimit $labels ", " }}
+{{-   else }}
+{{-     $args = $args | append (replace $variant.group " " "-") (or $variant.sku $variant.label) }}
+{{-     $suffix = i18n $variant.label | default $variant.label }}
+{{-   end }}
+{{- end }}
+{{- $title := "" }}
+{{- if strings.Contains $full_name "{" }}
+{{-   $title = trim (partialCached "utils/format" (dict "s" $full_name "params" .item_ctx) $full_name .item_ctx) " " }}
+{{- else }}
+{{-   $title = $full_name }}
+{{-   with .colour }}
+{{-     $title = printf "%s %s" $title (i18n . | default .) }}
+{{-   end }}
+{{-   with .size_name }}
+{{-     $title = printf "%s %s" $title . }}
+{{-   end }}
+{{- end }}
+{{- with $suffix }}
+{{-   $title = printf "%s %s" $title . }}
+{{- end }}
+{{- return dict "item_id" $item_id "args" $args "title" $title -}}
