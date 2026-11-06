@@ -491,7 +491,7 @@ $(window).on('load', function () {
     if (size) {
       const selectedOption = $(`.btn-sizes input[data-size="${size.replace('"', '\\"')}"`)
       if (selectedOption.length) {
-        selectedOption[0].selected = true
+        selectedOption[0].checked = true
         selectedOption[0].parentElement.classList.add('active')
       }
       delete options.size
