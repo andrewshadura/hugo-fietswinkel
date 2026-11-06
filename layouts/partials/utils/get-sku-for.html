@@ -1,0 +1,24 @@
+{{- /*
+  The SKU the page's skus table (utils/get-skus) gives a choice.
+  Context: dict "page" "selection", selection mapping lower-cased names
+  ("size", "colour", option group names) to the chosen size, colour and
+  option labels.
+  Returns the SKU of the first row whose every name matches the choice,
+  or "" when none does or the page has no skus:.
+*/ -}}
+{{- $choice := .selection }}
+{{- $sku := "" }}
+{{- range partial "utils/get-skus" .page }}
+{{-   if not $sku }}
+{{-     $ok := true }}
+{{-     range $k, $v := .selection }}
+{{-       if ne (string (default "" (index $choice $k))) $v }}
+{{-         $ok = false }}
+{{-       end }}
+{{-     end }}
+{{-     if $ok }}
+{{-       $sku = .sku }}
+{{-     end }}
+{{-   end }}
+{{- end }}
+{{- return $sku -}}

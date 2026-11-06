@@ -1,0 +1,31 @@
+{{- /*
+  The page's skus table: the SKU id of each combination of size,
+  colour and options, for supplier numbering that productID templating can't express.
+
+    skus:
+    - AB0013: {size: S, colour: Green}
+    - AB0014: {size: S, colour: Grey}
+    - AB0001: {size: M, colour: Green, Mount: Rear}
+
+  A list of one-key maps, so Hugo keeps the SKUs' case and the order (it
+  lowercases the keys of maps directly in params). A row names any of:
+    size     the size as shown: the sizes: entry before "(" or "{"
+    colour   the colour as shown: the colours: entry before "(" or "["
+    <group>  an option group's name, with the option's label
+  Names are case-insensitive. A row matches when everything it names
+  matches the choice; the first matching row wins.
+
+  Returns a slice of dict "sku" "selection", selection being the row's
+  map with lower-cased names; empty when the page has no skus:.
+*/ -}}
+{{- $rows := slice }}
+{{- range .Params.skus }}
+{{-   range $sku, $selection := . }}
+{{-     $s := newScratch }}
+{{-     range $k, $v := $selection }}
+{{-       $s.SetInMap "selection" (lower $k) (string $v) }}
+{{-     end }}
+{{-     $rows = $rows | append (dict "sku" (string $sku) "selection" (default dict ($s.Get "selection"))) }}
+{{-   end }}
+{{- end }}
+{{- return $rows -}}

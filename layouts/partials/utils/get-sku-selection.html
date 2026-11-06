@@ -1,0 +1,14 @@
+{{- /*
+  A choice of size, colour and options, keyed as utils/get-sku-for
+  expects: lower-cased "size", "colour" and option group names.
+  Context: dict "size" "colour" (names, may be empty) "options" (a slice
+  of dict "group" "label", e.g. a utils/get-sku-arg-combinations entry's
+  options).
+*/ -}}
+{{- $s := newScratch }}
+{{- $s.SetInMap "selection" "size" (string (default "" .size)) }}
+{{- $s.SetInMap "selection" "colour" (string (default "" .colour)) }}
+{{- range .options }}
+{{-   $s.SetInMap "selection" (lower .group) (string .label) }}
+{{- end }}
+{{- return $s.Get "selection" -}}

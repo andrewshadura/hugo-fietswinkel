@@ -433,6 +433,23 @@ $(window).on('load', function () {
           }
         }
       })
+      // A skus: table names the SKU of combinations of size, colour and
+      // options; the first row whose every name matches the choice wins.
+      const table = document.getElementById("sku-table")
+      if (table) {
+        const choice = {}
+        for (const [name, option] of Object.entries(collectSelectedOptions())) {
+          choice[name.toLowerCase()] = option.value
+        }
+        // collectSelectedOptions() covers the option selects, not these radios
+        choice.size = selected_size ? selected_size.dataset.size : ""
+        choice.colour = $(".color-button.product-option:checked").val() || ""
+        const row = JSON.parse(table.textContent).find((r) =>
+          Object.entries(r.selection).every(([k, v]) => (choice[k] || "") === v))
+        if (row) {
+          new_sku = row.sku
+        }
+      }
       for (const e of $(".sku")) {
         if (e.content) {
           e.content = new_sku

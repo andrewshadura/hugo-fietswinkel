@@ -10,13 +10,22 @@
     - default  true for the combination the page preselects: in each
                group the first option marked default: true, else the last
                free one, else the first (as products/single.html selects)
-  Returns an empty slice when no option carries sku_args.
+  Groups named in the page's skus table (utils/get-skus) take part too,
+  with empty sku_args: the table, not productID, gives their SKUs.
+  Returns an empty slice when no option carries sku_args and skus names
+  no option group.
 */ -}}
+{{- $sku_names := slice }}
+{{- range partial "utils/get-skus" . }}
+{{-   range $k, $_ := .selection }}
+{{-     $sku_names = $sku_names | append $k }}
+{{-   end }}
+{{- end }}
 {{- $combinations := slice }}
 {{- range .Params.Options }}
 {{-   range $group, $opts := . }}
 {{-     if and (ne $group "colours") (reflect.IsSlice $opts) }}
-{{-       $has_args := false }}
+{{-       $has_args := in $sku_names (lower $group) }}
 {{-       $default := "" }}
 {{-       $marked := "" }}
 {{-       range $opts }}

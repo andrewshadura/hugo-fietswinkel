@@ -23,9 +23,21 @@
 {{- if $colour_sku_arg }}
 {{-   $sku = replace $sku "{colour}" $colour_sku_arg }}
 {{- end }}
+{{- $default_options := slice }}
 {{- range partial "utils/get-sku-arg-combinations.html" . }}
 {{-   if .default }}
 {{-     $sku = partial "utils/format" (dict "s" $sku "params" .args) }}
+{{-     $default_options = .options }}
+{{-   end }}
+{{- end }}
+{{- if .Params.skus }}
+{{-   $size_name := "" }}
+{{-   with $size }}{{ $size_name = partial "utils/get-size-name" . }}{{ end }}
+{{-   $colour_name := "" }}
+{{-   with $colour }}{{ $colour_name = partial "utils/get-colour-name" . }}{{ end }}
+{{-   $selection := partial "utils/get-sku-selection" (dict "size" $size_name "colour" $colour_name "options" $default_options) }}
+{{-   with partial "utils/get-sku-for" (dict "page" . "selection" $selection) }}
+{{-     $sku = . }}
 {{-   end }}
 {{- end }}
 {{- return $sku }}

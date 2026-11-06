@@ -26,14 +26,23 @@
 {{- $sku_lists := partialCached "utils/get-sku-lists" . }}
 {{- $stock_lists := partialCached "utils/get-stock-lists" . }}
 {{- $product_ids := partial "utils/get-all-product-ids" . }}
-{{- /* EANs of the SKUs a page's options select, so the parameter table can
-       show the selected one's; pages without option SKUs keep their ean: */}}
-{{- $ean_scratch := newScratch }}
+{{- /* EANs of the SKUs a page's options or skus table select, so the
+       parameter table can show the selected one's; pages without them keep
+       their ean: */}}
+{{- $sku_table := partial "utils/get-skus" . }}
+{{- $selectable_skus := slice }}
 {{- range partial "utils/get-option-variants" . }}
 {{-   $sku := .sku }}
 {{-   with .args }}
 {{-     $sku = partial "utils/format" (dict "s" (partial "utils/get-product-id" $) "params" .) }}
 {{-   end }}
+{{-   $selectable_skus = $selectable_skus | append $sku }}
+{{- end }}
+{{- range $sku_table }}
+{{-   $selectable_skus = $selectable_skus | append .sku }}
+{{- end }}
+{{- $ean_scratch := newScratch }}
+{{- range $sku := $selectable_skus }}
 {{-   range $sku_lists }}
 {{-     with index . $sku }}
 {{-       if and .ean (not (index (default dict ($ean_scratch.Get "eans")) $sku)) }}
@@ -516,6 +525,8 @@ const stock_per_id = {{ $stock_per_id }}
         <meta itemprop="gtin13" content="{{ $ean }}" />
         {{ end }}{{ with $eans }}
         <script id="sku-eans" type="application/json">{{ . }}</script>
+        {{ end }}{{ with $sku_table }}
+        <script id="sku-table" type="application/json">{{ . }}</script>
         {{ end }}
         {{ if .Params.Model }}
         <meta itemprop="model" content="{{ .Params.Model }}" />

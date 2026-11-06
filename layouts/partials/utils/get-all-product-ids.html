@@ -43,12 +43,15 @@
   {{-     $item_id = printf "%s-%s" $item_id $size_name }}
   {{-   end }}
   {{- end }}
-  {{- if $combinations }}
-  {{-   range $combinations }}
-  {{-     $product_ids = append (partial "utils/format" (dict "s" $item_id "params" .args)) $product_ids }}
+  {{- range (or $combinations (slice dict)) }}
+  {{-   $id := partial "utils/format" (dict "s" $item_id "params" (default dict .args)) }}
+  {{-   if $params.skus }}
+  {{-     $selection := partial "utils/get-sku-selection" (dict "size" $size_name "colour" $colour "options" .options) }}
+  {{-     with partial "utils/get-sku-for" (dict "page" $page "selection" $selection) }}
+  {{-       $id = . }}
+  {{-     end }}
   {{-   end }}
-  {{- else }}
-  {{-   $product_ids = append $item_id $product_ids }}
+  {{-   $product_ids = append $id $product_ids }}
   {{- end }}
 {{- end }}
 {{- end }}

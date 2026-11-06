@@ -96,6 +96,12 @@
             "variant" $variant "item_id" $item_id "args" $args "item_ctx" $item_ctx
             "full_name" $full_name "colour" $colour "size_name" $size_name) }}
       {{- $v_item_id := $v.item_id }}
+      {{- if $page.Params.skus }}
+      {{-   $selection := partial "utils/get-sku-selection" (dict "size" $size_name "colour" $colour "options" $variant.options) }}
+      {{-   with partial "utils/get-sku-for" (dict "page" $page "selection" $selection) }}
+      {{-     $v_item_id = . }}
+      {{-   end }}
+      {{- end }}
       {{- $v_args := $v.args }}
       {{- $v_image := $image }}
       {{- $price := partial "utils/get-price" $page }}
