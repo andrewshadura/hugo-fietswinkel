@@ -302,7 +302,11 @@ const stock_per_id = {{ $stock_per_id }}
                 data-size="{{ $name }}"
                 data-size-id="{{ $size_id }}"
                 >
-                <span class="size-name">{{ $name }}</span><br><span class="size-detail">{{ $size }}</span>
+                <span class="size-name">{{ $name }}</span><br><span class="size-detail">
+                {{- /* Each comma-separated part stays whole: a long description wraps only after a comma */}}
+                {{- $parts := split $size ", " }}
+                {{- range $i, $part := $parts }}{{ if $i }} {{ end }}<span>{{ $part }}{{ if lt $i (sub (len $parts) 1) }},{{ end }}</span>{{ end -}}
+                </span>
               </input>
             </label>
             {{- end }}

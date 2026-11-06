@@ -43,6 +43,15 @@ a.color-button {
     .size-name {
         font-weight: 700;
     }
+
+    // Wrap a long description only between its comma-separated parts
+    .size-detail {
+        white-space: normal;
+
+        > span {
+            white-space: nowrap;
+        }
+    }
 }
 
 .h-product .variants-box {
