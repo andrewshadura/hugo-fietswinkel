@@ -333,7 +333,8 @@ $(window).on('load', function () {
   }
 
   function collectOptions() {
-    return $(".product-option :selected, .product-option :checked").map(function() {
+    // Size lives in data-item-size, so leave its radio out to prevent duplicates
+    return $(".product-option :selected, .product-option :checked").not('[name="size"]').map(function() {
       let scratch = {}
       // data-name-label is the same display label the variants-box heading uses
       scratch[this.dataset.nameLabel || this.dataset.name || this.name] = this.value
